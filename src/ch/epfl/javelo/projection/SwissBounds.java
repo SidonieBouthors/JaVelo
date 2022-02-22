@@ -25,9 +25,7 @@ public final class SwissBounds {
      * @return if the point is in Swiss bounds
      */
     public static boolean containsEN(double e, double n) {
-        if (e <= MAX_E && e >= MIN_E && n <= MAX_N && n >= MIN_N) {
-            return true;
-        } else {return false;}
+        return e <= MAX_E && e >= MIN_E && n <= MAX_N && n >= MIN_N;
     }
 
 }

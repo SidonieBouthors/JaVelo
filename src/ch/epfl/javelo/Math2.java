@@ -61,16 +61,12 @@ public final class Math2 {
         Preconditions.checkArgument(min<max);
         if (v > max) {
             return max;
-        } else if (v < min) {
-            return min;
-        } else {
-            return v;
-        }
+        } else return Math.max(v, min);
     }
 
     /**
      * Returns inverse hyperbolic sine of x
-     * @param x
+     * @param x     : value
      * @return asinh(x)
      */
     public static double asinh(double x){
@@ -116,8 +112,8 @@ public final class Math2 {
      * @param bX    : x coordinate of B
      * @param bY    : y coordinate of B
      * @param pX    : x coordinate of P
-     * @param pY    : y cooridnate of P
-     * @return
+     * @param pY    : y coordinate of P
+     * @return length of the projection of AP on AB
      */
     public static double projectionLength (double aX, double aY, double bX, double bY, double pX, double pY){
         double uX = pX - aX;
