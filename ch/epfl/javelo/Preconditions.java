@@ -6,11 +6,19 @@ package ch.epfl.javelo;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-public class Preconditions {
+public final class Preconditions {
 
+    /**
+     * Non instantiable
+     */
     private Preconditions() {}
 
-    public static void checkArgument (boolean shouldBeTrue) throws IllegalArgumentException{
+    /**
+     * Throws exception if shouldBeTrue is false
+     * @param shouldBeTrue              : argument
+     * @throws IllegalArgumentException : if shouldBeTrue is false
+     */
+    public static void checkArgument (boolean shouldBeTrue){
         if (!shouldBeTrue){
             throw new IllegalArgumentException();
         }
