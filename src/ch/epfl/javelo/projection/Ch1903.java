@@ -20,8 +20,6 @@ public final class Ch1903{
 
         double lambda1 = Math.pow(10,-4)*(3600*Math.toDegrees(lon) - 26782.5);
         double phi1 = Math.pow(10,-4)*(3600*Math.toDegrees(lat) - 169028.66);
-        System.out.println(lambda1);
-        System.out.println(phi1);
         return  2600072.37
                 + 211455.93*lambda1
                 - 10938.51*lambda1*phi1

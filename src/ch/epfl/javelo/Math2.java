@@ -14,7 +14,7 @@ public final class Math2 {
 
     /**
      * Returns the ceiling of the division
-     * @throws IllegalArgumentException     : for x < 0 or y <= 0
+     * @throws IllegalArgumentException     : if x < 0 or y <= 0
      * @param x     : dividend
      * @param y     : divisor
      * @return ceiling division x/y
