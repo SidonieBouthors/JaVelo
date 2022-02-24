@@ -10,7 +10,7 @@ public final class SwissBounds {
      */
     private SwissBounds(){}
 
-    public final static double MIN_E = 2485000; //2 485 000
+    public final static double MIN_E = 2485000;
     public final static double MAX_E = 2834000;
     public final static double MIN_N = 1075000;
     public final static double MAX_N = 1296000;
