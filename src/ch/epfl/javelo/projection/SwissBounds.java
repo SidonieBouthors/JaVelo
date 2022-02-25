@@ -9,12 +9,29 @@ public final class SwissBounds {
      * Non instantiable
      */
     private SwissBounds(){}
-
+    /**
+     * Smallest Swiss E coordinate
+     */
     public final static double MIN_E = 2485000;
+    /**
+     * Largest Swiss E coordinate
+     */
     public final static double MAX_E = 2834000;
+    /**
+     * Smallest Swiss N coordinate
+     */
     public final static double MIN_N = 1075000;
+    /**
+     * Largest Swiss N coordinate
+     */
     public final static double MAX_N = 1296000;
+    /**
+     * Width of Switzerland
+     */
     public final static double WIDTH= MAX_E-MIN_E;
+    /**
+     * Height of Switzerland
+     */
     public final static double HEIGHT = MAX_N-MIN_N;
 
     /**
