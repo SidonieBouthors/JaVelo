@@ -25,8 +25,33 @@ public final class Functions {
      * @return function obtained by interpolation
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax){
-
-        return null;
+        Preconditions.checkArgument(samples.length>1 && xMax>0);
+        return new Sampled(samples, xMax);
     }
 
+    private static final record Constant(double y) implements DoubleUnaryOperator{
+        @Override
+        public double applyAsDouble(double x) {
+            return y;
+        }
+    }
+    private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator{
+        @Override
+        public double applyAsDouble(double x) {
+
+            int sampleSize = samples.length;
+            double interval = xMax/sampleSize;
+            if (x > xMax){
+                return samples[sampleSize - 1];
+            }else if (x<0){
+                return samples[0];
+            } else {
+                float xAbove = 0;
+                while (x < xAbove) {
+                    xAbove+=interval;
+                }
+                return Math2.interpolate(xAbove-interval, xAbove, x);
+            }
+        }
+    }
 }
