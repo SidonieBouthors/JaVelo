@@ -32,8 +32,8 @@ public record AttributeSet(long bits) {
      * @return whether this contains the attribute
      */
     public boolean contains(Attribute attribute) {
-        long a = bits << 64 - Attribute.COUNT + attribute.ordinal();
-        a = a >>> 63;
+        long a = bits << Long.SIZE - Attribute.COUNT + attribute.ordinal();
+        a = a >>> Long.SIZE-1;
         return a == 1;
     }
     /**

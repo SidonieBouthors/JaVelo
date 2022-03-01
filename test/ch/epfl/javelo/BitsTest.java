@@ -10,16 +10,16 @@ class BitsTest {
     void testExtractSigned() {
         String initbin = "01110111110101001011101010101010";
         int  a = Integer.parseInt(initbin,2);
-        int actual = Bits.extractSigned(a, 6, 3);
+        int actual = Bits.extractSigned(a, 1, 2);
 
-        int expected =Integer.parseInt("111",2);
+        int expected =Integer.parseInt("11",2);
         assertEquals(expected,actual);
     }
     @Test
     void testExtractUnsigned() {
         String initbin = "01110111110101001011101010101010";
         int  a = Integer.parseInt(initbin,2);
-        int actual = Bits.extractUnsigned(a, 30, 2);
+        int actual = Bits.extractUnsigned(a, 30, 0);
 
         int expected =Integer.parseInt("10",2);
         assertEquals(expected,actual);
