@@ -29,12 +29,19 @@ public final class Functions {
         return new Sampled(samples, xMax);
     }
 
-    private static final record Constant(double y) implements DoubleUnaryOperator{
+    /**
+     * Record representing a constant function
+     */
+    private record Constant(double y) implements DoubleUnaryOperator{
         @Override
         public double applyAsDouble(double x) {
             return y;
         }
     }
+
+    /**
+     * Record representing a function constructed from a sample (by linear interpolation)
+     */
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator{
         @Override
         public double applyAsDouble(double x) {

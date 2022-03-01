@@ -15,7 +15,7 @@ public final class Bits {
      */
     public static int extractSigned (int value, int start, int length){
         Preconditions.checkArgument(start + length<32 && start>=0 && length >=0);
-        return (value << start) >> 32 - length;
+        return (value << start) >> Integer.SIZE - length;
     }
 
     /**
@@ -27,6 +27,6 @@ public final class Bits {
      */
     public static int extractUnsigned (int value, int start, int length){
         Preconditions.checkArgument(start+ length<=32 && start>=0 && length >=0);
-        return (value << start) >>> 32 - length;
+        return (value << start) >>> Integer.SIZE - length;
     }
 }

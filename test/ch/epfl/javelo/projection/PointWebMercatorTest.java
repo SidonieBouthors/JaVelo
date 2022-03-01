@@ -6,6 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PointWebMercatorTest {
 
+    @Test
+    void testOf(){
+        int x =69561722;
+        int y = 47468099;
+        PointWebMercator mercator = PointWebMercator.of(19, x, y);
+        assertEquals(x, mercator.xAtZoomLevel(19));
+        assertEquals(y, mercator.yAtZoomLevel(19));
+    }
 
     @Test
     void testToPointCh(){
@@ -13,5 +21,7 @@ class PointWebMercatorTest {
 
         PointCh ch = mercator.toPointCh();
     }
+
+
 
 }

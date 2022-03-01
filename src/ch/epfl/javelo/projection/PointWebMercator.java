@@ -7,6 +7,10 @@ import ch.epfl.javelo.Preconditions;
  * @author François Théron (346077)
  */
 public record PointWebMercator(double x, double y) {
+    /**
+     * z such that 2^z is the size in pixels of the whole world map at level of zoom 0
+     */
+    public static final int ZOOM_ZERO = 8;
 
     /**
      * PointWebMercator Constructor (Compact)
@@ -19,15 +23,21 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Constructs a PointWebMercator with specified zoom level
+     * Constructs a PointWebMercator whose coordinates are x and y at specified zoom level
      * @param zoomLevel     : level of zoom
      * @param x             : x coordinate
      * @param y             : y coordinate
-     * @return PointWebMercator with specified coordinates and zoom level
+     * @return PointWebMercator with specified coordinates at zoom level
      */
     public static PointWebMercator of(int zoomLevel, double x, double y){
-        return new PointWebMercator(Math.scalb(x, zoomLevel), Math.scalb(y, zoomLevel));
+        return new PointWebMercator(Math.scalb(x, -(ZOOM_ZERO+zoomLevel)), Math.scalb(y, -(ZOOM_ZERO+zoomLevel)));
     }
+
+    /**
+     * Returns a PointWebMercator that corresponds to the givenPointCh
+     * @param pointCh
+     * @return
+     */
     public static PointWebMercator ofPointCh(PointCh pointCh){
         double x = WebMercator.x(Ch1903.lon(pointCh.e(), pointCh.n()));
         double y = WebMercator.x(Ch1903.lat(pointCh.e(), pointCh.n()));
@@ -35,21 +45,21 @@ public record PointWebMercator(double x, double y) {
     }
 
     /**
-     * Returns the coordinates of x with zoom level applied
+     * Returns the x coordinates with zoom level applied
      * @param zoomLevel     : level of zoom
      * @return x coordinate with zoom applied
      */
     public double xAtZoomLevel(int zoomLevel){
-        return Math.scalb(x, zoomLevel);
+        return Math.scalb(x, ZOOM_ZERO+zoomLevel);
     }
 
     /**
-     * Returns the coordinates of y with zoom level applied
+     * Returns the y coordinates with zoom level applied
      * @param zoomLevel     : level of zoom
      * @return y coordinate with zoom applied
      */
     public double yAtZoomLevel(int zoomLevel){
-        return Math.scalb(y, zoomLevel);
+        return Math.scalb(y, ZOOM_ZERO+zoomLevel);
     }
 
     /**
