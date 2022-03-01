@@ -14,8 +14,8 @@ public final class Bits {
      * @return extracted sequence as int
      */
     public static int extractSigned (int value, int start, int length){
-        Preconditions.checkArgument(start + length<32 && start>=0 && length >=0);
-        return (value << start) >> Integer.SIZE - length;
+        Preconditions.checkArgument(start + length < Integer.SIZE && start>=0 && length >=0);
+        return  (value << start) >> Integer.SIZE - length;
     }
 
     /**

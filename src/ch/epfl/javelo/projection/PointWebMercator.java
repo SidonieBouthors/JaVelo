@@ -40,7 +40,7 @@ public record PointWebMercator(double x, double y) {
      */
     public static PointWebMercator ofPointCh(PointCh pointCh){
         double x = WebMercator.x(Ch1903.lon(pointCh.e(), pointCh.n()));
-        double y = WebMercator.x(Ch1903.lat(pointCh.e(), pointCh.n()));
+        double y = WebMercator.y(Ch1903.lat(pointCh.e(), pointCh.n()));
         return new PointWebMercator(x, y);
     }
 
