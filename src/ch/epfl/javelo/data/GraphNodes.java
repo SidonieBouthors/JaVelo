@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Preconditions;
 
 import java.nio.IntBuffer;
@@ -42,7 +43,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return
      */
     int outDegree(int nodeId){
-        return 0;
+        return Bits.extractUnsigned(buffer().get(nodeId*2),0,4);
     }
 
     /**
