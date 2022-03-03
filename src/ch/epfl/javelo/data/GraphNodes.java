@@ -12,39 +12,45 @@ import java.nio.IntBuffer;
  * @author François Théron (346077)
  */
 public record GraphNodes(IntBuffer buffer) {
-    /*
-     qui retourne le nombre total de nœuds,
+
+
+
+    private static final int OFFSET_E = 0;
+    private static final int OFFSET_N = OFFSET_E + 1;
+    private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
+    private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
+    /**
+     * Returns the total number of nodes
+     * @return
      */
-    int count(){
-       return buffer().capacity()%3;
+    public int count(){return buffer().capacity()/NODE_INTS;}
+
+    /**
+     * Returns the East coordinate of the node of given ID
+     * @param nodeId    : ID of the node
+     * @return East coordinate of the node
+     */
+    public double nodeE(int nodeId){
+        return buffer().get(OFFSET_E + NODE_INTS * (nodeId-1));
     }
 
     /**
-     * , qui retourne la coordonnée E du nœud d'identité donnée
-     * @param nodeI
-     * @return
+     * Returns the North coordinate of the node of given ID
+     * @param nodeId    : ID of the node
+     * @return North coordinate of the node
      */
-    double nodeE(int nodeI){
-        Preconditions.checkArgument(nodeI>0);
-        return buffer().get((nodeI-1)*3);
+    public double nodeN(int nodeId){
+
+        return buffer().get(OFFSET_N + 3*(NODE_INTS-1));
     }
 
     /**
-     * qui retourne la coordonnée N du nœud d'identité donnée,
-     * @param nodeI
-     * @return
+     * Returns the number of edges originating at the node of given ID
+     * @param nodeId    : ID of the node
+     * @return number of edges originating at the node
      */
-    double nodeN(int nodeI){
-        return buffer().get((nodeI-1)*3+1);
-    }
-
-    /**
-     * qui retourne le nombre d'arêtes sortant du nœud d'identité donné,
-     * @param nodeId
-     * @return
-     */
-    int outDegree(int nodeId){
-        return Bits.extractUnsigned(buffer().get(nodeId*2),0,4);
+    public int outDegree(int nodeId){
+        return Bits.extractUnsigned(buffer().get(nodeId*OFFSET_OUT_EDGES),0,4);
     }
 
     /**
@@ -53,7 +59,15 @@ public record GraphNodes(IntBuffer buffer) {
      * @param edgeIndex     : index of the edge amongst edges originating at this node
      * @return ID of the edge
      */
-    int edgeId(int nodeId, int edgeIndex){
-        return 0;
+    public int edgeId(int nodeId, int edgeIndex){
+       Preconditions.checkArgument(0 <= edgeIndex && edgeIndex < outDegree(nodeId));
+       int totalOfNodes=0;
+       int i=0;
+        while (i < nodeId) {
+             int nbOfEdgesInNode =outDegree(nodeId);
+             totalOfNodes+=nbOfEdgesInNode;
+            i++;
+        }
+        return totalOfNodes+edgeIndex;
     }
 }
