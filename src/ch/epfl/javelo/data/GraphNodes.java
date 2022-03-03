@@ -6,10 +6,11 @@ import ch.epfl.javelo.Preconditions;
 import java.nio.IntBuffer;
 
 /**
+ * Record GraphNodes
+ * @param buffer    : the buffer memory containing the value of the attributes of all nodes in the graph
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-
 public record GraphNodes(IntBuffer buffer) {
     /*
      qui retourne le nombre total de nœuds,
@@ -47,11 +48,10 @@ public record GraphNodes(IntBuffer buffer) {
     }
 
     /**
-     * qui retourne l'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId.
-     *
-     * @param nodeId
-     * @param edgeIndex
-     * @return
+     * Returns ID of the edge of index edgeIndex originating at the node of ID nodeId
+     * @param nodeId        : ID of the node that the edge originates at
+     * @param edgeIndex     : index of the edge amongst edges originating at this node
+     * @return ID of the edge
      */
     int edgeId(int nodeId, int edgeIndex){
         return 0;

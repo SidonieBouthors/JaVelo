@@ -42,10 +42,8 @@ public final class Ch1903{
                 - 194.56*lambda1*lambda1*phi1
                 + 119.79 * Math.pow(phi1,3);
     }
-/**
- *Return
- *
- * return s the longitude of the point in the WGS84 system
+    /**
+    * Returns the longitude of the point in the WGS84 system
      * @param e     : east coordinate
      * @param n     : north coordinate
      * @return the longitude

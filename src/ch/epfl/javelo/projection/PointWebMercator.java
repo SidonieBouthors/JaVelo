@@ -8,7 +8,7 @@ import ch.epfl.javelo.Preconditions;
  */
 public record PointWebMercator(double x, double y) {
     /**
-     * z such that 2^z is the size in pixels of the whole world map at level of zoom 0
+     * z such that 2^z is the size in pixels of the whole world map at level of zoom 0 (256)
      */
     public static final int ZOOM_ZERO = 8;
 

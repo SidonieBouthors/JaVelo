@@ -1,7 +1,7 @@
 package ch.epfl.javelo;
 
 public final class Q28_4 {
-    public static final int BITS_RIGHT_OF_POINT = 4;
+    public static final int POINT_OFFSET = 4;
     /**
      * Non instantiable
      */
@@ -13,7 +13,7 @@ public final class Q28_4 {
      * @return Q28.4 value
      */
     public static int ofInt(int i){
-        return i << BITS_RIGHT_OF_POINT;
+        return i << POINT_OFFSET;
     }
 
     /**
@@ -22,7 +22,7 @@ public final class Q28_4 {
      * @return double value
      */
     public static double asDouble(int q28_4){
-        return Math.scalb(q28_4, -BITS_RIGHT_OF_POINT);
+        return Math.scalb(q28_4, -POINT_OFFSET);
     }
 
     /**
@@ -31,6 +31,6 @@ public final class Q28_4 {
      * @return float value
      */
     public static float asFloat(int q28_4){
-        return Math.scalb(q28_4, -BITS_RIGHT_OF_POINT);
+        return Math.scalb(q28_4, -POINT_OFFSET);
     }
 }

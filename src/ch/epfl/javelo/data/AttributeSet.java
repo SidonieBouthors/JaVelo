@@ -14,6 +14,7 @@ public record AttributeSet(long bits) {
     public AttributeSet {
         Preconditions.checkArgument((bits >>> Attribute.COUNT) == 0);
     }
+
     /**
      * Returns an AttributeSet with the specified attributes
      * @param attributes    : list of attributes
@@ -26,6 +27,7 @@ public record AttributeSet(long bits) {
         }
         return new AttributeSet(attributeBits);
     }
+
     /**
      * Returns true iff this contains the attribute
      * @param attribute     : attribute that is being checked
@@ -36,6 +38,7 @@ public record AttributeSet(long bits) {
         a = a >>> Long.SIZE-1;
         return a == 1;
     }
+
     /**
      * Returns true iff this and that have one or more common attributes
      * @param that  : AttributeSet to compare to
