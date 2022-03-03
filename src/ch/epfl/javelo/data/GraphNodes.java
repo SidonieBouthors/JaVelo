@@ -2,6 +2,7 @@ package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Bits;
 import ch.epfl.javelo.Preconditions;
+import ch.epfl.javelo.Q28_4;
 
 import java.nio.IntBuffer;
 
@@ -31,7 +32,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return East coordinate of the node
      */
     public double nodeE(int nodeId){
-        return buffer().get(OFFSET_E + NODE_INTS * (nodeId-1));
+        return Q28_4.asDouble(buffer().get(OFFSET_E + NODE_INTS * (nodeId-1)));
     }
 
     /**
@@ -41,7 +42,7 @@ public record GraphNodes(IntBuffer buffer) {
      */
     public double nodeN(int nodeId){
 
-        return buffer().get(OFFSET_N + 3*(NODE_INTS-1));
+        return Q28_4.asDouble(buffer().get(OFFSET_N + 3*(NODE_INTS-1)));
     }
 
     /**
@@ -61,13 +62,13 @@ public record GraphNodes(IntBuffer buffer) {
      */
     public int edgeId(int nodeId, int edgeIndex){
        Preconditions.checkArgument(0 <= edgeIndex && edgeIndex < outDegree(nodeId));
-       int totalOfNodes=0;
-       int i=0;
-        while (i < nodeId) {
-             int nbOfEdgesInNode =outDegree(nodeId);
-             totalOfNodes+=nbOfEdgesInNode;
-            i++;
+       int totalOfEdges=0;
+       int actualnode=0;
+        while (actualnode < nodeId) {
+             int nbOfEdgesInNode =outDegree(actualnode);
+             totalOfEdges+=nbOfEdgesInNode;
+            actualnode++;
         }
-        return totalOfNodes+edgeIndex;
+        return totalOfEdges+edgeIndex+1;
     }
 }
