@@ -23,7 +23,6 @@ public record AttributeSet(long bits) {
     public static AttributeSet of(Attribute... attributes){
         long attributeBits = 0L;
         for (Attribute attribute : attributes) {
-            //attributeBits += Math.pow(2, Attribute.COUNT - 1 - attribute.ordinal());
             attributeBits += (1L << attribute.ordinal());
         }
         return new AttributeSet(attributeBits);
@@ -35,9 +34,6 @@ public record AttributeSet(long bits) {
      * @return whether this contains the attribute
      */
     public boolean contains(Attribute attribute) {
-        //long a = bits << Long.SIZE - Attribute.COUNT + attribute.ordinal();
-        //a = a >>> Long.SIZE-1;
-        //return a == 1;
         long singleAttribute = (1L << attribute.ordinal());
         return (bits & singleAttribute) != 0;
     }
