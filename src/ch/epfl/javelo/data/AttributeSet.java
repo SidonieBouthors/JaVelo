@@ -21,9 +21,10 @@ public record AttributeSet(long bits) {
      * @return an Attribute set with these attributes
      */
     public static AttributeSet of(Attribute... attributes){
-        long attributeBits = 0;
-        for (int i = 0; i < attributes.length; i++) {
-            attributeBits += Math.pow(2, Attribute.COUNT - 1 - attributes[i].ordinal());
+        long attributeBits = 0L;
+        for (Attribute attribute : attributes) {
+            //attributeBits += Math.pow(2, Attribute.COUNT - 1 - attribute.ordinal());
+            attributeBits += (1L << attribute.ordinal());
         }
         return new AttributeSet(attributeBits);
     }
@@ -34,9 +35,11 @@ public record AttributeSet(long bits) {
      * @return whether this contains the attribute
      */
     public boolean contains(Attribute attribute) {
-        long a = bits << Long.SIZE - Attribute.COUNT + attribute.ordinal();
-        a = a >>> Long.SIZE-1;
-        return a == 1;
+        //long a = bits << Long.SIZE - Attribute.COUNT + attribute.ordinal();
+        //a = a >>> Long.SIZE-1;
+        //return a == 1;
+        long singleAttribute = (1L << attribute.ordinal());
+        return (bits & singleAttribute) != 0;
     }
 
     /**
@@ -45,9 +48,7 @@ public record AttributeSet(long bits) {
      * @return whether the AttributeSets intersect
      */
     public boolean intersects(AttributeSet that){
-        if ((this.bits() & that.bits()) == 0){
-            return false;
-        } else { return true; }
+        return (this.bits() & that.bits()) != 0;
     }
 
     @Override

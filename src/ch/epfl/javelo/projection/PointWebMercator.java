@@ -35,8 +35,8 @@ public record PointWebMercator(double x, double y) {
 
     /**
      * Returns a PointWebMercator that corresponds to the givenPointCh
-     * @param pointCh
-     * @return
+     * @param pointCh   : given PointCh
+     * @return PointWebMercator corresponding to the PointCh
      */
     public static PointWebMercator ofPointCh(PointCh pointCh){
         double x = WebMercator.x(Ch1903.lon(pointCh.e(), pointCh.n()));

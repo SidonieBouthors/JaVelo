@@ -14,13 +14,14 @@ import java.util.List;
  * @author François Théron (346077)
  */
 public record GraphSectors(ByteBuffer buffer) {
+
     private record Sector(int startNodeId, int endNodeId) {
 
     }
 
     /**
      * Returns the list of all the Sectors intersecting with the square of center and size given
-     * @param center    : Center of square
+     * @param center    : center of the square
      * @param distance  : distance between center and a side (half of a side of the square)
      * @return List of Sectors intersecting with square
      */
@@ -39,10 +40,6 @@ public record GraphSectors(ByteBuffer buffer) {
         final short numberOfSqares =128;
         double actualX = SwissBounds.MIN_E;
         double actualY = SwissBounds.MIN_N;
-        
-
-
-
-
+        return output;
     }
 }
