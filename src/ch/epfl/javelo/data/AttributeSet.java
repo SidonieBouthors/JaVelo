@@ -23,7 +23,7 @@ public record AttributeSet(long bits) {
     public static AttributeSet of(Attribute... attributes){
         long attributeBits = 0;
         for (int i = 0; i < attributes.length; i++) {
-            attributeBits += Math.pow(2, Attribute.COUNT - 1 - attributes[i].ordinal());
+            attributeBits += 1L << attributes[i].ordinal();
         }
         return new AttributeSet(attributeBits);
     }
