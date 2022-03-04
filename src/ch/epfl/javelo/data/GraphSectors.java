@@ -39,10 +39,7 @@ public record GraphSectors(ByteBuffer buffer) {
         final short numberOfSqares =128;
         double actualX = SwissBounds.MIN_E;
         double actualY = SwissBounds.MIN_N;
-        
-
-
-
+        return null;
 
     }
 }
