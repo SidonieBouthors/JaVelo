@@ -45,11 +45,9 @@ public final class Functions {
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator{
         @Override
         public double applyAsDouble(double x) {
-
-            int sampleSize = samples.length;
-            double interval = xMax/(sampleSize-1);
+            double interval = xMax/(samples.length - 1);
             if (x >= xMax){
-                return samples[sampleSize - 1];
+                return samples[samples.length - 1];
             }else if (x<=0){
                 return samples[0];
             } else {
@@ -61,7 +59,6 @@ public final class Functions {
                     pos ++;
                 }
                 double xUnder = xAbove-interval;
-
 
                 return Math2.interpolate(samples[pos-1], samples[pos], (x-xUnder)/interval);
             }
