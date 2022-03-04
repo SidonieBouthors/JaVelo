@@ -14,7 +14,6 @@ import java.util.List;
  * @author François Théron (346077)
  */
 public record GraphSectors(ByteBuffer buffer) {
-
     private record Sector(int startNodeId, int endNodeId) {
 
     }

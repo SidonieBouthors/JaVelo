@@ -47,17 +47,23 @@ public final class Functions {
         public double applyAsDouble(double x) {
 
             int sampleSize = samples.length;
-            double interval = xMax/sampleSize;
-            if (x > xMax){
+            double interval = xMax/(sampleSize-1);
+            if (x >= xMax){
                 return samples[sampleSize - 1];
-            }else if (x<0){
+            }else if (x<=0){
                 return samples[0];
             } else {
-                float xAbove = 0;
-                while (x < xAbove) {
-                    xAbove+=interval;
+                double xAbove = 0;
+                int pos = 0;
+                while (x > xAbove) {
+                    System.out.println(interval);
+                    xAbove +=interval;
+                    pos ++;
                 }
-                return Math2.interpolate(xAbove-interval, xAbove, x);
+                double xUnder = xAbove-interval;
+
+
+                return Math2.interpolate(samples[pos-1], samples[pos], (x-xUnder)/interval);
             }
         }
     }
