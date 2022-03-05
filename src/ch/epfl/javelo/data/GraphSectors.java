@@ -56,10 +56,15 @@ public record GraphSectors(ByteBuffer buffer) {
         for (int j = indexBottomRight; j <= indexBottomLeft; j++) {
             for (i = indexBottomRight; i <=indexTopRight ; i+=SECTORS_GRID_SUBDIVISIONS) {
                 indexofallsectors.add(i);
-
             }
             i++;
 
+        }
+        for (int j = 0; j < indexofallsectors.size(); j++) {
+            int buffertoInt = buffer.getInt(j);
+            int startNodeID = buffertoInt>>Short.SIZE;
+            int endNodeID = startNodeID + ((buffertoInt<<Integer.SIZE)>>Integer.SIZE)+1;
+            output.add(new Sector(startNodeID,endNodeID));
         }
 
 
