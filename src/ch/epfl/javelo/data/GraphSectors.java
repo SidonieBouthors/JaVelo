@@ -14,7 +14,14 @@ import java.util.List;
  * @author François Théron (346077)
  */
 public record GraphSectors(ByteBuffer buffer) {
-    private record Sector(int startNodeId, int endNodeId) {
+
+    private static final int SWISS_WIDTH = 349000; //meters
+    private static final int SWISS_HEIGHT= 221000; //meters
+    private static final int SECTOR_WIDTH = 2730; //meters
+    private static final int SECTOR_HEIGHT = 1730; //meters
+    private static final short SECTORS_GRID_SUBDIVISIONS =128;
+
+    static private record Sector(int startNodeId, int endNodeId) {
 
     }
 
@@ -30,15 +37,41 @@ public record GraphSectors(ByteBuffer buffer) {
 
         double eastCoord = center.e();
         double northCoord = center.n();
+        double norm = 2*distance;
+        List<Integer> indexofallsectors = new ArrayList<>();
+
         double eastBorder = eastCoord-distance;
-        double westBorder = eastCoord + distance;
-        double northBorder = northCoord+distance;
         double southBorder = northCoord - distance;
-        final int xDistanceOfSectors = 2730; //meters
-        final int yDistanceOfSectors = 1730; //meters
-        final short numberOfSqares =128;
-        double actualX = SwissBounds.MIN_E;
-        double actualY = SwissBounds.MIN_N;
+
+        double distanceFromWest= (eastBorder-SwissBounds.MIN_E);
+        double distanceFromSouth = (southBorder-SwissBounds.MIN_N);
+
+        // Cast for the floor Example if indexsector == 0.5 it means that the first sector inside is the 0
+        int indexBottomLeft=indexOfSector((int)distanceFromWest/SECTOR_WIDTH,(int)distanceFromSouth/SECTOR_HEIGHT);
+        int indexTopRight=indexOfSector((int)(distanceFromWest+norm)/SECTOR_WIDTH,(int)(distanceFromSouth+norm)/SECTOR_HEIGHT);
+        int indexBottomRight=indexOfSector((int)(distanceFromWest+norm)/SECTOR_WIDTH,(int)distanceFromSouth/SECTOR_HEIGHT);
+        int indexTopLeft = indexOfSector((int)distanceFromWest/SECTOR_WIDTH,(int)(distanceFromSouth+norm)/SECTOR_HEIGHT);
+        int i = indexBottomRight;
+
+        for (int j = indexBottomRight; j <= indexBottomLeft; j++) {
+            for (i = indexBottomRight; i <=indexTopRight ; i+=SECTORS_GRID_SUBDIVISIONS) {
+                indexofallsectors.add(i);
+
+            }
+            i++;
+
+        }
+
+
+
         return output;
     }
+
+    private  int indexOfSector(int indexFromWest, int indexFromSouth) {
+
+        return  indexFromSouth*(SECTORS_GRID_SUBDIVISIONS)+ indexFromWest;
+
+    }
 }
+
+
