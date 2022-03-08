@@ -22,7 +22,7 @@ public final class Q28_4 {
      * @return double value
      */
     public static double asDouble(int q28_4){
-        return Math.scalb(q28_4, -POINT_OFFSET);
+        return Math.scalb((double)q28_4, -POINT_OFFSET);
     }
 
     /**

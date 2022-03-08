@@ -53,13 +53,11 @@ public final class Functions {
             } else {
                 double xAbove = 0;
                 int pos = 0;
-                while (x > xAbove) {
-                    System.out.println(interval);
-                    xAbove +=interval;
+                while (x > xAbove && pos < samples.length - 1) {
+                    xAbove += interval;
                     pos ++;
                 }
                 double xUnder = xAbove-interval;
-
                 return Math2.interpolate(samples[pos-1], samples[pos], (x-xUnder)/interval);
             }
         }

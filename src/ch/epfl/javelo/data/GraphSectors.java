@@ -1,6 +1,6 @@
 package ch.epfl.javelo.data;
 
-import ch.epfl.javelo.Bits;
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 
@@ -15,15 +15,15 @@ import java.util.List;
  */
 public record GraphSectors(ByteBuffer buffer) {
 
-    private static final int SWISS_WIDTH = 349000; //meters
-    private static final int SWISS_HEIGHT= 221000; //meters
     private static final int SECTOR_WIDTH = 2730; //meters
     private static final int SECTOR_HEIGHT = 1730; //meters
-    private static final short SECTORS_GRID_SUBDIVISIONS =128;
+    private static final short SECTORS_GRID_SUBDIVISIONS =128; //number of sectors in a row/column
 
-    static private record Sector(int startNodeId, int endNodeId) {
+    private static final int OFFSET_FIRST_NODE_ID = 0;
+    private static final int OFFSET_NUMBER_OF_NODES = OFFSET_FIRST_NODE_ID + Integer.BYTES;
+    private static final int SECTOR_BYTES = OFFSET_NUMBER_OF_NODES + Short.BYTES;
 
-    }
+    private record Sector(int startNodeId, int endNodeId) {}
 
     /**
      * Returns the list of all the Sectors intersecting with the square of center and size given
@@ -35,48 +35,27 @@ public record GraphSectors(ByteBuffer buffer) {
 
         List<Sector> output = new ArrayList<>();
 
-        double eastCoord = center.e();
-        double northCoord = center.n();
-        double norm = 2*distance;
-        List<Integer> indexofallsectors = new ArrayList<>();
+        double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
 
-        double eastBorder = eastCoord-distance;
-        double southBorder = northCoord - distance;
+        int indexBottomLeft = (int)(bottomLeftEastDistance/SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/SECTOR_HEIGHT) * SECTORS_GRID_SUBDIVISIONS;
 
-        double distanceFromWest= (eastBorder-SwissBounds.MIN_E);
-        double distanceFromSouth = (southBorder-SwissBounds.MIN_N);
-
-        // Cast for the floor Example if indexsector == 0.5 it means that the first sector inside is the 0
-        int indexBottomLeft=indexOfSector((int)distanceFromWest/SECTOR_WIDTH,(int)distanceFromSouth/SECTOR_HEIGHT);
-        int indexTopRight=indexOfSector((int)(distanceFromWest+norm)/SECTOR_WIDTH,(int)(distanceFromSouth+norm)/SECTOR_HEIGHT);
-        int indexBottomRight=indexOfSector((int)(distanceFromWest+norm)/SECTOR_WIDTH,(int)distanceFromSouth/SECTOR_HEIGHT);
-        int indexTopLeft = indexOfSector((int)distanceFromWest/SECTOR_WIDTH,(int)(distanceFromSouth+norm)/SECTOR_HEIGHT);
-        int i = indexBottomRight;
-
-        for (int j = indexBottomRight; j <= indexBottomLeft; j++) {
-            for (i = indexBottomRight; i <=indexTopRight ; i+=SECTORS_GRID_SUBDIVISIONS) {
-                indexofallsectors.add(i);
+        int coteHeight = (int)(topRightNorthDistance/SECTOR_HEIGHT);
+        int coteWidth = (int)(topRightEastDistance/SECTOR_WIDTH);
+        for (int i = 0; i < SECTORS_GRID_SUBDIVISIONS * coteHeight; i+= SECTORS_GRID_SUBDIVISIONS) {
+            for (int j = indexBottomLeft; j < indexBottomLeft + coteWidth + i * SECTORS_GRID_SUBDIVISIONS; j++) {
+                int sectorIndex = j * SECTOR_BYTES;
+                int startNodeId = buffer.getInt(sectorIndex + OFFSET_FIRST_NODE_ID);
+                int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndex + OFFSET_NUMBER_OF_NODES));
+                int endNodeId = startNodeId + numberOfNodes;
+                output.add(new Sector(startNodeId,endNodeId));
             }
-            i++;
-
         }
-        for (int j = 0; j < indexofallsectors.size(); j++) {
-            int buffertoInt = buffer.getInt(j);
-            int startNodeID = buffertoInt>>Short.SIZE;
-            int endNodeID = startNodeID + ((buffertoInt<<Integer.SIZE)>>Integer.SIZE)+1;
-            output.add(new Sector(startNodeID,endNodeID));
-        }
-
-
-
         return output;
     }
 
-    private  int indexOfSector(int indexFromWest, int indexFromSouth) {
-
-        return  indexFromSouth*(SECTORS_GRID_SUBDIVISIONS)+ indexFromWest;
-
-    }
 }
 
 
