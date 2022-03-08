@@ -5,18 +5,21 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
-    private final static int OFFSET_DESTINATION_NODE_ID = 0;
     private final static int OFFSET_EDGE_DIRECTION = 0;
+    private final static int OFFSET_DESTINATION_NODE_ID = OFFSET_EDGE_DIRECTION;
     private final static int OFFSET_EDGE_LENGTH = OFFSET_DESTINATION_NODE_ID+Integer.BYTES;
     private final static int OFFSET_EDGE_ELEVATION = OFFSET_EDGE_LENGTH+Short.BYTES;
     private final static int OFFSET_EDGE_OSM_ID = OFFSET_EDGE_ELEVATION+Short.BYTES;
+    private final static int EDGE_BYTES = OFFSET_EDGE_OSM_ID + Short.BYTES;
     /**
      * Returns true iff the edge of given ID goes in the opposite direction
      * of the OSM road it comes from
      * @param edgeId    : ID of the edge
      * @return whether the edges direction is inverted
      */
-    public boolean isInverted(int edgeId){return edgesBuffer.getInt(edgeId*OFFSET_EDGE_LENGTH) < 0;}
+    public boolean isInverted(int edgeId){
+        return edgesBuffer.getInt(edgeId*EDGE_BYTES + OFFSET_EDGE_DIRECTION) < 0;
+    }
 
     /**
      * Returns the ID of the destination node of the edge of given ID
@@ -39,7 +42,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
     }
 
     /**
-     * Returns the positive elevation gain (in meters) of the edge of given ID
+     * Returns the elevation gain (in meters) of the edge of given ID
      * @param edgeId    : ID of the edge
      * @return positive elevation gain of the edge
      */
