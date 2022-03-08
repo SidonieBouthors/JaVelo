@@ -10,7 +10,9 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
     private final static int OFFSET_EDGE_LENGTH = OFFSET_DESTINATION_NODE_ID+Integer.BYTES;
     private final static int OFFSET_EDGE_ELEVATION = OFFSET_EDGE_LENGTH+Short.BYTES;
     private final static int OFFSET_EDGE_OSM_ID = OFFSET_EDGE_ELEVATION+Short.BYTES;
-    private final static int EDGE_BYTES = OFFSET_EDGE_OSM_ID + Short.BYTES;
+    private final static int OFFSET_PROFILE = OFFSET_EDGE_ELEVATION+Integer.BYTES;
+    private final static int EDGE_BYTES = OFFSET_PROFILE + Short.BYTES;
+
     /**
      * Returns true iff the edge of given ID goes in the opposite direction
      * of the OSM road it comes from
@@ -27,7 +29,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return ID of the destination node of the edge
      */
     public int targetNodeId(int edgeId){
-        return (edgesBuffer.getInt(edgeId*EDGE_BYTES + OFFSET_EDGE_DIRECTION)<<1)>>>1;
+        return (edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID)<<1)>>>1;
     }
 
     /**
@@ -46,8 +48,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return positive elevation gain of the edge
      */
     public double elevationGain(int edgeId){
-
-        return 0;
+        return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_EDGE_ELEVATION);
     }
 
     /**
