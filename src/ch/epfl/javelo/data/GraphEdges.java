@@ -1,5 +1,7 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Bits;
+
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -68,8 +70,14 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return table of samples of edge profile
      */
     public float[] profileSamples(int edgeId){
+        if (hasProfile(edgeId)){
+            int profileInfo = edgesBuffer.getInt( edgeId * EDGE_BYTES + OFFSET_PROFILE);
+            int profileType = Bits.extractUnsigned(profileInfo, 30, 2);
+            int firstSampleId = Bits.extractUnsigned(profileInfo, 0, 30);
 
-        return new float[0];
+            return new float[0];
+        }
+        else { return new float[0]; }
     }
 
     /**
