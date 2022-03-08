@@ -7,12 +7,12 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
-    private final static int OFFSET_EDGE_DIRECTION = 0;
-    private final static int OFFSET_DESTINATION_NODE_ID = OFFSET_EDGE_DIRECTION;
-    private final static int OFFSET_EDGE_LENGTH = OFFSET_DESTINATION_NODE_ID+Integer.BYTES;
-    private final static int OFFSET_EDGE_ELEVATION = OFFSET_EDGE_LENGTH+Short.BYTES;
-    private final static int OFFSET_EDGE_OSM_ID = OFFSET_EDGE_ELEVATION+Short.BYTES;
-    private final static int OFFSET_PROFILE = OFFSET_EDGE_ELEVATION+Integer.BYTES;
+    private final static int OFFSET_DIRECTION = 0;
+    private final static int OFFSET_DESTINATION_NODE_ID = OFFSET_DIRECTION;
+    private final static int OFFSET_LENGTH = OFFSET_DESTINATION_NODE_ID+Integer.BYTES;
+    private final static int OFFSET_ELEVATION = OFFSET_LENGTH +Short.BYTES;
+    private final static int OFFSET_OSM_ID = OFFSET_ELEVATION +Short.BYTES;
+    private final static int OFFSET_PROFILE = OFFSET_ELEVATION +Integer.BYTES;
     private final static int EDGE_BYTES = OFFSET_PROFILE + Short.BYTES;
 
     /**
@@ -22,7 +22,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return whether the edges direction is inverted
      */
     public boolean isInverted(int edgeId){
-        return edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_EDGE_DIRECTION) < 0;
+        return edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DIRECTION) < 0;
     }
 
     /**
@@ -31,7 +31,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return ID of the destination node of the edge
      */
     public int targetNodeId(int edgeId){
-        return (edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_EDGE_DIRECTION) << 1) >>> 1;
+        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID), 0, 31);
     }
 
     /**
@@ -40,8 +40,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return length of the edge
      */
     public double length(int edgeId){
-        return edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_EDGE_LENGTH);
-
+        return edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH);
     }
 
     /**
@@ -50,7 +49,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return positive elevation gain of the edge
      */
     public double elevationGain(int edgeId){
-        return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_EDGE_ELEVATION);
+        return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_ELEVATION);
     }
 
     /**
@@ -59,8 +58,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return whether the edge has a profile
      */
     public boolean hasProfile(int edgeId){
-
-        return (edgesBuffer.getInt(OFFSET_PROFILE + EDGE_BYTES*edgeId)>>>Integer.SIZE-2)!=0;
+        return Bits.extractUnsigned(edgesBuffer.getInt(OFFSET_PROFILE + EDGE_BYTES*edgeId), 30, 2)!=0;
     }
 
     /**
