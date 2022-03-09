@@ -1,6 +1,8 @@
 package ch.epfl.javelo.data;
 
 import ch.epfl.javelo.Bits;
+import ch.epfl.javelo.Math2;
+import ch.epfl.javelo.Q28_4;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -9,17 +11,16 @@ import java.nio.ShortBuffer;
 public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
     private final static int OFFSET_DIRECTION = 0;
     private final static int OFFSET_DESTINATION_NODE_ID = OFFSET_DIRECTION;
-    private final static int OFFSET_LENGTH = OFFSET_DESTINATION_NODE_ID+Integer.BYTES;
-    private final static int OFFSET_ELEVATION = OFFSET_LENGTH +Short.BYTES;
-    private final static int OFFSET_OSM_ID = OFFSET_ELEVATION +Short.BYTES;
-    private final static int OFFSET_PROFILE = OFFSET_ELEVATION +Integer.BYTES;
-    private final static int EDGE_BYTES = OFFSET_PROFILE + Short.BYTES;
+    private final static int OFFSET_LENGTH = OFFSET_DESTINATION_NODE_ID + Integer.BYTES;
+    private final static int OFFSET_ELEVATION = OFFSET_LENGTH + Short.BYTES;
+    private final static int OFFSET_OSM_ID = OFFSET_ELEVATION + Short.BYTES;
+    private final static int EDGE_BYTES = OFFSET_OSM_ID + Short.BYTES;
 
     /**
      * Returns true iff the edge of given ID goes in the opposite direction
      * of the OSM road it comes from
      * @param edgeId    : ID of the edge
-     * @return whether the edges direction is inverted
+     * @return whether the edges' direction is inverted
      */
     public boolean isInverted(int edgeId){
         return edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DIRECTION) < 0;
@@ -40,7 +41,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return length of the edge
      */
     public double length(int edgeId){
-        return edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH);
+        return Q28_4.asDouble(edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH));
     }
 
     /**
@@ -58,7 +59,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return whether the edge has a profile
      */
     public boolean hasProfile(int edgeId){
-        return Bits.extractUnsigned(edgesBuffer.getInt(OFFSET_PROFILE + EDGE_BYTES*edgeId), 30, 2)!=0;
+        return Bits.extractUnsigned(profileIds.get(edgeId), 29, 2)!=0;
     }
 
     /**
@@ -68,14 +69,32 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return table of samples of edge profile
      */
     public float[] profileSamples(int edgeId){
-        if (hasProfile(edgeId)){
-            int profileInfo = edgesBuffer.getInt( edgeId * EDGE_BYTES + OFFSET_PROFILE);
-            int profileType = Bits.extractUnsigned(profileInfo, 30, 2);
-            int firstSampleId = Bits.extractUnsigned(profileInfo, 0, 30);
-
-            return new float[0];
+        int profileInfo = profileIds.get(edgeId);
+        int profileType = Bits.extractUnsigned(profileInfo, 30, 2);
+        int firstSampleId = Bits.extractUnsigned(profileInfo, 0, 30);
+        int lengthOfEdge = Short.toUnsignedInt(edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH));
+        int numberOfSamples = 1 + Math2.ceilDiv(lengthOfEdge,Q28_4.ofInt(2));
+        float[] samples = new float[numberOfSamples];
+        switch (profileType) {
+            case 1:
+                for (int i = 0; i < numberOfSamples; i++) {
+                    samples[i] = elevations.get(firstSampleId + i);
+                }
+                return samples;
+            case 2:
+                samples[0] = elevations.get(firstSampleId);
+                for (int i = 1; i < numberOfSamples; i++) {
+                    samples[i] = samples[i - 1] + elevations.get(firstSampleId + i);
+                }
+                return samples;
+            case 3:
+                samples[0] = elevations.get(firstSampleId);
+                for (int i = 1; i < numberOfSamples; i++) {
+                    samples[i] = samples[i - 1] + elevations.get(firstSampleId + i);
+                }
+                return samples;
+            default : return new float[0]; //case 0
         }
-        else { return new float[0]; }
     }
 
     /**
