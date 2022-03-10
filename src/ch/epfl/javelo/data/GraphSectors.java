@@ -23,7 +23,7 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final int OFFSET_NUMBER_OF_NODES = OFFSET_FIRST_NODE_ID + Integer.BYTES;
     private static final int SECTOR_BYTES = OFFSET_NUMBER_OF_NODES + Short.BYTES;
 
-    private record Sector(int startNodeId, int endNodeId) {}
+    public record Sector(int startNodeId, int endNodeId) {}
 
     /**
      * Returns the list of all the Sectors intersecting with the square of center and size given
@@ -36,19 +36,29 @@ public record GraphSectors(ByteBuffer buffer) {
         List<Sector> output = new ArrayList<>();
 
         double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("bottom left east : " +bottomLeftEastDistance);
         double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("bottom left north : " +bottomLeftNorthDistance);
         double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("top right east : " +topRightEastDistance);
         double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("top right north : " +topRightNorthDistance);
 
         int indexBottomLeft = (int)(bottomLeftEastDistance/SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/SECTOR_HEIGHT) * SECTORS_GRID_SUBDIVISIONS;
+        System.out.println("index bottom left : "+indexBottomLeft);
+        int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
+        System.out.println("coteHeight : "+coteHeight);
+        int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
+        System.out.println("coteWidth : " + coteWidth);
 
-        int coteHeight = (int)(topRightNorthDistance/SECTOR_HEIGHT);
-        int coteWidth = (int)(topRightEastDistance/SECTOR_WIDTH);
-        for (int i = 0; i < SECTORS_GRID_SUBDIVISIONS * coteHeight; i+= SECTORS_GRID_SUBDIVISIONS) {
-            for (int j = indexBottomLeft; j < indexBottomLeft + coteWidth + i * SECTORS_GRID_SUBDIVISIONS; j++) {
-                int sectorIndex = j * SECTOR_BYTES;
-                int startNodeId = buffer.getInt(sectorIndex + OFFSET_FIRST_NODE_ID);
-                int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndex + OFFSET_NUMBER_OF_NODES));
+        for (int i = 0; i < SECTORS_GRID_SUBDIVISIONS * coteHeight; i += SECTORS_GRID_SUBDIVISIONS) {
+
+            for (int j = indexBottomLeft + i ; j < indexBottomLeft + coteWidth + i ; j++) {
+
+                int sectorIndexInBuffer = j * SECTOR_BYTES;
+                System.out.println(j);
+                int startNodeId = buffer.getInt(sectorIndexInBuffer + OFFSET_FIRST_NODE_ID);
+                int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));
                 int endNodeId = startNodeId + numberOfNodes;
                 output.add(new Sector(startNodeId,endNodeId));
             }

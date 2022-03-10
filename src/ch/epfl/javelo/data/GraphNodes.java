@@ -14,15 +14,13 @@ import java.nio.IntBuffer;
  */
 public record GraphNodes(IntBuffer buffer) {
 
-
-
     private static final int OFFSET_E = 0;
     private static final int OFFSET_N = OFFSET_E + 1;
     private static final int OFFSET_OUT_EDGES = OFFSET_N + 1;
     private static final int NODE_INTS = OFFSET_OUT_EDGES + 1;
     /**
      * Returns the total number of nodes
-     * @return
+     * @return total number of nodes
      */
     public int count(){return buffer().capacity()/NODE_INTS;}
 
@@ -32,7 +30,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return East coordinate of the node
      */
     public double nodeE(int nodeId){
-        return Q28_4.asDouble(buffer().get(OFFSET_E + NODE_INTS * (nodeId-1)));
+        return Q28_4.asDouble(buffer.get(OFFSET_E + NODE_INTS * nodeId));
     }
 
     /**
@@ -41,8 +39,7 @@ public record GraphNodes(IntBuffer buffer) {
      * @return North coordinate of the node
      */
     public double nodeN(int nodeId){
-
-        return Q28_4.asDouble(buffer().get(OFFSET_N + 3*(NODE_INTS-1)));
+        return Q28_4.asDouble(buffer.get(OFFSET_N + NODE_INTS * nodeId));
     }
 
     /**
@@ -51,24 +48,18 @@ public record GraphNodes(IntBuffer buffer) {
      * @return number of edges originating at the node
      */
     public int outDegree(int nodeId){
-        return Bits.extractUnsigned(buffer().get(nodeId*OFFSET_OUT_EDGES),0,4);
+        return Bits.extractUnsigned(buffer.get(OFFSET_OUT_EDGES + NODE_INTS * nodeId),28,3);
     }
 
     /**
-     * Returns ID of the edge of index edgeIndex originating at the node of ID nodeId
+     * Returns ID of the edge of given index originating at the node of given ID
      * @param nodeId        : ID of the node that the edge originates at
      * @param edgeIndex     : index of the edge amongst edges originating at this node
      * @return ID of the edge
      */
     public int edgeId(int nodeId, int edgeIndex){
        Preconditions.checkArgument(0 <= edgeIndex && edgeIndex < outDegree(nodeId));
-       int totalOfEdges=0;
-       int actualnode=0;
-        while (actualnode < nodeId) {
-             int nbOfEdgesInNode =outDegree(actualnode);
-             totalOfEdges+=nbOfEdgesInNode;
-            actualnode++;
-        }
-        return totalOfEdges+edgeIndex+1;
+
+       return Bits.extractUnsigned(buffer.get(OFFSET_OUT_EDGES + NODE_INTS * nodeId),0,28) + edgeIndex;
     }
 }
