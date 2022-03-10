@@ -36,7 +36,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return ID of the destination node of the edge
      */
     public int targetNodeId(int edgeId){
-        return Bits.extractUnsigned(edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID), 0, 31);
+        return ~edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID);
     }
 
     /**
