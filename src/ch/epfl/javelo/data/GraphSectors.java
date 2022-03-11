@@ -36,29 +36,19 @@ public record GraphSectors(ByteBuffer buffer) {
         List<Sector> output = new ArrayList<>();
 
         double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
-        System.out.println("bottom left east : " +bottomLeftEastDistance);
         double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
-        System.out.println("bottom left north : " +bottomLeftNorthDistance);
         double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
-        System.out.println("top right east : " +topRightEastDistance);
         double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
-        System.out.println("top right north : " +topRightNorthDistance);
 
         int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
-        System.out.println("bottom left east distance / sectorwidth :"+bottomLeftEastDistance/SECTOR_WIDTH);
-        System.out.println("bottom left north distance / sectorheight :"+(bottomLeftNorthDistance/SECTOR_HEIGHT));
-        System.out.println("index bottom left : "+indexBottomLeft);
         int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
-        System.out.println("coteHeight : "+coteHeight);
         int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
-        System.out.println("coteWidth : " + coteWidth);
 
         for (int i = 0; i < GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
 
             for (int j = indexBottomLeft + i ; j < indexBottomLeft + coteWidth + i ; j++) {
 
                 int sectorIndexInBuffer = j * SECTOR_BYTES;
-                System.out.println("indexsecteur : "+j);
                 int startNodeId = buffer.getInt(sectorIndexInBuffer + OFFSET_FIRST_NODE_ID);
                 int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));
                 int endNodeId = startNodeId + numberOfNodes;

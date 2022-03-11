@@ -50,8 +50,8 @@ class GraphEdgesTest {
     @Test
     void testProfileSamples(){
         ByteBuffer edgesBuffer = ByteBuffer.allocate(10);
-        // Sens : inversé. Nœud destination : 12.
-        edgesBuffer.putInt(0, ~12);
+        // Sens : non inversé. Nœud destination : 12.
+        edgesBuffer.putInt(0, 12);
         // Longueur : 0x10.b m (= 16.6875 m)
         edgesBuffer.putShort(4, (short) 0x10_b);
         // Dénivelé : 0x10.0 m (= 16.0 m)
@@ -59,20 +59,60 @@ class GraphEdgesTest {
         // Identité de l'ensemble d'attributs OSM : 2022
         edgesBuffer.putShort(8, (short) 2022);
         IntBuffer profileIds = IntBuffer.wrap(new int[]{
-                // Type : 3. Index du premier échantillon : 1.
-                (3 << 30) | 1
+                // Type : 2. Index du premier échantillon : 1.
+                (2 << 30) | 1
         });
-        ShortBuffer elevations = ShortBuffer.wrap(new short[]{
+        short[] buffer = new short[]{
                 (short) 0,
-                (short) 0x180C, (short) 0xFEFF,
-                (short) 0xFFFE, (short) 0xF000
-        });
+                (short) 0x1800,
+                (short) ((int)Math.scalb(0.0625, 8 + 4) | (int)Math.scalb(0.0625, 4)),
+                (short) ((int)Math.scalb(0.125, 8 + 4) | (int)Math.scalb(0.0625, 4)),
+                (short) ((int)Math.scalb(0.0625, 8 + 4) | (int)Math.scalb(0.0625, 4)),
+                (short) ((int)Math.scalb(0.0625, 8 + 4) | (int)Math.scalb(0.0625, 4)),
+                (short) ((int)Math.scalb(0.125, 8 + 4))
+        };
+
+        short[] buffer2 = new short[]{
+                (short) 0,
+                (short) 0x1800,
+                (short) ((int)Math.scalb(384.0625f, 4)),
+                (short) ((int)Math.scalb(384.125f, 4)),
+                (short) ((int)Math.scalb(384.25f, 4)),
+                (short) ((int)Math.scalb(384.3125f, 4)),
+                (short) ((int)Math.scalb(384.375f, 4)),
+                (short) ((int)Math.scalb(384.4375f, 4)),
+                (short) ((int)Math.scalb(384.5f, 4)),
+                (short) ((int)Math.scalb(384.5625f, 4)),
+                (short) ((int)Math.scalb(384.6875f, 4))
+        };
+        ShortBuffer elevations = ShortBuffer.wrap(buffer);
+
         GraphEdges edges = new GraphEdges(edgesBuffer, profileIds, elevations);
 
         float[] expectedSamples = new float[]{
-                384.0625f, 384.125f, 384.25f, 384.3125f, 384.375f,
-                384.4375f, 384.5f, 384.5625f, 384.6875f, 384.75f
+                384f, 384.0625f, 384.125f, 384.25f, 384.3125f, 384.375f,
+                384.4375f, 384.5f, 384.5625f, 384.6875f
         };
-        assertArrayEquals(expectedSamples, edges.profileSamples(0));
+        /*
+        for (int i = 0; i < expectedSamples.length-2; i++) {
+            System.out.println(expectedSamples[i+1] - expectedSamples[i]);
+        }*/
+        float[] profileSamples = edges.profileSamples(0);
+
+        assertArrayEquals(expectedSamples, profileSamples);
+
+        IntBuffer profileIds2 = IntBuffer.wrap(new int[]{
+                // Type : 2. Index du premier échantillon : 1.
+                (1 << 30) | 1
+        });
+        ShortBuffer elevations2 = ShortBuffer.wrap(buffer2);
+
+        GraphEdges edges2 = new GraphEdges(edgesBuffer, profileIds2, elevations2);
+
+        float[] profileSamples2 = edges2.profileSamples(0);
+        for (float sample:profileSamples2){
+            System.out.println(sample);
+        }
+        assertArrayEquals(expectedSamples, profileSamples2);
     }
 }
