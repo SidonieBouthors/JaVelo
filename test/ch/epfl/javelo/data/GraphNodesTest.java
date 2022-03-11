@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Q28_4;
 import org.junit.jupiter.api.Test;
 
 import java.nio.IntBuffer;
@@ -21,6 +22,25 @@ class GraphNodesTest {
         assertEquals(2, ns.outDegree(0));
         assertEquals(0x1234, ns.edgeId(0, 0));
         assertEquals(0x1235, ns.edgeId(0, 1));
+    }
+    @Test
+    void test2() {
+        int nodeN=929392;
+        int nodeE=6753745;
+        int lastint= 1;
+
+        IntBuffer a = IntBuffer.allocate(21);
+        a.put(nodeE);
+        a.put(nodeN);
+        a.put(987392047);
+
+        GraphNodes b = new GraphNodes(a);
+        assertEquals(7,b.count());
+        assertEquals(Q28_4.asDouble(nodeE), b.nodeE(0));
+        assertEquals(Q28_4.asDouble(nodeN),b.nodeN(0));
+        assertEquals(0,b.outDegree(0));
+        assertEquals(1,b.edgeId(0,1));
+
     }
 
 }

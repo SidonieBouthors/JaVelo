@@ -28,16 +28,23 @@ class GraphSectorsTest {
         }
         */
 
-        PointCh point = new PointCh(0, 0);
-        int distance = 1731*3;
+        PointCh point = new PointCh((SwissBounds.MIN_E+2740),SwissBounds.MIN_N );
+        double distance = 1;
         GraphSectors graphSector = new GraphSectors(sectorBuffer);
         List<GraphSectors.Sector> sectors = graphSector.sectorsInArea(point, distance);
         System.out.println(" size : "+sectors.size());
 
         for (GraphSectors.Sector sector : sectors) {
-            System.out.println(sector.startNodeId());
-            //assertEquals(2*128,sector.endNodeId());
+            System.out.println("startnodeid :  "+ sector.startNodeId());
+
         }
+        System.out.println("expected bottomleft east :"+(SwissBounds.WIDTH-distance));
+        System.out.println("expected bottomleft north :"+(SwissBounds.HEIGHT-distance));
+
+        System.out.println("expected topright east :"+(SwissBounds.WIDTH));
+
+        System.out.println("expected topright north :"+(SwissBounds.HEIGHT));
+
 
     }
 

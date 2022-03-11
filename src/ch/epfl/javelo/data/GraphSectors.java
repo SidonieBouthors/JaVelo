@@ -53,12 +53,12 @@ public record GraphSectors(ByteBuffer buffer) {
         int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
         System.out.println("coteWidth : " + coteWidth);
 
-        for (int i = 0; i < SECTORS_GRID_SUBDIVISIONS * coteHeight; i += SECTORS_GRID_SUBDIVISIONS) {
+        for (int i = 0; i < GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
 
             for (int j = indexBottomLeft + i ; j < indexBottomLeft + coteWidth + i ; j++) {
 
                 int sectorIndexInBuffer = j * SECTOR_BYTES;
-                System.out.println(j);
+                System.out.println("indexsecteur : "+j);
                 int startNodeId = buffer.getInt(sectorIndexInBuffer + OFFSET_FIRST_NODE_ID);
                 int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));
                 int endNodeId = startNodeId + numberOfNodes;
