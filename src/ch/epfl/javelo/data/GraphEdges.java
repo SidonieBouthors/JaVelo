@@ -96,8 +96,10 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
                 for (int i = 1; i < numberOfSamples; i += Q4_4_PER_SHORT) {
                     short nextTwoSamples = elevations.get(firstSampleId + sampleIndex);
                     for (int j = 0; j < Q4_4_PER_SHORT; j++) {
-                        float elevationDifference = Q28_4.asFloat(Bits.extractSigned(nextTwoSamples, 8  - Q4_4_LENGTH * j, Q4_4_LENGTH));
-                        samples[i+j] = samples[i+j-1] + elevationDifference;
+                        if (i + j < samples.length) {
+                            float elevationDifference = Q28_4.asFloat(Bits.extractSigned(nextTwoSamples, 8 - Q4_4_LENGTH * j, Q4_4_LENGTH));
+                            samples[i + j] = samples[i + j - 1] + elevationDifference;
+                        }
                     }
                     sampleIndex++;
                 }
