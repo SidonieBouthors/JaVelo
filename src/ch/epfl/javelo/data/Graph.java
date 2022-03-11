@@ -1,6 +1,8 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.SwissBounds;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -125,7 +127,24 @@ public class Graph {
      * @return
      */
     int nodeClosestTo(PointCh point, double searchDistance){
-        return 0;
+
+        double shortestDistance = SwissBounds.MAX_N;
+        int indexWithShortestDistanceFromPoint = -1;
+        List<GraphSectors.Sector> searching = sectors.sectorsInArea(point, searchDistance);
+
+        for (GraphSectors.Sector sector : searching) {
+
+            for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {
+
+                double squaredDistance = Math2.squaredNorm(nodes.nodeE(i) - point.e(), nodes.nodeN(i) - point.n());
+                if (squaredDistance < shortestDistance) {
+                    shortestDistance = squaredDistance;
+                    indexWithShortestDistanceFromPoint = i;
+                }
+
+            }
+        }
+        return indexWithShortestDistanceFromPoint;
     }
 
 
