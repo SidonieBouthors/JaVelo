@@ -20,6 +20,11 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
     private final static int OFFSET_OSM_ID = OFFSET_ELEVATION + Short.BYTES;
     private final static int EDGE_BYTES = OFFSET_OSM_ID + Short.BYTES;
 
+    private final static int Q0_4_LENGTH = 4;
+    private final static int Q4_4_LENGTH = 8;
+    private final static int Q0_4_PER_SHORT = Short.SIZE / Q0_4_LENGTH;
+    private final static int Q4_4_PER_SHORT = Short.SIZE / Q4_4_LENGTH;
+
     /**
      * Returns true iff the edge of given ID goes in the opposite direction
      * of the OSM road it comes from
@@ -45,7 +50,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return length of the edge
      */
     public double length(int edgeId){
-        return Q28_4.asDouble(edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH));
+        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(EDGE_BYTES * edgeId + OFFSET_LENGTH)));
     }
 
     /**
@@ -54,7 +59,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return positive elevation gain of the edge
      */
     public double elevationGain(int edgeId){
-        return Q28_4.asDouble(edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_ELEVATION));
+        return Q28_4.asDouble(Short.toUnsignedInt(edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_ELEVATION)));
     }
 
     /**
@@ -63,7 +68,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return whether the edge has a profile
      */
     public boolean hasProfile(int edgeId){
-        return Bits.extractUnsigned(profileIds.get(edgeId), 29, 2)!=0;
+        return Bits.extractUnsigned(profileIds.get(edgeId), 30, 2)!=0;
     }
 
     /**
@@ -82,41 +87,37 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
         switch (profileType) {
             case 1:
                 for (int i = 0; i < numberOfSamples; i++) {
-                    samples[i] = Q28_4.asFloat(elevations.get(firstSampleId + i));
+                    samples[i] = Q28_4.asFloat(Short.toUnsignedInt(elevations.get(firstSampleId + i)));
                 }
                 break;
             case 2:
-                samples[0] = Q28_4.asFloat(elevations.get(firstSampleId));
-                int sampleNumber = 1;
-                for (int i = 1; i < numberOfSamples; i+=2) {
-                    short nextTwoSamples = elevations.get(firstSampleId + sampleNumber);
-                    for (int j = 0; j < 2; j++) {
-                        samples[i+j] = samples[i-1+j] + Q28_4.asFloat(Bits.extractSigned(nextTwoSamples, 8 - 8*j, 8));
+                samples[0] = Q28_4.asFloat(Short.toUnsignedInt(elevations.get(firstSampleId)));
+                int sampleIndex = 1;
+                for (int i = 1; i < numberOfSamples; i += Q4_4_PER_SHORT) {
+                    short nextTwoSamples = elevations.get(firstSampleId + sampleIndex);
+                    for (int j = 0; j < Q4_4_PER_SHORT; j++) {
+                        float elevationDifference = Q28_4.asFloat(Bits.extractSigned(nextTwoSamples, 8  - Q4_4_LENGTH * j, Q4_4_LENGTH));
+                        samples[i+j] = samples[i+j-1] + elevationDifference;
                     }
-                    sampleNumber++;
+                    sampleIndex++;
                 }
                 break;
             case 3:
-                samples[0] = Q28_4.asFloat(elevations.get(firstSampleId));
-                sampleNumber = 1;
-                for (int i = 1; i < numberOfSamples; i+=4) {
-                    short nextFourSamples = elevations.get(firstSampleId + sampleNumber);
-                    for (int j = 0; j < 4; j++) {
+                samples[0] = Q28_4.asFloat(Short.toUnsignedInt(elevations.get(firstSampleId)));
+                sampleIndex = 1;
+                for (int i = 1; i < numberOfSamples; i += Q0_4_PER_SHORT) {
+                    short nextFourSamples = elevations.get(firstSampleId + sampleIndex);
+                    for (int j = 0; j < Q0_4_PER_SHORT; j++) {
                         if (i + j < samples.length){
-                            samples[i+j] = samples[i-1+j] + Q28_4.asFloat(Bits.extractSigned(nextFourSamples, 12 - j * 4, 4));
-                            System.out.println(samples[i+j]);
+                            float elevationDifference = Q28_4.asFloat(Bits.extractSigned(nextFourSamples, 12 - Q0_4_LENGTH * j, Q0_4_LENGTH));
+                            samples[i+j] = samples[i+j-1] + elevationDifference;
                         }
                     }
-                    sampleNumber++;
+                    sampleIndex++;
                 }
                 break;
             default : samples = new float[0]; //case 0
         }
-        System.out.println("next");
-        for (float sample: samples) {
-            System.out.println(sample);
-        }
-
         if (isInverted(edgeId)) {
             float[] invertedSamples = new float[samples.length];
             for (int i = 0; i < samples.length; i++) {
@@ -132,5 +133,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @param edgeId    : ID of the edge
      * @return attributes ID of the edge
      */
-    public int attributesIndex(int edgeId){return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_OSM_ID);}
+    public int attributesIndex(int edgeId){
+        return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_OSM_ID);
+    }
 }

@@ -15,9 +15,9 @@ import java.util.List;
  */
 public record GraphSectors(ByteBuffer buffer) {
 
-    private static final int SECTOR_WIDTH = 2730; //meters
-    private static final int SECTOR_HEIGHT = 1730; //meters
-    private static final short SECTORS_GRID_SUBDIVISIONS =128; //number of sectors in a row/column
+    private static final double SECTOR_WIDTH = SwissBounds.WIDTH / 128; //meters
+    private static final double SECTOR_HEIGHT = SwissBounds.HEIGHT / 128; //meters
+    private static final short GRID_DIMENSIONS =128; //number of sectors in a row/column
 
     private static final int OFFSET_FIRST_NODE_ID = 0;
     private static final int OFFSET_NUMBER_OF_NODES = OFFSET_FIRST_NODE_ID + Integer.BYTES;
@@ -44,7 +44,9 @@ public record GraphSectors(ByteBuffer buffer) {
         double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
         System.out.println("top right north : " +topRightNorthDistance);
 
-        int indexBottomLeft = (int)(bottomLeftEastDistance/SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/SECTOR_HEIGHT) * SECTORS_GRID_SUBDIVISIONS;
+        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
+        System.out.println("bottom left east distance / sectorwidth :"+bottomLeftEastDistance/SECTOR_WIDTH);
+        System.out.println("bottom left north distance / sectorheight :"+(bottomLeftNorthDistance/SECTOR_HEIGHT));
         System.out.println("index bottom left : "+indexBottomLeft);
         int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
         System.out.println("coteHeight : "+coteHeight);

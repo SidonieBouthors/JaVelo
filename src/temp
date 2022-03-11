@@ -1,0 +1,40 @@
+        double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("bottom left east : " +bottomLeftEastDistance);
+        double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("bottom left north : " +bottomLeftNorthDistance);
+        double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("top right east : " +topRightEastDistance);
+        double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("top right north : " +topRightNorthDistance);
+
+        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * SECTORS_GRID_SUBDIVISIONS;
+        System.out.println("bottom left east distance / sectorwidth :"+bottomLeftEastDistance/SECTOR_WIDTH);
+        System.out.println("bottom left north distance / sectorheight :"+(bottomLeftNorthDistance/SECTOR_HEIGHT));
+        System.out.println("index bottom left : "+indexBottomLeft);
+        int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
+        System.out.println("coteHeight : "+coteHeight);
+        int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
+        System.out.println("coteWidth : " + coteWidth);
+
+
+
+
+        //**
+        ****
+
+        double bottomLeftEastDistance = Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, SECTORS_GRID_SUBDIVISIONS-1);
+                System.out.println("bottom left east : " +bottomLeftEastDistance);
+                double bottomLeftNorthDistance = Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, SECTORS_GRID_SUBDIVISIONS-1);
+                System.out.println("bottom left north : " +bottomLeftNorthDistance);
+                System.out.println(center.n() - distance - SwissBounds.MIN_N);
+                double topRightEastDistance = Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, SECTORS_GRID_SUBDIVISIONS-1);
+                System.out.println("top right east : " +topRightEastDistance);
+                double topRightNorthDistance = Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, SECTORS_GRID_SUBDIVISIONS-1);
+                System.out.println("top right north : " +topRightNorthDistance);
+
+                int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * SECTORS_GRID_SUBDIVISIONS;
+                System.out.println("index bottom left : "+indexBottomLeft);
+                int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
+                System.out.println("coteHeight : "+coteHeight);
+                int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
+                System.out.println("coteWidth : " + coteWidth);
