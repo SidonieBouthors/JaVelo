@@ -27,7 +27,6 @@ public class Graph {
         this.sectors=sectors;
         this.edges=edges;
         this.attributeSet=attributeSets;
-
     }
 
     static Graph loadFrom(Path basePath) throws IOException {
