@@ -17,10 +17,10 @@ import java.util.function.DoubleUnaryOperator;
 
 public class Graph {
 
-    private GraphNodes nodes;
-    private GraphSectors sectors;
-    private GraphEdges edges;
-    private List<AttributeSet> attributeSet;
+    private final GraphNodes nodes;
+    private final GraphSectors sectors;
+    private final GraphEdges edges;
+    private final List<AttributeSet> attributeSet;
 
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
         this.nodes=nodes;
@@ -29,7 +29,7 @@ public class Graph {
         this.attributeSet=attributeSets;
     }
 
-    static Graph loadFrom(Path basePath) throws IOException {
+    public static Graph loadFrom(Path basePath) throws IOException {
 
         Path nodes = basePath.resolve("nodes.bin");
         Path sector = basePath.resolve("sectors.bin");
@@ -48,8 +48,6 @@ public class Graph {
         IntBuffer profilesIds;
         ShortBuffer elevations;
 
-
-
         try (FileChannel channel = FileChannel.open(edges)) {
             edgesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
@@ -64,7 +62,6 @@ public class Graph {
             for (int i = 0; i < attributeSetLong.capacity(); i++) {
                 attributeSetList.add(new AttributeSet(attributeSetLong.get(i)));
             }
-
         }
         try (FileChannel channel = FileChannel.open(elevation)) {
             elevations = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asShortBuffer();
@@ -74,10 +71,6 @@ public class Graph {
             profilesIds = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
 
         }
-
-
-
-
         return new Graph(new GraphNodes(nodesBuffer),new GraphSectors(sectorBuffer),new GraphEdges(edgesBuffer,profilesIds,elevations),attributeSetList);
     }
 
@@ -85,7 +78,7 @@ public class Graph {
      * Qui retourne le nombre total de nœuds dans le graphe,
      * @return
      */
-    int nodeCount(){
+    public int nodeCount(){
         return nodes.count();
     }
 
@@ -94,7 +87,7 @@ public class Graph {
      * @param nodeId
      * @return
      */
-    PointCh nodePoint(int nodeId){
+    public PointCh nodePoint(int nodeId){
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
@@ -103,7 +96,7 @@ public class Graph {
      * @param nodeId
      * @return
      */
-    int nodeOutDegree(int nodeId){
+    public int nodeOutDegree(int nodeId){
         return nodes.outDegree(nodeId);
     }
 
@@ -114,7 +107,7 @@ public class Graph {
      * @param edgeIndex
      * @return
      */
-    int nodeOutEdgeId(int nodeId, int edgeIndex) {
+    public int nodeOutEdgeId(int nodeId, int edgeIndex) {
         return nodes.edgeId(nodeId,edgeIndex);
     }
 
@@ -125,7 +118,7 @@ public class Graph {
      * @param searchDistance
      * @return
      */
-    int nodeClosestTo(PointCh point, double searchDistance){
+    public int nodeClosestTo(PointCh point, double searchDistance){
 
         double shortestDistance = SwissBounds.MAX_N;
         int indexWithShortestDistanceFromPoint = -1;
@@ -154,7 +147,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    int edgeTargetNodeId(int edgeId){
+    public int edgeTargetNodeId(int edgeId){
         return edges.targetNodeId(edgeId);
     }
 
@@ -163,7 +156,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    boolean edgeIsInverted(int edgeId) {
+    public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
     }
 
@@ -172,7 +165,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    AttributeSet edgeAttributes(int edgeId) {
+    public AttributeSet edgeAttributes(int edgeId) {
         return edgeAttributes(edgeId);
     }
 
@@ -181,7 +174,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    double edgeLength(int edgeId) {
+    public double edgeLength(int edgeId) {
         return edges.length(edgeId);
     }
 
@@ -190,7 +183,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    double edgeElevationGain(int edgeId){
+    public double edgeElevationGain(int edgeId){
         return edges.elevationGain(edgeId);
     }
 
@@ -199,7 +192,7 @@ public class Graph {
      * @param edgeId
      * @return
      */
-    DoubleUnaryOperator edgeProfile(int edgeId){
+    public DoubleUnaryOperator edgeProfile(int edgeId){
         return null;
     }
 }
