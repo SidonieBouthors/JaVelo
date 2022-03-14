@@ -34,22 +34,27 @@ public record GraphSectors(ByteBuffer buffer) {
     public List<Sector> sectorsInArea(PointCh center, double distance){
 
         List<Sector> output = new ArrayList<>();
+        double bottomLeftEastDistance = (int)Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+        System.out.println("bottom left east : " +bottomLeftEastDistance);
+        double bottomLeftNorthDistance = (int)Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+        System.out.println("bottom left north : " +bottomLeftNorthDistance);
+        double topRightEastDistance = (int)Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+        System.out.println("top right east : " +topRightEastDistance);
+        double topRightNorthDistance = (int)Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+        System.out.println("top right north : " +topRightNorthDistance);
 
-        double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
-        double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
-        double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
-        double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * GRID_DIMENSIONS;
+        System.out.println("index bottom left : "+indexBottomLeft);
+        int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
+        System.out.println("coteHeight : "+coteHeight);
+        int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
+        System.out.println("coteWidth : " + coteWidth);
 
-        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH)
-                            + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
+        for (int i = 0; i <= GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
 
-        int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
-        int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
+            for (int j = indexBottomLeft + i ; j <= indexBottomLeft + coteWidth + i ; j++) {
 
-        for (int i = 0; i < GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
-
-            for (int j = indexBottomLeft + i ; j < indexBottomLeft + coteWidth + i ; j++) {
-
+                System.out.println("+1");
                 int sectorIndexInBuffer = j * SECTOR_BYTES;
                 int startNodeId = buffer.getInt(sectorIndexInBuffer + OFFSET_FIRST_NODE_ID);
                 int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));

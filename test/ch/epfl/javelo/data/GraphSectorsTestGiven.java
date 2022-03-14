@@ -129,7 +129,6 @@ class GraphSectorsTestGiven {
         assertEquals(List.of(new GraphSectors.Sector(0, maxSectorSize)), sectors);
     }
 
-    @Disabled
     @Test
     void graphSectorsSectorsInAreaWorksForAllOfThem() {
         var graphSectors = new GraphSectors(SECTORS_BUFFER);
