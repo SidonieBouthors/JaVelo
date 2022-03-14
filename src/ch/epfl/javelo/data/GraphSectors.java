@@ -40,7 +40,9 @@ public record GraphSectors(ByteBuffer buffer) {
         double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
         double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
 
-        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
+        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH)
+                            + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
+
         int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
         int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
 

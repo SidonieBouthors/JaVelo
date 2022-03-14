@@ -41,7 +41,12 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return ID of the destination node of the edge
      */
     public int targetNodeId(int edgeId){
-        return ~edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID);
+        if (isInverted(edgeId)){
+            return ~edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID);
+        }
+        else {
+            return edgesBuffer.getInt(edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID);
+        }
     }
 
     /**
@@ -136,6 +141,6 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      * @return attributes ID of the edge
      */
     public int attributesIndex(int edgeId){
-        return edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_OSM_ID);
+        return Short.toUnsignedInt(edgesBuffer.getShort(edgeId * EDGE_BYTES + OFFSET_OSM_ID));
     }
 }
