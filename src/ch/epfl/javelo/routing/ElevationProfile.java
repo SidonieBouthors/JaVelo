@@ -24,7 +24,7 @@ public class ElevationProfile {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples;
-        DoubleSummaryStatistics sampleStats = new DoubleSummaryStatistics();
+        this.sampleStats = new DoubleSummaryStatistics();
         for (float sample:elevationSamples){
             sampleStats.accept(sample);
         }
@@ -32,7 +32,7 @@ public class ElevationProfile {
 
     /**
      * Returns length of ElevationProfile
-     * @return length in meters
+     * @return length (in meters)
      */
     public double length(){
         return length;
@@ -40,14 +40,14 @@ public class ElevationProfile {
 
     /**
      * Returns minimum elevation of the profile
-     * @return min elevation
+     * @return min elevation (in meters)
      */
     public double minElevation(){
         return sampleStats.getMin();
     }
     /**
      * Returns maximum elevation of the profile
-     * @return max elevation
+     * @return max elevation (in meters)
      */
     public double maxElevation(){
         return sampleStats.getMax();
@@ -74,7 +74,7 @@ public class ElevationProfile {
         double descent = 0;
         for (int i = 1; i < elevationSamples.length; i++) {
             if (elevationSamples[i-1] > elevationSamples[i]){
-                descent += elevationSamples[i]-elevationSamples[i-1];
+                descent += elevationSamples[i-1]-elevationSamples[i];
             }
         }
         return descent;

@@ -23,14 +23,33 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         return new Edge(fromNodeId, toNodeId, edgeFromPoint, edgeToPoint, edgeLength, edgeProfile);
     }
 
+    /**
+     * Returns the position along the edge that is closest to the given point
+     * @param point : point
+     * @return position on edge closest to the point
+     */
     public double positionClosestTo(PointCh point){
         return Math2.projectionLength(point.e(), point.n(), fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n());
     }
-    public PointCh pointAt(double position){
-        return null;
-    }
-    public double elevationAt(double position){
 
-        return position;
+    /**
+     * Returns the point situated at a given position on the edge
+     * @param position  : position on the edge
+     * @return point situated at given position on the edge
+     */
+    public PointCh pointAt(double position){
+        double factor = length / position;
+        double e = Math.abs(fromPoint.e() - toPoint.e())/factor + Math.min(fromPoint.e(), toPoint.e());
+        double n = Math.abs(fromPoint.n() - toPoint.n())/factor + Math.min(fromPoint.n(), toPoint.n());
+        return new PointCh(e, n);
+    }
+
+    /**
+     * Returns the altitude of the given position on the edge
+     * @param position  : position on the edge
+     * @return altitude at given position
+     */
+    public double elevationAt(double position){
+        return profile.applyAsDouble(position);
     }
 }

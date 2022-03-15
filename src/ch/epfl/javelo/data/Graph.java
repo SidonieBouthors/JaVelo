@@ -1,5 +1,6 @@
 package ch.epfl.javelo.data;
 
+import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
@@ -29,14 +30,20 @@ public class Graph {
         this.attributeSet=attributeSets;
     }
 
+    /**
+     * Returns the JaVelo graph obtained from the files in the given directory
+     * @throws IOException if there is an input/output error (ex: expected file does not exist)
+     * @param basePath  : path of the directory containing the files to load from
+     * @return JaVelo graph obtained from the files
+     */
     public static Graph loadFrom(Path basePath) throws IOException {
 
-        Path nodes = basePath.resolve("nodes.bin");
-        Path sector = basePath.resolve("sectors.bin");
-        Path edges = basePath.resolve("edges.bin");
-        Path attributes = basePath.resolve("attributes.bin");
-        Path profile = basePath.resolve("profile_ids.bin");
-        Path elevation =basePath.resolve("elevations.bin");
+        Path nodesPath = basePath.resolve("nodes.bin");
+        Path sectorPath = basePath.resolve("sectors.bin");
+        Path edgesPath = basePath.resolve("edges.bin");
+        Path attributesPath = basePath.resolve("attributes.bin");
+        Path profileIdsPath = basePath.resolve("profile_ids.bin");
+        Path elevationsPath =basePath.resolve("elevations.bin");
 
         ByteBuffer edgesBuffer;
         IntBuffer nodesBuffer;
@@ -51,81 +58,74 @@ public class Graph {
         try (FileChannel channel = FileChannel.open(edges)) {
             edgesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
-        try (FileChannel channel = FileChannel.open(nodes)) {
+        try (FileChannel channel = FileChannel.open(nodesPath)) {
             nodesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
         }
-        try (FileChannel channel = FileChannel.open(sector)) {
+        try (FileChannel channel = FileChannel.open(sectorPath)) {
             sectorBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
-        try (FileChannel channel = FileChannel.open(attributes)) {
+        try (FileChannel channel = FileChannel.open(attributesPath)) {
             attributeSetLong = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asLongBuffer();
             for (int i = 0; i < attributeSetLong.capacity(); i++) {
                 attributeSetList.add(new AttributeSet(attributeSetLong.get(i)));
             }
         }
-        try (FileChannel channel = FileChannel.open(elevation)) {
+        try (FileChannel channel = FileChannel.open(elevationsPath)) {
             elevations = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asShortBuffer();
-
         }
-        try (FileChannel channel = FileChannel.open(profile)) {
+        try (FileChannel channel = FileChannel.open(profileIdsPath)) {
             profilesIds = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
-
         }
         return new Graph(new GraphNodes(nodesBuffer),new GraphSectors(sectorBuffer),new GraphEdges(edgesBuffer,profilesIds,elevations),attributeSetList);
     }
 
     /**
-     * Qui retourne le nombre total de nœuds dans le graphe,
-     * @return
+     * Returns the total number of nodes in the graph
+     * @return total number of nodes
      */
     public int nodeCount(){
         return nodes.count();
     }
 
     /**
-     * qui retourne la position du nœud d'identité donnée
-     * @param nodeId
-     * @return
+     * Returns the position of the node of given ID
+     * @param nodeId    : ID of the node
+     * @return position of the node
      */
     public PointCh nodePoint(int nodeId){
         return new PointCh(nodes.nodeE(nodeId), nodes.nodeN(nodeId));
     }
 
     /**
-     * , qui retourne le nombre d'arêtes sortant du nœud d'identité donnée,
-     * @param nodeId
-     * @return
+     * Returns the number of edges originating at the node of given ID
+     * @param nodeId    : ID of the node
+     * @return number of edges originating at the node
      */
     public int nodeOutDegree(int nodeId){
         return nodes.outDegree(nodeId);
     }
 
     /**
-     * qui retourne l'identité de la edgeIndex-ième arête sortant du nœud d'identité nodeId,
-     *
-     * @param nodeId
-     * @param edgeIndex
-     * @return
+     *Returns the ID of the edge of given index originating at the node of given ID
+     * @param nodeId        : ID of the node
+     * @param edgeIndex     : index of the edge
+     * @return ID of the edge
      */
     public int nodeOutEdgeId(int nodeId, int edgeIndex) {
         return nodes.edgeId(nodeId,edgeIndex);
     }
 
     /**
-     * qui retourne l'identité du nœud se trouvant le plus proche du point donné, à la distance maximale donnée (en mètres), ou -1 si aucun nœud ne correspond à ces critères,
-     *
-     * @param point
-     * @param searchDistance
-     * @return
+     *Returns the ID of the node closest to the given point, within the given search distance, or -1 if no node corresponds to this criteria
+     * @param point             : point from which to search
+     * @param searchDistance    : search distance around the point (in meters)
+     * @return the ID of the closest node, or -1 if there are none within search distance
      */
     public int nodeClosestTo(PointCh point, double searchDistance){
-
-        double shortestDistance = SwissBounds.MAX_N;
+        double squaredShortestDistance = searchDistance;
         int indexWithShortestDistanceFromPoint = -1;
-        List<GraphSectors.Sector> searching = sectors.sectorsInArea(point, searchDistance);
-
-        for (GraphSectors.Sector sector : searching) {
-
+        List<GraphSectors.Sector> sectorsToSearch = sectors.sectorsInArea(point, searchDistance);
+        for (GraphSectors.Sector sector : sectorsToSearch) {
             for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {
 
                 double squaredDistance = Math2.squaredNorm(nodes.nodeE(i) - point.e(), nodes.nodeN(i) - point.n());
@@ -133,66 +133,71 @@ public class Graph {
                     shortestDistance = squaredDistance;
                     indexWithShortestDistanceFromPoint = i;
                 }
-
             }
         }
         return indexWithShortestDistanceFromPoint;
     }
 
-
-
     /**
-     * , qui retourne l'identité du nœud destination de l'arête d'identité donnée,
-     *
-     * @param edgeId
-     * @return
+     *Returns the ID of the destination node of the edge of given ID
+     * @param edgeId    : ID of the edge
+     * @return ID of the destination node of the edge
      */
     public int edgeTargetNodeId(int edgeId){
         return edges.targetNodeId(edgeId);
     }
 
     /**
-     * , qui retourne vrai ssi l'arête d'identité donnée va dans le sens contraire de la voie OSM dont elle provient,
-     * @param edgeId
-     * @return
+     * Returns true iff the edge of given ID goes in the opposite direction to the OSM route it is a part of
+     * @param edgeId    : ID of the edge
+     * @return whether the edge is inverted as compared to it's OSM route
      */
     public boolean edgeIsInverted(int edgeId) {
         return edges.isInverted(edgeId);
     }
 
     /**
-     * , qui retourne l'ensemble des attributs OSM attachés à l'arête d'identité donnée,
+     * Returns the set of OSM attributes attached to the edge of given ID
      * @param edgeId
      * @return
      */
     public AttributeSet edgeAttributes(int edgeId) {
-        return edgeAttributes(edgeId);
+        int index = edges.attributesIndex(edgeId);
+        return attributeSet.get(index); // CHECK
     }
 
     /**
-     * qui retourne la longueur, en mètres, de l'arête d'identité donnée,
-     * @param edgeId
-     * @return
+     * Returns the length of the edge of given ID
+     * @param edgeId    : ID of the edge
+     * @return the length (in meters) of the edge
      */
     public double edgeLength(int edgeId) {
         return edges.length(edgeId);
     }
 
     /**
-     *  qui retourne le dénivelé positif total de l'arête d'identité donnée
-     * @param edgeId
-     * @return
+     * Returns the total elevation gain of the edge of given ID
+     * @param edgeId    : ID of the edge
+     * @return total elevation gain of the edge (in meters)
      */
     public double edgeElevationGain(int edgeId){
         return edges.elevationGain(edgeId);
     }
 
     /**
-     * qui retourne le profil en long de l'arête d'identité donnée, sous la forme d'une fonction  ; si l'arête ne possède pas de profil, alors cette fonction doit retourner Double.NaN pour n'importe quel argument.
-     * @param edgeId
-     * @return
+     * Returns the profile of the edge of given ID, in the form of a function
+     * if the edge does not have a profile, this function returns Double.NaN for all arguments
+     * @param edgeId    : ID of the edge
+     * @return the profile of the edge, or a constant Double.NaN function if it has none
      */
     public DoubleUnaryOperator edgeProfile(int edgeId){
-        return null;
+        if (edges.hasProfile(edgeId)){
+             double length = edges.length(edgeId);
+            float[] samples = edges.profileSamples(edgeId);
+            return Functions.sampled(samples, length);
+        }
+        else {
+            return Functions.constant(Double.NaN);
+        }
     }
 }
