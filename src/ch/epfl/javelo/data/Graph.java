@@ -55,7 +55,7 @@ public class Graph {
         IntBuffer profilesIds;
         ShortBuffer elevations;
 
-        try (FileChannel channel = FileChannel.open(edges)) {
+        try (FileChannel channel = FileChannel.open(edgesPath)) {
             edgesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
         try (FileChannel channel = FileChannel.open(nodesPath)) {
@@ -127,10 +127,9 @@ public class Graph {
         List<GraphSectors.Sector> sectorsToSearch = sectors.sectorsInArea(point, searchDistance);
         for (GraphSectors.Sector sector : sectorsToSearch) {
             for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {
-
-                double squaredDistance = Math2.squaredNorm(nodes.nodeE(i) - point.e(), nodes.nodeN(i) - point.n());
-                if (squaredDistance < shortestDistance) {
-                    shortestDistance = squaredDistance;
+                double squaredDistance = Math2.squaredNorm( nodes.nodeE(i) - point.e(), nodes.nodeN(i) - point.n());
+                if (squaredDistance < squaredShortestDistance) {
+                    squaredShortestDistance = squaredDistance;
                     indexWithShortestDistanceFromPoint = i;
                 }
             }

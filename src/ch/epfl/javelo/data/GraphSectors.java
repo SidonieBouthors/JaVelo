@@ -35,20 +35,14 @@ public record GraphSectors(ByteBuffer buffer) {
 
         List<Sector> output = new ArrayList<>();
         double bottomLeftEastDistance = (int)Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
-        System.out.println("bottom left east : " +bottomLeftEastDistance);
         double bottomLeftNorthDistance = (int)Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
-        System.out.println("bottom left north : " +bottomLeftNorthDistance);
         double topRightEastDistance = (int)Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
-        System.out.println("top right east : " +topRightEastDistance);
         double topRightNorthDistance = (int)Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
-        System.out.println("top right north : " +topRightNorthDistance);
 
         int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * GRID_DIMENSIONS;
-        System.out.println("index bottom left : "+indexBottomLeft);
         int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
-        System.out.println("coteHeight : "+coteHeight);
         int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
-        System.out.println("coteWidth : " + coteWidth);
+
 
         for (int i = 0; i <= GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
 
