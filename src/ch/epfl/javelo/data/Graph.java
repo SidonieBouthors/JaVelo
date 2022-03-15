@@ -3,7 +3,6 @@ package ch.epfl.javelo.data;
 import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.javelo.projection.SwissBounds;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -157,8 +156,8 @@ public class Graph {
 
     /**
      * Returns the set of OSM attributes attached to the edge of given ID
-     * @param edgeId
-     * @return
+     * @param edgeId    : ID of the edge
+     * @return set of OSM attributes linked to the edge
      */
     public AttributeSet edgeAttributes(int edgeId) {
         int index = edges.attributesIndex(edgeId);

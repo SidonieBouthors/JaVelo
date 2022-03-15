@@ -8,7 +8,7 @@ import java.util.function.DoubleUnaryOperator;
 
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length, DoubleUnaryOperator profile) {
     /**
-     * Builds an Edge using edge of given edgeId in graph to obtain last three prameters
+     * Builds an Edge using edge of given edgeId in graph to obtain last three parameters
      * @param graph         : graph that the edge is a part of
      * @param edgeId        : ID of the edge in the graph
      * @param fromNodeId    : ID of starting node of the edge

@@ -11,12 +11,14 @@ public class ElevationProfile {
 
     private final double length;
     private final float[] elevationSamples;
-    private DoubleSummaryStatistics sampleStats;
+    private  final DoubleSummaryStatistics sampleStats;
+    private final int totalAscent;
+    private final int totalDescent;
 
     /**
      * Builds the Elevation Profile  of an itinerary of length (in meters),
      * and of give samples
-     * @throws IllegalArgumentException iff length <= 0 or if elevationSmaples contains less than 2 samples
+     * @throws IllegalArgumentException iff length <= 0 or if elevationSamples contains less than 2 samples
      * @param length    : length of the itinerary
      * @param elevationSamples  : altitude samples along the itinerary
      */
@@ -24,10 +26,23 @@ public class ElevationProfile {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
         this.elevationSamples = elevationSamples;
+        //Create statistics from which to get min and max
         this.sampleStats = new DoubleSummaryStatistics();
         for (float sample:elevationSamples){
             sampleStats.accept(sample);
         }
+        //Calculate ascent and descent (so they are only calculated once)
+        int ascent = 0; int descent = 0;
+        for (int i = 1; i < elevationSamples.length; i++) {
+            if (elevationSamples[i-1] < elevationSamples[i]){
+                ascent += elevationSamples[i]-elevationSamples[i-1];
+            }
+            else {
+                descent += elevationSamples[i-1]-elevationSamples[i];
+            }
+        }
+        this.totalAscent = ascent;
+        this.totalDescent = descent;
     }
 
     /**
@@ -57,28 +72,12 @@ public class ElevationProfile {
      * Returns total positive elevation of the profile
      * @return total positive elevation (in meters)
      */
-    public double totalAscent(){
-        double ascent = 0;
-        for (int i = 1; i < elevationSamples.length; i++) {
-            if (elevationSamples[i-1] < elevationSamples[i]){
-                ascent += elevationSamples[i]-elevationSamples[i-1];
-            }
-        }
-        return ascent;
-    }
+    public double totalAscent(){ return totalAscent; }
     /**
      * Returns total negative elevation of the profile
      * @return total negative elevation (in meters)
      */
-    public double totalDescent(){
-        double descent = 0;
-        for (int i = 1; i < elevationSamples.length; i++) {
-            if (elevationSamples[i-1] > elevationSamples[i]){
-                descent += elevationSamples[i-1]-elevationSamples[i];
-            }
-        }
-        return descent;
-    }
+    public double totalDescent(){ return totalDescent; }
 
     /**
      * Returns altitude of the profile at given position

@@ -7,13 +7,13 @@ import static java.lang.Double.POSITIVE_INFINITY;
 
 public record RoutePoint(PointCh point, double position, double distanceToReference) {
     /**
-     * Constant representing a non-existant point
+     * Constant representing a non-existent point
      */
     public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
     /**
      * Returns a RoutePoint identical to this but with a position shifted by the given difference
      * @param positionDifference    : shift in the position to apply
-     * @return a RoutePoint with it's position shifted
+     * @return a RoutePoint with its position shifted
      */
     public RoutePoint withPositionShiftedBy(double positionDifference){
         return new RoutePoint(point, position + positionDifference, distanceToReference);

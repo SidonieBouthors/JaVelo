@@ -10,7 +10,7 @@ public final class Functions {
 
     /**
      * Returns constant function value y
-     * @param y
+     * @param y : constant value of the function
      * @return constant function f(x)=y
      */
     public static DoubleUnaryOperator constant(double y){
