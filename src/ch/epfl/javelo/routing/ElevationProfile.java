@@ -4,6 +4,7 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
+import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
 
@@ -25,12 +26,14 @@ public class ElevationProfile {
     public ElevationProfile(double length, float[] elevationSamples){
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
         this.length = length;
-        this.elevationSamples = elevationSamples;
+        this.elevationSamples = elevationSamples.clone();
+
         //Create statistics from which to get min and max
         this.sampleStats = new DoubleSummaryStatistics();
         for (float sample:elevationSamples){
             sampleStats.accept(sample);
         }
+
         //Calculate ascent and descent (so they are only calculated once)
         int ascent = 0; int descent = 0;
         for (int i = 1; i < elevationSamples.length; i++) {

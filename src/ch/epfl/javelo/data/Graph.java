@@ -160,8 +160,7 @@ public class Graph {
      * @return set of OSM attributes linked to the edge
      */
     public AttributeSet edgeAttributes(int edgeId) {
-        int index = edges.attributesIndex(edgeId);
-        return attributeSet.get(index); // CHECK
+        return attributeSet.get(edges.attributesIndex(edgeId));
     }
 
     /**
@@ -190,7 +189,7 @@ public class Graph {
      */
     public DoubleUnaryOperator edgeProfile(int edgeId){
         if (edges.hasProfile(edgeId)){
-             double length = edges.length(edgeId);
+            double length = edges.length(edgeId);
             float[] samples = edges.profileSamples(edgeId);
             return Functions.sampled(samples, length);
         }
