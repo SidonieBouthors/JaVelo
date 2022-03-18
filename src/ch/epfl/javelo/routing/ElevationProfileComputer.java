@@ -41,11 +41,10 @@ public final class ElevationProfileComputer {
 
 
         for (int i = 0; i < nbOfSamples; i++) {
-            if (!rightFound && !Float.isNaN(samples[i])) {
 
-                if (firstSampleNotNaNFromRight == -1 && !Float.isNaN(samples[i])) {
-                    firstSampleNotNaNFromRight = i;
-                    rightFound = true;
+
+            if (firstSampleNotNaNFromRight==-1 && !Float.isNaN(samples[i])) {
+                firstSampleNotNaNFromRight=i;
 
                 }
                 if (firstSampleNotNaNFromRight != -1 && Float.isNaN(samples[i])) {
@@ -67,7 +66,7 @@ public final class ElevationProfileComputer {
             //Proposition pour les deux première étapes
 
             //Remplir les NaN tout à gauche
-            i = 0;
+            int i = 0;
             while (!Float.isNaN(i)) {
                 i++;
             } //trouver l'index de la première valeur valide
