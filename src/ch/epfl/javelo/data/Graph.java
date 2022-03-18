@@ -160,9 +160,7 @@ public class Graph {
      * @param edgeId    : ID of the edge
      * @return set of OSM attributes linked to the edge
      */
-    public AttributeSet edgeAttributes(int edgeId) {
-        return attributeSet.get(edges.attributesIndex(edgeId));
-    }
+    public AttributeSet edgeAttributes(int edgeId) { return attributeSet.get(edges.attributesIndex(edgeId)); }
 
     /**
      * Returns the length of the edge of given ID
