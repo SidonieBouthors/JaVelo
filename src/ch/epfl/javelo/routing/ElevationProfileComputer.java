@@ -35,26 +35,24 @@ public final class ElevationProfileComputer {
 
         int firstSampleNotNaNFromRight = -1;
         int firstSampleNotNaNFromLeft= firstSampleNotNaNFromRight;
-        boolean rightFound=false;
-        boolean leftFound=false;
+
 
         for (int i = 0; i < nbOfSamples; i++) {
 
-            if (!rightFound && !Float.isNaN(samples[i])) {
+            if (firstSampleNotNaNFromRight==-1 && !Float.isNaN(samples[i])) {
                 firstSampleNotNaNFromRight=i;
-                rightFound=true;
 
             }
-            if (rightFound && Float.isNaN(samples[i])) {
+            if (firstSampleNotNaNFromRight!=-1 && Float.isNaN(samples[i])) {
                 samples[i] = (float)Math2.interpolate(route.elevationAt(firstSampleNotNaNFromRight * stepLength), route.elevationAt(routeLength), i * stepLength);
             }
         }
         for (int i = 0; i < nbOfSamples; i++) {
-            if (!leftFound && !Float.isNaN(samples[nbOfSamples-i])) {
-                firstSampleNotNaNFromLeft = nbOfSamples-i;
-                leftFound=true;
+
+            if (firstSampleNotNaNFromLeft==-1 && !Float.isNaN(samples[nbOfSamples-i-1])) {
+                firstSampleNotNaNFromLeft = nbOfSamples-i-1;
             }
-            if (leftFound && Float.isNaN(samples[nbOfSamples-i])) {
+            if (firstSampleNotNaNFromLeft!=-1 && Float.isNaN(samples[nbOfSamples-i-1])) {
                 samples[i] = (float)Math2.interpolate(route.elevationAt(0),route.elevationAt(firstSampleNotNaNFromLeft * stepLength), i * stepLength);
             }
         }
