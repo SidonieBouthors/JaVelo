@@ -39,8 +39,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
     public PointCh pointAt(double position){
         double factor = length / position;
-        double e = Math.abs(fromPoint.e() - toPoint.e())/factor + Math.min(fromPoint.e(), toPoint.e());
-        double n = Math.abs(fromPoint.n() - toPoint.n())/factor + Math.min(fromPoint.n(), toPoint.n());
+        double e = (toPoint.e() - fromPoint.e())/factor + fromPoint.e();
+        double n = (toPoint.n() - fromPoint.n())/factor + fromPoint.n();
         return new PointCh(e, n);
     }
 

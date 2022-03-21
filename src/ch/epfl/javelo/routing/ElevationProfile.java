@@ -13,8 +13,8 @@ public class ElevationProfile {
     private final double length;
     private final float[] elevationSamples;
     private  final DoubleSummaryStatistics sampleStats;
-    private final int totalAscent;
-    private final int totalDescent;
+    private final double totalAscent;
+    private final double totalDescent;
 
     /**
      * Builds the Elevation Profile  of an itinerary of length (in meters),
@@ -35,14 +35,11 @@ public class ElevationProfile {
         }
 
         //Calculate ascent and descent (so they are only calculated once)
-        int ascent = 0; int descent = 0;
+        double d = 0; double ascent = 0; double descent = 0;
         for (int i = 1; i < elevationSamples.length; i++) {
-            if (elevationSamples[i-1] < elevationSamples[i]){
-                ascent += elevationSamples[i]-elevationSamples[i-1];
-            }
-            else {
-                descent += elevationSamples[i-1]-elevationSamples[i];
-            }
+            d = elevationSamples[i] - elevationSamples[i-1];
+            if (d > 0){ascent += d;}
+            else {descent -= d;}
         }
         this.totalAscent = ascent;
         this.totalDescent = descent;

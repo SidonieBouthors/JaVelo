@@ -12,6 +12,7 @@ import java.nio.ShortBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
@@ -26,7 +27,7 @@ public class Graph {
         this.nodes=nodes;
         this.sectors=sectors;
         this.edges=edges;
-        this.attributeSet=attributeSets;
+        this.attributeSet= List.copyOf(attributeSets);
     }
 
     /**
