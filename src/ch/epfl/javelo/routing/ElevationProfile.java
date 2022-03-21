@@ -4,7 +4,6 @@ import ch.epfl.javelo.Functions;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
-import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
 
@@ -35,9 +34,9 @@ public class ElevationProfile {
         }
 
         //Calculate ascent and descent (so they are only calculated once)
-        double d = 0; double ascent = 0; double descent = 0;
+        double ascent = 0; double descent = 0;
         for (int i = 1; i < elevationSamples.length; i++) {
-            d = elevationSamples[i] - elevationSamples[i-1];
+            double d = elevationSamples[i] - elevationSamples[i-1];
             if (d > 0){ascent += d;}
             else {descent -= d;}
         }
