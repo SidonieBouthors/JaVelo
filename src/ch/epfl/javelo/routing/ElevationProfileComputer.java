@@ -27,19 +27,17 @@ public final class ElevationProfileComputer {
 
         double routeLength = route.length();
         int nbOfSamples = (int) (Math.ceil(routeLength / maxStepLength) + 1);
-        //System.out.println("nb of samples: " + nbOfSamples);
         double stepLength = routeLength / (nbOfSamples - 1);
-        System.out.println("steplength : " + stepLength);
+
         //// Creating Original Samples
         float[] samples = new float[nbOfSamples];
         double position = 0;
         for (int i = 0; i < nbOfSamples; i++) {
-            //System.out.println("samples ["+i+"] : " + route.elevationAt(position));
             samples[i] = (float) route.elevationAt(position);
             position += stepLength;
         }
 
-        //Filling in NaN values at start of array
+        //Filling in NaN values at start of array & checking for NaN only sample sets
         int i = 0;
         while (i < nbOfSamples && Float.isNaN(samples[i])) { i++; }
         if (i == nbOfSamples) {
@@ -63,10 +61,8 @@ public final class ElevationProfileComputer {
                 double x = step;
                 for (int l = firstNaNIndex; l < nextCorrectIndex; l++) {
                     samples[l] = (float) Math2.interpolate(samples[firstNaNIndex - 1], samples[nextCorrectIndex], x);
-                    System.out.println("y0 : "+ samples[firstNaNIndex-1] + " y1 : "+samples[nextCorrectIndex] + " x : " + x);
                     x += step;
                 }
-                System.out.println("x : " + x);
                 findNext = false;
             }
             else if (!findNext && Float.isNaN(samples[k])) {
@@ -74,14 +70,7 @@ public final class ElevationProfileComputer {
                 findNext = true;
             }
         }
-
-        System.out.println("\n final samples");
-        for(float sample:samples){
-            System.out.println(sample);
-        }
-
         return new ElevationProfile(routeLength, samples);
-
     }
 }
 

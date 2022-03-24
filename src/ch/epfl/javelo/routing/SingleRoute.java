@@ -60,27 +60,21 @@ public final class SingleRoute implements Route{
      * @inheritDoc
      */
     @Override
-    public double length() {
-
-        return totalLength;
-    }
+    public double length() { return totalLength; }
 
     /**
      * @inheritDoc
      */
     @Override
     public List<Edge> edges() {
-        return Collections.unmodifiableList(edges);
+        return List.copyOf(edges);
     }
 
     /**
      * @inheritDoc
      */
     @Override
-    public List<PointCh> points() {
-        return Collections.unmodifiableList(points); //CHECK
-    }
-
+    public List<PointCh> points() { return List.copyOf(points); }
 
     private Edge getEdgeAtPosition(double position){
         position = Math2.clamp(0, position, length());

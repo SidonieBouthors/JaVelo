@@ -110,9 +110,9 @@ class ElevationProfileComputerTest {
         edgeList.add(edge9);
         Route route = new SingleRoute(edgeList);
         ElevationProfile elevationProfile = ElevationProfileComputer.elevationProfile(route, 0.75);
-        //assertEquals(Math2.interpolate(2, 5, 0.25), elevationProfile.minElevation());
-        //assertEquals(9.2, elevationProfile.maxElevation());
-        //assertEquals(9, elevationProfile.length());
+        assertEquals(2.5, elevationProfile.minElevation());
+        assertEquals(7.9375, elevationProfile.maxElevation());
+        assertEquals(9, elevationProfile.length());
         for (int i = 0; i <= 12; i++) {
             System.out.println("pos : " + (i*0.75));
             System.out.println("route el : " + route.elevationAt(i*0.75));
@@ -120,6 +120,77 @@ class ElevationProfileComputerTest {
             System.out.println("");
         }
 
+    }
+
+    @Test
+    void onlyNaN(){
+        Edge edge0 = new Edge(0, 1,
+                new PointCh(2485000, 1076000),
+                new PointCh(2485000, SwissBounds.MAX_N),
+                0.5, Functions.constant(Double.NaN)
+        );
+        Edge edge1 = new Edge(1, 2,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                1.5, Functions.constant(Double.NaN)
+        );
+        Edge edge2 = new Edge(2, 3,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                0.4, Functions.constant(Double.NaN)
+        );
+        Edge edge3 = new Edge(3, 4,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                1.6, Functions.constant(Double.NaN)
+        );
+        Edge edge4 = new Edge(4, 5,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                1, Functions.constant(Double.NaN)
+        );
+        Edge edge5 = new Edge(5, 6,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                0.8, Functions.constant(Double.NaN)
+        );
+        Edge edge6 = new Edge(6, 7,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                1, Functions.constant(Double.NaN)
+        );
+        Edge edge7 = new Edge(7, 8,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                0.5, Functions.constant(Double.NaN)
+        );
+        Edge edge8 = new Edge(8, 9,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                0.7, Functions.constant(Double.NaN)
+        );
+        Edge edge9 = new Edge(9, 10,
+                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
+                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
+                1, Functions.constant(Double.NaN)
+        );
+        List<Edge> edgeList = new ArrayList<Edge>();
+        edgeList.add(edge0);
+        edgeList.add(edge1);
+        edgeList.add(edge2);
+        edgeList.add(edge3);
+        edgeList.add(edge4);
+        edgeList.add(edge5);
+        edgeList.add(edge6);
+        edgeList.add(edge7);
+        edgeList.add(edge8);
+        edgeList.add(edge9);
+        Route route = new SingleRoute(edgeList);
+        ElevationProfile elevationProfile = ElevationProfileComputer.elevationProfile(route, 0.75);
+        assertEquals(0, elevationProfile.totalAscent());
+        assertEquals(0, elevationProfile.totalDescent());
+        assertEquals(0, elevationProfile.minElevation());
+        assertEquals(0, elevationProfile.maxElevation());
     }
 
 }
