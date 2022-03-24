@@ -32,9 +32,10 @@ public final class ElevationProfileComputer {
         System.out.println("steplength : " + stepLength);
         //// Creating Original Samples
         float[] samples = new float[nbOfSamples];
-        double position = stepLength;
-        for (float sample:samples){
-            sample = (float) route.elevationAt(position);
+        double position = 0;
+        for (int i = 0; i < nbOfSamples; i++) {
+            //System.out.println("samples ["+i+"] : " + route.elevationAt(position));
+            samples[i] = (float) route.elevationAt(position);
             position += stepLength;
         }
 
