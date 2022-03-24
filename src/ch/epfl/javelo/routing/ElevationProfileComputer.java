@@ -27,8 +27,10 @@ public final class ElevationProfileComputer {
 
         double routeLength = route.length();
         int nbOfSamples = (int) (Math.ceil(routeLength / maxStepLength) + 1);
+        //System.out.println("nb of samples: " + nbOfSamples);
         double stepLength = routeLength / (nbOfSamples - 1);
-        // Creating Original Samples
+        System.out.println("steplength : " + stepLength);
+        //// Creating Original Samples
         float[] samples = new float[nbOfSamples];
         double position = stepLength;
         for (float sample:samples){
@@ -51,46 +53,33 @@ public final class ElevationProfileComputer {
         Arrays.fill(samples, j, nbOfSamples, samples[j]);
 
         int firstNaNIndex = -1;
-        int nextCorrectValueIndex;
+        int nextCorrectIndex;
         boolean findNext = false;
         for (int k = 0; k < nbOfSamples; k++) {
-            if (Float.isNaN(samples[k])) {
-                firstNaNIndex = k;
-                findNext = true;
-            } else if (findNext) {
-                nextCorrectValueIndex = k;
-                double step = 1 / (double) (nextCorrectValueIndex - firstNaNIndex);
+            if (findNext && !Float.isNaN(samples[k])) {
+                nextCorrectIndex = k;
+                double step = 1 / (double) (nextCorrectIndex - firstNaNIndex + 1);
                 double x = step;
-                for (int l = firstNaNIndex; l < nextCorrectValueIndex; l++) {
-                    samples[l] = (float) Math2.interpolate(samples[firstNaNIndex - 1], samples[nextCorrectValueIndex], x);
+                for (int l = firstNaNIndex; l < nextCorrectIndex; l++) {
+                    samples[l] = (float) Math2.interpolate(samples[firstNaNIndex - 1], samples[nextCorrectIndex], x);
+                    System.out.println("y0 : "+ samples[firstNaNIndex-1] + " y1 : "+samples[nextCorrectIndex] + " x : " + x);
                     x += step;
                 }
+                System.out.println("x : " + x);
+                findNext = false;
+            }
+            else if (!findNext && Float.isNaN(samples[k])) {
+                firstNaNIndex = k;
+                findNext = true;
             }
         }
+
+        System.out.println("\n final samples");
+        for(float sample:samples){
+            System.out.println(sample);
+        }
+
         return new ElevationProfile(routeLength, samples);
-
-        /*
-        int firstSampleNotNaNFromRight = -1;
-        int firstSampleNotNaNFromLeft = firstSampleNotNaNFromRight;
-        for (int i = 0; i < nbOfSamples; i++) {
-            if (firstSampleNotNaNFromRight == -1 && !Float.isNaN(samples[i])) {
-                firstSampleNotNaNFromRight = i;
-            }
-            if (firstSampleNotNaNFromRight != -1 && Float.isNaN(samples[i])) {
-                samples[i] = (float) Math2.interpolate(route.elevationAt(firstSampleNotNaNFromRight * stepLength), route.elevationAt(routeLength), i * stepLength);
-            }
-        }
-        for (int i = 0; i < nbOfSamples; i++) {
-
-            if (firstSampleNotNaNFromLeft == -1 && !Float.isNaN(samples[nbOfSamples - i - 1])) {
-                firstSampleNotNaNFromLeft = nbOfSamples - i - 1;
-            }
-            if (firstSampleNotNaNFromLeft != -1 && Float.isNaN(samples[nbOfSamples - i - 1])) {
-                samples[i] = (float) Math2.interpolate(route.elevationAt(0), route.elevationAt(firstSampleNotNaNFromLeft * stepLength), i * stepLength);
-            }
-        }
-         */
-
 
     }
 }
