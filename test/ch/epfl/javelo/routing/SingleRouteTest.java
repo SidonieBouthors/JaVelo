@@ -1,6 +1,7 @@
 package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Functions;
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.SwissBounds;
 import org.junit.jupiter.api.Test;
@@ -15,21 +16,21 @@ class SingleRouteTest {
     private SingleRoute testRoute(){
         List<Edge> edges = new ArrayList<Edge>();
         edges.add(new Edge(0, 1,
-                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
-                new PointCh(SwissBounds.MAX_E, SwissBounds.MIN_N),
-                2, Functions.constant(3)));
+                new PointCh(2485000, 1075000),
+                new PointCh(2534666.52,1166960.92),
+                Math2.norm(2534666.52-2485000, 1166960.92-1075000), Functions.constant(3)));
         edges.add(new Edge(1, 2,
                 new PointCh(SwissBounds.MAX_E, SwissBounds.MIN_N),
                 new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
                 2, Functions.constant(4)));
         edges.add(new Edge(2, 3,
-                new PointCh(SwissBounds.MAX_E, SwissBounds.MAX_N),
-                new PointCh(SwissBounds.MIN_E, SwissBounds.MAX_N),
-                2, Functions.constant(5)));
+                new PointCh(2644894.82,1157579.79),
+                new PointCh(2695318.40,1253736.39),
+                Math2.norm(2644894.82-2695318.40,1157579.79-1253736.39), Functions.constant(5)));
         edges.add(new Edge(4, 5,
-                new PointCh(SwissBounds.MIN_E, SwissBounds.MAX_N),
-                new PointCh(SwissBounds.MIN_E, SwissBounds.MIN_N),
-                2, Functions.constant(6)));
+                new PointCh(2695318.40,1253736.39),
+                new PointCh(2834000,1296000),
+                Math2.norm(2695318.40-2834000, 1253736.39-1296000), Functions.constant(6)));
         return new SingleRoute(edges);
     }
 

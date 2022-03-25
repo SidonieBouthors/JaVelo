@@ -7,7 +7,6 @@ import ch.epfl.javelo.projection.SwissBounds;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,8 +22,8 @@ public final class SingleRoute implements Route{
 
     /**
      * Constructs the single route composed of the given edges
-     * @throws IllegalArgumentException
-     * @param edges
+     * @throws IllegalArgumentException if edge list is empty
+     * @param edges : list of edges of the single route
      */
     public SingleRoute(List<Edge> edges){
         Preconditions.checkArgument(edges.size() > 0);
@@ -76,17 +75,6 @@ public final class SingleRoute implements Route{
     @Override
     public List<PointCh> points() { return List.copyOf(points); }
 
-    private Edge getEdgeAtPosition(double position){
-        position = Math2.clamp(0, position, length());
-        int found = Arrays.binarySearch(edgePositions, position);
-        if (found >= 0){
-            found = Math2.clamp(0, found, edges.size());
-        } else {
-            found = (found+2)*(-1);
-        }
-        return edges.get(found);
-    }
-
     /**
      * @inheritDoc
      */
@@ -98,7 +86,7 @@ public final class SingleRoute implements Route{
             return points.get(found);
         }
         else {
-            found = (found+2)*(-1);
+            found = -(found+2);
             Edge edge = edges.get(found);
             double positionOnEdge = position - edgePositions[found];
             return edge.pointAt(positionOnEdge);
@@ -142,7 +130,7 @@ public final class SingleRoute implements Route{
             return edges.get(found).fromNodeId();
         }
         else {
-            found = (found+2)*(-1);
+            found = -(found+2);
             Edge edge = edges.get(found);
             double positionOnEdge = position - edgePositions[found];
             if(positionOnEdge < edge.length()/2){
@@ -160,19 +148,20 @@ public final class SingleRoute implements Route{
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
         Edge edge = edges.get(0);
+
         double closestPosition = edge.positionClosestTo(point);
         PointCh closestPoint = edge.pointAt(closestPosition);
         double distanceToPoint = SwissBounds.WIDTH;
+
         RoutePoint closestRoutePoint = new RoutePoint(closestPoint, closestPosition, distanceToPoint);
         for (int i = 0; i < edges.size(); i++) {
             edge = edges.get(i);
             double closestPositionOnEdge = edge.positionClosestTo(point);
             PointCh closestPointOnEdge = edge.pointAt(closestPositionOnEdge);
             double distanceToPointOnEdge = Math2.norm(closestPointOnEdge.e() - point.e(), closestPointOnEdge.n() - point.n());
-            closestRoutePoint = closestRoutePoint
-                    .min(closestPointOnEdge,closestPositionOnEdge, distanceToPointOnEdge)
-                    .withPositionShiftedBy(edgePositions[i]);
+
+            closestRoutePoint = closestRoutePoint.min(closestPointOnEdge,closestPositionOnEdge, distanceToPointOnEdge);
         }
-        return new RoutePoint(closestPoint, closestPosition, distanceToPoint);
+        return closestRoutePoint;
     }
 }

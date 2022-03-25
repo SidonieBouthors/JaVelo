@@ -29,7 +29,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return position on edge closest to the point
      */
     public double positionClosestTo(PointCh point){
-        return Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n());
+        return Math2.clamp(0, Math2.projectionLength(fromPoint.e(), fromPoint.n(), toPoint.e(), toPoint.n(), point.e(), point.n()), this.length);
     }
 
     /**
@@ -38,6 +38,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return point situated at given position on the edge
      */
     public PointCh pointAt(double position){
+        Math2.clamp(0, position, this.length);
         double factor = length / position;
         double e = (toPoint.e() - fromPoint.e())/factor + fromPoint.e();
         double n = (toPoint.n() - fromPoint.n())/factor + fromPoint.n();
