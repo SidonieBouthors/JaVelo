@@ -147,20 +147,19 @@ public final class SingleRoute implements Route{
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
-        Edge edge = edges.get(0);
 
-        double closestPosition = edge.positionClosestTo(point);
-        PointCh closestPoint = edge.pointAt(closestPosition);
-        double distanceToPoint = SwissBounds.WIDTH;
+        Edge edge;
+        double closestPosition;
+        PointCh closestPoint;
+        double distanceToPoint;
+        RoutePoint closestRoutePoint = RoutePoint.NONE;
 
-        RoutePoint closestRoutePoint = new RoutePoint(closestPoint, closestPosition, distanceToPoint);
         for (int i = 0; i < edges.size(); i++) {
             edge = edges.get(i);
-            double closestPositionOnEdge = edge.positionClosestTo(point);
-            PointCh closestPointOnEdge = edge.pointAt(closestPositionOnEdge);
-            double distanceToPointOnEdge = Math2.norm(closestPointOnEdge.e() - point.e(), closestPointOnEdge.n() - point.n());
-
-            closestRoutePoint = closestRoutePoint.min(closestPointOnEdge,closestPositionOnEdge, distanceToPointOnEdge);
+            closestPosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
+            closestPoint = edge.pointAt(closestPosition);
+            distanceToPoint = Math2.norm(closestPoint.e() - point.e(), closestPoint.n() - point.n());
+            closestRoutePoint = closestRoutePoint.min(closestPoint,closestPosition + edgePositions[i], distanceToPoint);
         }
         return closestRoutePoint;
     }
