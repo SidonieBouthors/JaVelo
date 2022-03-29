@@ -53,20 +53,15 @@ public class MultiRoute implements Route{
      */
     @Override
     public int indexOfSegmentAt(double position){
-        Math2.clamp(0, position, length);
+        position = Math2.clamp(0, position, length);
         int previousIndexes = 0;
         int i = 0;
         Route segment = segments.get(0);
         while (position > segmentPositions[i+1]) {
-            System.out.println(segmentPositions[i+1]);
             segment = segments.get(i);
             previousIndexes += segment.indexOfSegmentAt(segment.length()) + 1;
             i++;
         }
-        System.out.println(i);
-        System.out.println("prev : " + previousIndexes );
-        System.out.println("pos : " + position + " - " +  segmentPositions[i]);
-        System.out.println("segment indx : " + segment.indexOfSegmentAt(position - segmentPositions[i]));
         return previousIndexes + segment.indexOfSegmentAt(position - segmentPositions[i]);
     }
 
@@ -91,19 +86,17 @@ public class MultiRoute implements Route{
      */
     @Override
     public List<PointCh> points(){
-        List<PointCh> output = new ArrayList<>();
+        List<PointCh> points = new ArrayList<>();
         PointCh endPointFromBefore = null;
         for (Edge edges : edges()) {
 
             if (edges.fromPoint() != endPointFromBefore ){
-                output.add(edges.fromPoint());
+                points.add(edges.fromPoint());
             }
-
-            output.add(edges.toPoint());
+            points.add(edges.toPoint());
             endPointFromBefore = edges.toPoint();
-
         }
-        return output;
+        return points;
     }
 
     /**
@@ -112,10 +105,7 @@ public class MultiRoute implements Route{
     @Override
     public PointCh pointAt(double position){
         int i = indexOfSegmentAt(position);
-        double actualLength =0;
-        for (int j = 0; j < i; j++) {
-            segments.get(j);
-        }
+
         return null;
     }
 

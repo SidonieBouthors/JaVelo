@@ -16,6 +16,7 @@ class MultiRouteTest {
     public static final List<PointCh> ALL_POINTS = allPoints();
     public static final List<Edge> ALL_EDGES = allEdges();
     public static final MultiRoute MULTI_ROUTE = multiRoute();
+    public static final MultiRoute COMPLEX_MULTI_ROUTE = complexMultiRoute();
 
     public static List<PointCh> allPoints() {
         PointCh point0 = new PointCh(2_550_000, 1_152_300);
@@ -84,13 +85,43 @@ class MultiRouteTest {
         return new MultiRoute(segments);
     }
 
+    public static MultiRoute complexMultiRoute() {
+
+        Route singleRoute0 = new SingleRoute(ALL_EDGES.subList(0,2));
+        Route singleRoute1 = new SingleRoute(ALL_EDGES.subList(2,4));
+        Route singleRoute2 = new SingleRoute(ALL_EDGES.subList(4,6));
+        Route singleRoute3 = new SingleRoute(ALL_EDGES.subList(6,8));
+        Route singleRoute4 = new SingleRoute(ALL_EDGES.subList(8,10));
+        Route singleRoute5 = new SingleRoute(ALL_EDGES.subList(10,12));
+
+        Route subroute0 = new MultiRoute(List.of(singleRoute0, singleRoute1));
+        Route subroute1 = new MultiRoute(List.of(singleRoute2, singleRoute3));
+
+        List<Route> segment0 = new ArrayList<>(List.of(subroute0, subroute1));
+        List<Route> segment1 = new ArrayList<>(List.of(singleRoute4, singleRoute5));
+
+        List<Route> segments = new ArrayList<>();
+        Stream.of(segment0, segment1).forEach(segments::addAll);
+
+        return new MultiRoute(segments);
+    }
+
     @Test
     void indexOfSegmentAtWorksOnKnownValues() {
         assertEquals(0, MULTI_ROUTE.indexOfSegmentAt(100));
-        assertEquals(4, MULTI_ROUTE.indexOfSegmentAt(4000));
+        assertEquals(3, MULTI_ROUTE.indexOfSegmentAt(4000));
         assertEquals(4, MULTI_ROUTE.indexOfSegmentAt(4100));
         assertEquals(5, MULTI_ROUTE.indexOfSegmentAt(5500));
-        assertEquals(6, MULTI_ROUTE.indexOfSegmentAt(6000));
+        assertEquals(5, MULTI_ROUTE.indexOfSegmentAt(6000));
+    }
+
+    @Test
+    void indexOfSegmentAtWorksOnComplexRoutes() {
+        assertEquals(0, COMPLEX_MULTI_ROUTE.indexOfSegmentAt(100));
+        assertEquals(3, COMPLEX_MULTI_ROUTE.indexOfSegmentAt(4000));
+        assertEquals(4, COMPLEX_MULTI_ROUTE.indexOfSegmentAt(4100));
+        assertEquals(5, COMPLEX_MULTI_ROUTE.indexOfSegmentAt(5500));
+        assertEquals(5, COMPLEX_MULTI_ROUTE.indexOfSegmentAt(6000));
     }
 
     @Test

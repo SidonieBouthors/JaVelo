@@ -2,6 +2,7 @@ package ch.epfl.javelo.routing;
 
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointCh;
 
 import java.util.PriorityQueue;
 
@@ -35,6 +36,9 @@ public class RouteComputer {
             else {
                 toExplore.add(new WeightedNode(i, Float.POSITIVE_INFINITY));
             }
+        }
+        while (!toExplore.isEmpty()){
+            WeightedNode n = toExplore.remove();
         }
         /*
         pour chaque nœud N du graphe:
