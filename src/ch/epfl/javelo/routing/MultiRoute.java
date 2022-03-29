@@ -95,6 +95,7 @@ public class MultiRoute implements Route{
             }
             points.add(edges.toPoint());
             endPointFromBefore = edges.toPoint();
+
         }
         return points;
     }
@@ -104,9 +105,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public PointCh pointAt(double position){
+        Math2.clamp(0,position,length);
         int i = indexOfSegmentAt(position);
-
-        return null;
+        double actualLength =segmentPositions[i];
+        return segments.get(i).pointAt(position-actualLength);
     }
 
     /**
@@ -114,7 +116,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public double elevationAt(double position){
-        return 0;
+        Math2.clamp(0,position,length);
+        int i= indexOfSegmentAt(position);
+        double actualLength = segmentPositions[i];
+        return segments.get(i).elevationAt(position-actualLength);
     }
 
     /**
@@ -122,7 +127,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public int nodeClosestTo(double position){
-        return 0;
+        Math2.clamp(0,position,length);
+        int i = indexOfSegmentAt(position);
+        double actualLength = segmentPositions[i];
+        return segments.get(i).nodeClosestTo(position-actualLength);
     }
 
     /**
@@ -130,6 +138,25 @@ public class MultiRoute implements Route{
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point){
-        return null;
+
+        RoutePoint routepoint = RoutePoint.NONE;
+        double closestPosition, distanceToRef, actualPosition=0;
+
+        for (int i = 0; i < edges.size(); ++i) {
+            Edge edge = edges.get(i);
+
+            //Counting the position on the multi route to use it in routepoint
+            actualPosition+=edge.length();
+
+            closestPosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
+
+            PointCh pointclosest = edge.pointAt(closestPosition);
+
+            distanceToRef = Math2.norm(pointclosest.e()-point.e(),pointclosest.n()-point.n());
+
+            routepoint = routepoint.min(new RoutePoint(pointclosest,closestPosition,distanceToRef+
+                    actualPosition));
+        }
+        return routepoint;
     }
 }
