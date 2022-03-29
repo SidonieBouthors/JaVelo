@@ -29,6 +29,7 @@ public class RouteComputer {
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId){
         Preconditions.checkArgument(startNodeId != endNodeId);
+
         PriorityQueue<WeightedNode> toExplore = new PriorityQueue<>();
         double[] distance = new double[graph.nodeCount()];
         int[] predecessor = new int[graph.nodeCount()];
@@ -57,7 +58,7 @@ public class RouteComputer {
                 int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
                 int toNodeID = graph.edgeTargetNodeId(edgeID);
 
-                double d =  node.distance + graph.edgeLength(edgeID);
+                double d =  node.distance + graph.edgeLength(edgeID)*costFunction.costFactor(node.nodeId, edgeID);
                 if( d < distance[toNodeID]) {
                     distance[toNodeID] = d;
                     predecessor[toNodeID] = node.nodeId;
