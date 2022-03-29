@@ -44,7 +44,12 @@ public class RouteComputer {
         while (!toExplore.isEmpty()){
             //get the closest node to explore
             WeightedNode node = toExplore.remove();
+            while (distance[node.nodeId] == Float.NEGATIVE_INFINITY) {
+                node = toExplore.remove();
+            }
+            //check if last node is reached
             if (node.nodeId == endNodeId) {
+                System.out.println("Exploration done!");
                 break; //terminer ici
             }
             //for each edge from the node
@@ -59,7 +64,9 @@ public class RouteComputer {
                 }
                 //add new node to toExplore
                 toExplore.add(new WeightedNode(toNodeID, (float)distance[toNodeID]));
+                System.out.println("added node to explore");
             }
+            distance[node.nodeId] = Float.NEGATIVE_INFINITY;
         }
 
         //create the corresponding shortest route found
@@ -80,8 +87,9 @@ public class RouteComputer {
             int toNodeId = nodes.get(i+1);
             for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
-                if (edgeId == toNodeId){
+                if (graph.edgeTargetNodeId(edgeId) == toNodeId){
                     edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                    System.out.println("edge : " + edgeId);
                 }
             }
         }
