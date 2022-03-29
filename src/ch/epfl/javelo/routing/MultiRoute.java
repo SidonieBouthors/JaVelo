@@ -1,9 +1,11 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointCh;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,12 +14,38 @@ import java.util.List;
  */
 
 public class MultiRoute implements Route{
-    private List<Route> segments;
+    private final List<Route> segments;
+    private final double length;
+    private final List<Edge> edges;
+    private double[] segmentPositions;
 
     public MultiRoute(List<Route> segments){
         Preconditions.checkArgument(!segments.isEmpty());
-        this.segments=segments;
 
+        this.segments= List.copyOf(segments);
+
+        //calculate total length
+        double totalLength = 0;
+        for (Route route : segments) {
+            totalLength+=route.length();
+        }
+        this.length = totalLength;
+
+        //create edge list
+        List<Edge> totalEdges = new ArrayList<>();
+        for (Route route : segments) {
+            totalEdges.addAll(route.edges());
+        }
+        this.edges = totalEdges;
+
+        //calculate segment positions
+        segmentPositions = new double[this.segments.size() + 1];
+        double position = 0;
+        segmentPositions[0] = 0;
+        for (int i = 1; i < this.segments.size() + 1; i++) {
+            position += this.segments.get(i-1).length();
+            segmentPositions[i] = position;
+        }
     }
 
     /**
@@ -25,15 +53,21 @@ public class MultiRoute implements Route{
      */
     @Override
     public int indexOfSegmentAt(double position){
-
-        double actualLength = segments.get(0).length();
-        int i =1;
-        while(position > actualLength) {
-            actualLength += segments.get(i).length();
+        Math2.clamp(0, position, length);
+        int previousIndexes = 0;
+        int i = 0;
+        Route segment = segments.get(0);
+        while (position > segmentPositions[i+1]) {
+            System.out.println(segmentPositions[i+1]);
+            segment = segments.get(i);
+            previousIndexes += segment.indexOfSegmentAt(segment.length()) + 1;
             i++;
         }
-        return i;
-
+        System.out.println(i);
+        System.out.println("prev : " + previousIndexes );
+        System.out.println("pos : " + position + " - " +  segmentPositions[i]);
+        System.out.println("segment indx : " + segment.indexOfSegmentAt(position - segmentPositions[i]));
+        return previousIndexes + segment.indexOfSegmentAt(position - segmentPositions[i]);
     }
 
     /**
@@ -41,10 +75,6 @@ public class MultiRoute implements Route{
      */
     @Override
     public double length(){
-        double length =0;
-        for (Route route : segments) {
-            length+=route.length();
-        }
         return length;
     }
 
@@ -53,11 +83,7 @@ public class MultiRoute implements Route{
      */
     @Override
     public List<Edge> edges(){
-        List<Edge> output = new ArrayList<>();
-        for (Route route : segments) {
-            output.addAll(route.edges());
-        }
-        return output;
+        return edges;
     }
 
     /**
