@@ -4,6 +4,8 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 public class RouteComputer {
@@ -23,24 +25,79 @@ public class RouteComputer {
      * @throws IllegalArgumentException if both given nodes are identical
      * @param startNodeId   : ID of the node at which the route starts
      * @param endNodeId     : ID of the node at which the route ends
-     * @return
+     * @return route with the smallest total costbetween the two nodes of given ID
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId){
         Preconditions.checkArgument(startNodeId != endNodeId);
         PriorityQueue<WeightedNode> toExplore = new PriorityQueue<>();
-
+        double[] distance = new double[graph.nodeCount()];
+        int[] predecessor = new int[graph.nodeCount()];
+        //set distance and predecessor default for all nodes in the graph
         for (int i = 0; i < graph.nodeCount(); i++) {
-            if (i == startNodeId) {
-                toExplore.add(new WeightedNode(0, 0f));
-            }
-            else {
-                toExplore.add(new WeightedNode(i, Float.POSITIVE_INFINITY));
-            }
+            distance[i] = Float.POSITIVE_INFINITY;
+            predecessor[i] = 0;
         }
+        //set start node distance and add to toExplore
+        distance[startNodeId] = 0;
+        toExplore.add(new WeightedNode(startNodeId, 0f));
+
         while (!toExplore.isEmpty()){
-            WeightedNode n = toExplore.remove();
+            //get the closest node to explore
+            WeightedNode node = toExplore.remove();
+            if (node.nodeId == endNodeId) {
+                break; //terminer ici
+            }
+            //for each edge from the node
+            for (int i = 0; i < graph.nodeOutDegree(node.nodeId); i++) {
+                int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
+                int toNodeID = graph.edgeTargetNodeId(edgeID);
+
+                double d =  node.distance + graph.edgeLength(edgeID);
+                if( d < distance[toNodeID]) {
+                    distance[toNodeID] = d;
+                    predecessor[toNodeID] = node.nodeId;
+                }
+                //add new node to toExplore
+                toExplore.add(new WeightedNode(toNodeID, (float)distance[toNodeID]));
+            }
         }
-        /*
+
+        //create the corresponding shortest route found
+        int nodeID = endNodeId;
+        if (distance[nodeID] == Float.POSITIVE_INFINITY){
+            return null;
+        }
+        //create list of nodes of the route
+        List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(0, nodeID);
+        }
+        //create list of edges of the route
+        List<Edge> edges = new ArrayList<>();
+        for (int i = 0; i < nodes.size() - 1; i++) {
+            int fromNodeId = nodes.get(i);
+            int toNodeId = nodes.get(i+1);
+            for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                if (edgeId == toNodeId){
+                    edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                }
+            }
+        }
+        return new SingleRoute(edges);
+    }
+
+    //private ou public???
+    private record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
+        @Override
+        public int compareTo(WeightedNode that) {
+            return Float.compare(this.distance, that.distance);
+        }
+    }
+}
+
+/*
         pour chaque nœud N du graphe:
         distance[N] = ∞
         prédécesseur[N] = 0
@@ -61,14 +118,3 @@ public class RouteComputer {
 
         terminer, car aucun chemin n'a été trouvé
          */
-        return null;
-    }
-
-    //private ou public???
-    private record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
-        @Override
-        public int compareTo(WeightedNode that) {
-            return Float.compare(this.distance, that.distance);
-        }
-    }
-}
