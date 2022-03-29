@@ -8,11 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public class RouteComputer {
 
     Graph graph;
     CostFunction costFunction;
 
+    /**
+     * Builds a RouteComputer for the given graph and cost function
+     * @param graph             : graph from which the routes are calculated
+     * @param costFunction      : cost function for the edges in the graph
+     */
     public RouteComputer(Graph graph, CostFunction costFunction){
         this.graph = graph;
         this.costFunction = costFunction;
@@ -50,8 +59,7 @@ public class RouteComputer {
             }
             //check if last node is reached
             if (node.nodeId == endNodeId) {
-                System.out.println("Exploration done!");
-                break; //terminer ici
+                break; //end exploration
             }
             //for each edge from the node
             for (int i = 0; i < graph.nodeOutDegree(node.nodeId); i++) {
@@ -65,7 +73,6 @@ public class RouteComputer {
                 }
                 //add new node to toExplore
                 toExplore.add(new WeightedNode(toNodeID, (float)distance[toNodeID]));
-                System.out.println("added node to explore");
             }
             distance[node.nodeId] = Float.NEGATIVE_INFINITY;
         }
@@ -90,7 +97,6 @@ public class RouteComputer {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId){
                     edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
-                    System.out.println("edge : " + edgeId);
                 }
             }
         }
@@ -105,25 +111,3 @@ public class RouteComputer {
         }
     }
 }
-
-/*
-        pour chaque nœud N du graphe:
-        distance[N] = ∞
-        prédécesseur[N] = 0
-        distance[Nd] = 0
-        en_exploration = {Nd}
-        tant que en_exploration n'est pas vide:
-        N = nœud de en_exploration tel que distance[N] minimale
-        (N est retiré de en_exploration)
-        si N = Na:
-        terminer, car le plus court chemin a été trouvé
-        pour chaque arête A sortant de N:
-        N′ = nœud d'arrivée de A
-        d = distance[N] + longueur de A
-        si d < distance[N′]:
-        distance[N′] = d
-         prédécesseur[N′] = N
-        ajouter N′ à en_exploration
-
-        terminer, car aucun chemin n'a été trouvé
-         */
