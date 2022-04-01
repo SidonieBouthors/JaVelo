@@ -13,6 +13,7 @@ public record PointCh(double e, double n) {
      */
     public PointCh{
         Preconditions.checkArgument(SwissBounds.containsEN(e,n));
+
     }
 
     /**
