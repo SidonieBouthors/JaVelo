@@ -58,9 +58,9 @@ public class MultiRoute implements Route{
         int i = 0;
         Route segment = segments.get(0);
         while (position > segmentPositions[i+1]) {
-            segment = segments.get(i);
             previousIndexes += segment.indexOfSegmentAt(segment.length()) + 1;
             i++;
+            segment = segments.get(i);
         }
         return previousIndexes + segment.indexOfSegmentAt(position - segmentPositions[i]);
     }
@@ -87,16 +87,14 @@ public class MultiRoute implements Route{
     @Override
     public List<PointCh> points(){
         List<PointCh> points = new ArrayList<>();
-        PointCh endPointFromBefore = null;
-        for (Edge edges : edges()) {
-
-            if (edges.fromPoint() != endPointFromBefore ){
-                points.add(edges.fromPoint());
-            }
-            points.add(edges.toPoint());
-            endPointFromBefore = edges.toPoint();
-
+        Route segment;
+        for (int i = 0; i < segments.size() - 1; i++) {
+            segment = segments.get(i);
+            points.addAll(segment.points());
+            points.remove(points.size() - 1);
         }
+        segment = segments.get(segments.size() - 1);
+        points.addAll(segment.points());
         return points;
     }
 
@@ -105,10 +103,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public PointCh pointAt(double position){
-        Math2.clamp(0,position,length);
-        int i = indexOfSegmentAt(position);
-        double actualLength =segmentPositions[i];
-        return segments.get(i).pointAt(position-actualLength);
+        position = Math2.clamp(0, position, length);
+        int i =0;
+        while (position > segmentPositions[i+1]){ i++; }
+        return segments.get(i).pointAt(position - segmentPositions[i]);
     }
 
     /**
@@ -116,10 +114,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public double elevationAt(double position){
-        Math2.clamp(0,position,length);
-        int i= indexOfSegmentAt(position);
-        double actualLength = segmentPositions[i];
-        return segments.get(i).elevationAt(position-actualLength);
+        position = Math2.clamp(0, position, length);
+        int i =0;
+        while (position > segmentPositions[i+1]){ i++; }
+        return segments.get(i).elevationAt(position - segmentPositions[i]);
     }
 
     /**
@@ -127,10 +125,10 @@ public class MultiRoute implements Route{
      */
     @Override
     public int nodeClosestTo(double position){
-        Math2.clamp(0,position,length);
-        int i = indexOfSegmentAt(position);
-        double actualLength = segmentPositions[i];
-        return segments.get(i).nodeClosestTo(position-actualLength);
+        position = Math2.clamp(0, position, length);
+        int i =0;
+        while (position > segmentPositions[i+1]){ i++; }
+        return segments.get(i).nodeClosestTo(position - segmentPositions[i]);
     }
 
     /**
@@ -138,25 +136,12 @@ public class MultiRoute implements Route{
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point){
-
-        RoutePoint routepoint = RoutePoint.NONE;
-        double closestPosition, distanceToRef, actualPosition=0;
-
-        for (int i = 0; i < edges.size(); ++i) {
-            Edge edge = edges.get(i);
-
-            //Counting the position on the multi route to use it in routepoint
-            actualPosition+=edge.length();
-
-            closestPosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
-
-            PointCh pointclosest = edge.pointAt(closestPosition);
-
-            distanceToRef = Math2.norm(pointclosest.e()-point.e(),pointclosest.n()-point.n());
-
-            routepoint = routepoint.min(new RoutePoint(pointclosest,closestPosition,distanceToRef+
-                    actualPosition));
+        Route segment;
+        RoutePoint closestRoutePoint = RoutePoint.NONE;
+        for (int i = 0; i < segments.size(); ++i) {
+            segment = segments.get(i);
+            closestRoutePoint = closestRoutePoint.min(segment.pointClosestTo(point).withPositionShiftedBy(segmentPositions[i]));
         }
-        return routepoint;
+        return closestRoutePoint;
     }
 }

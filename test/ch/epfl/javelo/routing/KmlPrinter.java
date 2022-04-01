@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 
+/**
+ * To test routes visually
+ */
 public final class KmlPrinter {
     private static final String KML_HEADER =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

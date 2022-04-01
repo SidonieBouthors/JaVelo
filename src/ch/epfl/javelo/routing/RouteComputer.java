@@ -1,5 +1,6 @@
 package ch.epfl.javelo.routing;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
@@ -34,14 +35,16 @@ public class RouteComputer {
      * @throws IllegalArgumentException if both given nodes are identical
      * @param startNodeId   : ID of the node at which the route starts
      * @param endNodeId     : ID of the node at which the route ends
-     * @return route with the smallest total costbetween the two nodes of given ID
+     * @return route with the smallest total cost between the two nodes of given ID
      */
     public Route bestRouteBetween(int startNodeId, int endNodeId){
         Preconditions.checkArgument(startNodeId != endNodeId);
 
+        PointCh endNodePoint = graph.nodePoint(endNodeId);
         PriorityQueue<WeightedNode> toExplore = new PriorityQueue<>();
         double[] distance = new double[graph.nodeCount()];
         int[] predecessor = new int[graph.nodeCount()];
+
         //set distance and predecessor default for all nodes in the graph
         for (int i = 0; i < graph.nodeCount(); i++) {
             distance[i] = Float.POSITIVE_INFINITY;
@@ -51,12 +54,14 @@ public class RouteComputer {
         distance[startNodeId] = 0;
         toExplore.add(new WeightedNode(startNodeId, 0f));
 
+        WeightedNode node;
+
         while (!toExplore.isEmpty()){
             //get the closest node to explore
-            WeightedNode node = toExplore.remove();
-            while (distance[node.nodeId] == Float.NEGATIVE_INFINITY) {
+            do {
                 node = toExplore.remove();
-            }
+            } while (distance[node.nodeId] == Float.NEGATIVE_INFINITY);
+
             //check if last node is reached
             if (node.nodeId == endNodeId) {
                 break; //end exploration
@@ -64,15 +69,19 @@ public class RouteComputer {
             //for each edge from the node
             for (int i = 0; i < graph.nodeOutDegree(node.nodeId); i++) {
                 int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
-                int toNodeID = graph.edgeTargetNodeId(edgeID);
+                int toNodeId = graph.edgeTargetNodeId(edgeID);
 
-                double d =  node.distance + graph.edgeLength(edgeID)*costFunction.costFactor(node.nodeId, edgeID);
-                if( d < distance[toNodeID]) {
-                    distance[toNodeID] = d;
-                    predecessor[toNodeID] = node.nodeId;
+                double d =  distance[node.nodeId] + graph.edgeLength(edgeID)*costFunction.costFactor(node.nodeId, edgeID);
+                if( d < distance[toNodeId]) {
+                    distance[toNodeId] = d;
+                    predecessor[toNodeId] = node.nodeId;
                 }
-                //add new node to toExplore
-                toExplore.add(new WeightedNode(toNodeID, (float)distance[toNodeID]));
+
+                //add new node to toExplore (+ as the crow flies distance for A*)
+                PointCh toNodePoint = graph.nodePoint(toNodeId);
+                double distanceToEnd = toNodePoint.distanceTo(endNodePoint);
+                double minimalTotalDistance = distance[toNodeId] + distanceToEnd;
+                toExplore.add(new WeightedNode(toNodeId, (float)minimalTotalDistance));
             }
             distance[node.nodeId] = Float.NEGATIVE_INFINITY;
         }
@@ -97,13 +106,13 @@ public class RouteComputer {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId){
                     edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                    break;
                 }
             }
         }
         return new SingleRoute(edges);
     }
 
-    //private ou public???
     private record WeightedNode(int nodeId, float distance) implements Comparable<WeightedNode> {
         @Override
         public int compareTo(WeightedNode that) {
