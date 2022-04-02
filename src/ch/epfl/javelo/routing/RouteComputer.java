@@ -5,9 +5,7 @@ import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * @author Sidonie Bouthors (343678)
@@ -37,7 +35,7 @@ public class RouteComputer {
      * @param endNodeId     : ID of the node at which the route ends
      * @return route with the smallest total cost between the two nodes of given ID
      */
-    public Route bestRouteBetween(int startNodeId, int endNodeId){
+    public Route bestRouteBetween(int startNodeId, int endNodeId) {
         Preconditions.checkArgument(startNodeId != endNodeId);
 
         PointCh endNodePoint = graph.nodePoint(endNodeId);
@@ -56,7 +54,7 @@ public class RouteComputer {
 
         WeightedNode node;
 
-        while (!toExplore.isEmpty()){
+        while (!toExplore.isEmpty()) {
             //get the closest node to explore
             do {
                 node = toExplore.remove();
@@ -71,8 +69,8 @@ public class RouteComputer {
                 int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
                 int toNodeId = graph.edgeTargetNodeId(edgeID);
 
-                double d =  distance[node.nodeId] + graph.edgeLength(edgeID)*costFunction.costFactor(node.nodeId, edgeID);
-                if( d < distance[toNodeId]) {
+                double d = distance[node.nodeId] + graph.edgeLength(edgeID) * costFunction.costFactor(node.nodeId, edgeID);
+                if (d < distance[toNodeId]) {
                     distance[toNodeId] = d;
                     predecessor[toNodeId] = node.nodeId;
                 }
@@ -81,25 +79,59 @@ public class RouteComputer {
                 PointCh toNodePoint = graph.nodePoint(toNodeId);
                 double distanceToEnd = toNodePoint.distanceTo(endNodePoint);
                 double minimalTotalDistance = distance[toNodeId] + distanceToEnd;
-                toExplore.add(new WeightedNode(toNodeId, (float)minimalTotalDistance));
+                toExplore.add(new WeightedNode(toNodeId, (float) minimalTotalDistance));
             }
             distance[node.nodeId] = Float.NEGATIVE_INFINITY;
         }
 
         //create the corresponding shortest route found
         int nodeID = endNodeId;
-        if (distance[nodeID] == Float.POSITIVE_INFINITY){
+        if (distance[nodeID] == Float.POSITIVE_INFINITY) {
             return null;
         }
         //create list of nodes of the route
-        List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
+
+        /*Stack<Integer> nodes = new Stack<>();
+        nodes.push(nodeID);
+
         while (nodeID != startNodeId) {
             nodeID = predecessor[nodeID];
-            nodes.add(0, nodeID);
+            nodes.push(nodeID);
+
+        }*/
+
+
+        /*List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(nodeID);
+
         }
+        Collections.reverse(nodes);*/
+
         //create list of edges of the route
         List<Edge> edges = new ArrayList<>();
-        for (int i = 0; i < nodes.size() - 1; i++) {
+
+
+        int toNodeId = nodeID;
+        int fromNodeId = nodeID;
+
+    while (fromNodeId != startNodeId) {
+
+            toNodeId =fromNodeId;
+            fromNodeId = predecessor[toNodeId];
+            for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
+                    edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                    break;
+                }
+
+            }
+        }
+
+
+        /*for (int i = 0; i < nodes.size() - 1; i++) {
             int fromNodeId = nodes.get(i);
             int toNodeId = nodes.get(i+1);
             for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
@@ -109,7 +141,7 @@ public class RouteComputer {
                     break;
                 }
             }
-        }
+        }*/
         return new SingleRoute(edges);
     }
 
