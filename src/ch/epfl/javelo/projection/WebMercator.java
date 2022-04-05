@@ -3,6 +3,7 @@ package ch.epfl.javelo.projection;
 import ch.epfl.javelo.Math2;
 
 public final class WebMercator {
+
     private WebMercator (){}
 
     /**

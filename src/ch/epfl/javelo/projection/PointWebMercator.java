@@ -19,7 +19,8 @@ public record PointWebMercator(double x, double y) {
      * @param y     : y coordinate
      */
     public PointWebMercator{
-        Preconditions.checkArgument(0 <= x && x <= 1 && 0 <= y && y <= 1);
+        Preconditions.checkArgument(0 <= x && x <= 1
+                                            && 0 <= y && y <= 1);
     }
 
     /**
@@ -30,7 +31,8 @@ public record PointWebMercator(double x, double y) {
      * @return PointWebMercator with specified coordinates at zoom level
      */
     public static PointWebMercator of(int zoomLevel, double x, double y){
-        return new PointWebMercator(Math.scalb(x, -(ZOOM_ZERO+zoomLevel)), Math.scalb(y, -(ZOOM_ZERO+zoomLevel)));
+        return new PointWebMercator(Math.scalb(x, -(ZOOM_ZERO+zoomLevel)),
+                                    Math.scalb(y, -(ZOOM_ZERO+zoomLevel)));
     }
 
     /**
@@ -39,8 +41,10 @@ public record PointWebMercator(double x, double y) {
      * @return PointWebMercator corresponding to the PointCh
      */
     public static PointWebMercator ofPointCh(PointCh pointCh){
+
         double x = WebMercator.x(Ch1903.lon(pointCh.e(), pointCh.n()));
         double y = WebMercator.y(Ch1903.lat(pointCh.e(), pointCh.n()));
+
         return new PointWebMercator(x, y);
     }
 

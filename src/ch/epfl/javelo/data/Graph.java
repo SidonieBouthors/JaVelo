@@ -47,10 +47,7 @@ public class Graph {
         ByteBuffer edgesBuffer;
         IntBuffer nodesBuffer;
         ByteBuffer sectorBuffer;
-
         List<AttributeSet> attributeSetList = new ArrayList<>();
-        LongBuffer attributeSetLong;
-
         IntBuffer profilesIds;
         ShortBuffer elevations;
 
@@ -64,9 +61,10 @@ public class Graph {
             sectorBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
         }
         try (FileChannel channel = FileChannel.open(attributesPath)) {
-            attributeSetLong = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asLongBuffer();
+            LongBuffer attributeSetLong = channel.map(FileChannel.MapMode.READ_ONLY, 0,
+                                                        channel.size()).asLongBuffer();
             for (int i = 0; i < attributeSetLong.capacity(); i++) {
-                attributeSetList.add(new AttributeSet(attributeSetLong.get(i)));
+                attributeSetList.add( new AttributeSet( attributeSetLong.get(i) ) );
             }
         }
         try (FileChannel channel = FileChannel.open(elevationsPath)) {
@@ -75,7 +73,10 @@ public class Graph {
         try (FileChannel channel = FileChannel.open(profileIdsPath)) {
             profilesIds = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
         }
-        return new Graph(new GraphNodes(nodesBuffer),new GraphSectors(sectorBuffer),new GraphEdges(edgesBuffer,profilesIds,elevations),attributeSetList);
+        return new Graph(new GraphNodes(nodesBuffer),
+                        new GraphSectors(sectorBuffer),
+                        new GraphEdges(edgesBuffer,profilesIds,elevations),
+                        attributeSetList);
     }
 
     /**
@@ -115,26 +116,29 @@ public class Graph {
     }
 
     /**
-     *Returns the ID of the node closest to the given point, within the given search distance, or -1 if no node corresponds to this criteria
+     * Returns the ID of the node closest to the given point, within the given search distance
+     * Returns -1 if no node corresponds to this criteria
      * @param point             : point from which to search
      * @param searchDistance    : search distance around the point (in meters)
      * @return the ID of the closest node, or -1 if there are none within search distance
      */
     public int nodeClosestTo(PointCh point, double searchDistance){
 
-        double squaredShortestDistance = searchDistance*searchDistance;
-        int indexWithShortestDistanceFromPoint = -1;
         List<GraphSectors.Sector> sectorsToSearch = sectors.sectorsInArea(point, searchDistance);
+        double squaredShortestDistance = searchDistance * searchDistance;
+        int indexWithShortestDistance = -1;
+
         for (GraphSectors.Sector sector : sectorsToSearch) {
             for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {
-                double squaredDistance = Math2.squaredNorm( nodes.nodeE(i) - point.e(), nodes.nodeN(i) - point.n());
+                double squaredDistance = Math2.squaredNorm( nodes.nodeE(i) - point.e(),
+                                                            nodes.nodeN(i) - point.n());
                 if (squaredDistance < squaredShortestDistance) {
                     squaredShortestDistance = squaredDistance;
-                    indexWithShortestDistanceFromPoint = i;
+                    indexWithShortestDistance = i;
                 }
             }
         }
-        return indexWithShortestDistanceFromPoint;
+        return indexWithShortestDistance;
     }
 
     /**
@@ -160,7 +164,9 @@ public class Graph {
      * @param edgeId    : ID of the edge
      * @return set of OSM attributes linked to the edge
      */
-    public AttributeSet edgeAttributes(int edgeId) { return attributeSet.get(edges.attributesIndex(edgeId)); }
+    public AttributeSet edgeAttributes(int edgeId) {
+        return attributeSet.get(edges.attributesIndex(edgeId));
+    }
 
     /**
      * Returns the length of the edge of given ID

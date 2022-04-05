@@ -45,17 +45,20 @@ public final class Functions {
     private record Sampled(float[] samples, double xMax) implements DoubleUnaryOperator{
         @Override
         public double applyAsDouble(double x) {
+
             x = Math2.clamp(0, x, xMax);
-            if (x==xMax){ return samples[samples.length - 1]; }
-            double interval = xMax/(samples.length - 1);
-            double xAbove = 0;
-            int pos = 0;
-            while ((xAbove <= x) && (pos < samples.length - 1)) {
-                xAbove += interval;
-                pos++;
+            int maxIndex = samples.length - 1;
+
+            if (x == xMax){ return samples[maxIndex]; }
+
+            double interval = xMax/(maxIndex);
+            int indexAbove = 0;
+            while (indexAbove*interval <= x) {
+                indexAbove++;
             }
-            double xUnder = xAbove-interval;
-            return Math2.interpolate(samples[pos-1], samples[pos], (x-xUnder)/interval);
+
+            double xUnder = (indexAbove - 1) * interval;
+            return Math2.interpolate(samples[indexAbove-1], samples[indexAbove], (x-xUnder)/interval);
         }
     }
 }

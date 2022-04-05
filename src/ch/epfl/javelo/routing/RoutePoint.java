@@ -10,6 +10,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * Constant representing a non-existent point
      */
     public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
+
     /**
      * Returns a RoutePoint identical to this but with a position shifted by the given difference
      * @param positionDifference    : shift in the position to apply
@@ -18,6 +19,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
     public RoutePoint withPositionShiftedBy(double positionDifference){
         return new RoutePoint(point, position + positionDifference, distanceToReference);
     }
+
     /**
      * Returns this if it's distance to reference is lesser or equal to the one of that
      * Otherwise, returns that

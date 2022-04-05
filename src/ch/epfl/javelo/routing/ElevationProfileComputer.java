@@ -29,7 +29,7 @@ public final class ElevationProfileComputer {
         int nbOfSamples = (int) (Math.ceil(routeLength / maxStepLength) + 1);
         double stepLength = routeLength / (nbOfSamples - 1);
 
-        //// Creating Original Samples
+        // Creating Original Samples
         float[] samples = new float[nbOfSamples];
         double position = 0;
         for (int i = 0; i < nbOfSamples; i++) {
@@ -37,7 +37,7 @@ public final class ElevationProfileComputer {
             position += stepLength;
         }
 
-        //Filling in NaN values at start of array & checking for NaN only sample sets
+        // Filling in NaN values at start of array & checking for NaN only sample sets
         int i = 0;
         while (i < nbOfSamples && Float.isNaN(samples[i])) { i++; }
         if (i == nbOfSamples) {
@@ -56,6 +56,7 @@ public final class ElevationProfileComputer {
         boolean findNext = false;
         for (int k = 0; k < nbOfSamples; k++) {
             if (findNext && !Float.isNaN(samples[k])) {
+
                 nextCorrectIndex = k;
                 double step = 1 / (double) (nextCorrectIndex - firstNaNIndex + 1);
                 double x = step;
@@ -66,8 +67,10 @@ public final class ElevationProfileComputer {
                 findNext = false;
             }
             else if (!findNext && Float.isNaN(samples[k])) {
+
                 firstNaNIndex = k;
                 findNext = true;
+
             }
         }
         return new ElevationProfile(routeLength, samples);

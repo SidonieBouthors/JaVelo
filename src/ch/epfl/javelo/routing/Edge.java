@@ -6,7 +6,8 @@ import ch.epfl.javelo.projection.PointCh;
 
 import java.util.function.DoubleUnaryOperator;
 
-public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint, double length, DoubleUnaryOperator profile) {
+public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint,
+                   double length, DoubleUnaryOperator profile) {
     /**
      * Builds an Edge using edge of given edgeId in graph to obtain last three parameters
      * @param graph         : graph that the edge is a part of
@@ -16,11 +17,14 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      * @return an Edge using the given parameters
      */
     public static Edge of(Graph graph, int edgeId, int fromNodeId, int toNodeId){
+
         PointCh edgeFromPoint = graph.nodePoint(fromNodeId);
         PointCh edgeToPoint = graph.nodePoint(toNodeId);
         double edgeLength = graph.edgeLength(edgeId);
         DoubleUnaryOperator edgeProfile = graph.edgeProfile(edgeId);
-        return new Edge(fromNodeId, toNodeId, edgeFromPoint, edgeToPoint, edgeLength, edgeProfile);
+
+        return new Edge(fromNodeId, toNodeId, edgeFromPoint, edgeToPoint,
+                        edgeLength, edgeProfile);
     }
 
     /**
@@ -39,9 +43,11 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
      */
     public PointCh pointAt(double position){
         Math2.clamp(0, position, this.length);
+
         double factor = length / position;
         double e = (toPoint.e() - fromPoint.e())/factor + fromPoint.e();
         double n = (toPoint.n() - fromPoint.n())/factor + fromPoint.n();
+
         return new PointCh(e, n);
     }
 

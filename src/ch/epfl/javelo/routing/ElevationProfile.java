@@ -18,12 +18,14 @@ public class ElevationProfile {
     /**
      * Builds the Elevation Profile  of an itinerary of length (in meters),
      * and of give samples
-     * @throws IllegalArgumentException iff length <= 0 or if elevationSamples contains less than 2 samples
+     * @throws IllegalArgumentException iff length <= 0 or if elevationSamples contains < 2 samples
      * @param length    : length of the itinerary
      * @param elevationSamples  : altitude samples along the itinerary
      */
     public ElevationProfile(double length, float[] elevationSamples){
+
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
+
         this.length = length;
         this.elevationSamples = elevationSamples.clone();
 
@@ -84,8 +86,10 @@ public class ElevationProfile {
      * @return altitude at position
      */
     public double elevationAt(double position){
+
         Math2.clamp(0,position,length);
         DoubleUnaryOperator elevationFunction = Functions.sampled(elevationSamples, length);
+
         return elevationFunction.applyAsDouble(position);
     }
 }
