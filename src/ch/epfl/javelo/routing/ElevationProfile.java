@@ -36,7 +36,8 @@ public class ElevationProfile {
         }
 
         //Calculate ascent and descent (so they are only calculated once)
-        double ascent = 0; double descent = 0;
+        double ascent = 0;
+        double descent = 0;
         for (int i = 1; i < elevationSamples.length; i++) {
             double d = elevationSamples[i] - elevationSamples[i-1];
             if (d > 0){ascent += d;}

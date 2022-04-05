@@ -13,7 +13,6 @@ public record PointCh(double e, double n) {
      */
     public PointCh{
         Preconditions.checkArgument(SwissBounds.containsEN(e,n));
-
     }
 
     /**
@@ -24,7 +23,6 @@ public record PointCh(double e, double n) {
      */
     public double squaredDistanceTo(PointCh that){
         return  Math2.squaredNorm(e - that.e, n - that.n);
-
     }
 
     /**

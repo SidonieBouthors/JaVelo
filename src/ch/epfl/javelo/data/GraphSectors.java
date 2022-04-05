@@ -34,23 +34,36 @@ public record GraphSectors(ByteBuffer buffer) {
     public List<Sector> sectorsInArea(PointCh center, double distance){
 
         List<Sector> output = new ArrayList<>();
-        double bottomLeftEastDistance = (int)Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
-        double bottomLeftNorthDistance = (int)Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
-        double topRightEastDistance = (int)Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
-        double topRightNorthDistance = (int)Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
 
-        int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * GRID_DIMENSIONS;
-        int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
-        int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
+        // Distance (north and east distance) from the Swiss border to the different corner of the square
+        double bottomLeftEastDistance = (int)Math2.clamp(0,
+                (center.e() - distance - SwissBounds.MIN_E) /SECTOR_WIDTH, GRID_DIMENSIONS-1);
 
+        double bottomLeftNorthDistance = (int)Math2.clamp(0,
+                (center.n() - distance - SwissBounds.MIN_N) /SECTOR_HEIGHT, GRID_DIMENSIONS-1);
 
-        for (int i = 0; i <= GRID_DIMENSIONS * coteHeight; i += GRID_DIMENSIONS) {
+        double topRightEastDistance = (int) Math2.clamp(0,
+                (center.e() + distance - SwissBounds.MIN_E) /SECTOR_WIDTH, GRID_DIMENSIONS-1);
+
+        double topRightNorthDistance = (int)Math2.clamp(0,
+                (center.n() + distance - SwissBounds.MIN_N) /SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+
+        //Calculating index of the bottom left corner, and the height and the width of the square
+        int indexBottomLeft = (int) bottomLeftEastDistance +
+                                (int) bottomLeftNorthDistance * GRID_DIMENSIONS;
+
+        int height = (int) Math.ceil(topRightNorthDistance - bottomLeftNorthDistance);
+        int width = (int) Math.ceil(topRightEastDistance - bottomLeftEastDistance);
+
+        //Adding all the sectors in the square
+        for (int i = 0; i <= GRID_DIMENSIONS * height; i += GRID_DIMENSIONS) {
 
             for (int j = indexBottomLeft + i ; j <= indexBottomLeft + width + i ; j++) {
 
                 int sectorIndexInBuffer = j * SECTOR_BYTES;
                 int startNodeId = buffer.getInt(sectorIndexInBuffer + OFFSET_FIRST_NODE_ID);
-                int numberOfNodes = Short.toUnsignedInt(buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));
+                int numberOfNodes = Short.toUnsignedInt(
+                                    buffer.getShort(sectorIndexInBuffer + OFFSET_NUMBER_OF_NODES));
                 int endNodeId = startNodeId + numberOfNodes;
 
                 output.add(new Sector(startNodeId, endNodeId));

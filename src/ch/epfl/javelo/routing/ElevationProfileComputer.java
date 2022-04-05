@@ -48,9 +48,10 @@ public final class ElevationProfileComputer {
 
         //Filling in NaN values at end of array
         int j = nbOfSamples - 1;
-        while (0 <= j && Float.isNaN(samples[j])) { j--; }
+        while ( Float.isNaN(samples[j]) && 0 <= j) { j--; }
         Arrays.fill(samples, j, nbOfSamples, samples[j]);
 
+        // Filling the last Nan values
         int firstNaNIndex = -1;
         int nextCorrectIndex;
         boolean findNext = false;
@@ -60,8 +61,10 @@ public final class ElevationProfileComputer {
                 nextCorrectIndex = k;
                 double step = 1 / (double) (nextCorrectIndex - firstNaNIndex + 1);
                 double x = step;
+
                 for (int l = firstNaNIndex; l < nextCorrectIndex; l++) {
-                    samples[l] = (float) Math2.interpolate(samples[firstNaNIndex - 1], samples[nextCorrectIndex], x);
+                    samples[l] = (float) Math2.interpolate(
+                            samples[firstNaNIndex - 1], samples[nextCorrectIndex], x);
                     x += step;
                 }
                 findNext = false;

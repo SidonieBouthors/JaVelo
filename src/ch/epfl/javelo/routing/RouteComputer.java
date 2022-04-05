@@ -91,13 +91,12 @@ public class RouteComputer {
         }
         //create list of nodes of the route
 
-        /*Stack<Integer> nodes = new Stack<>();
-        nodes.push(nodeID);
+        /*List<Integer> nodes = new ArrayList<>();
+        nodes.add(nodeID);
 
         while (nodeID != startNodeId) {
             nodeID = predecessor[nodeID];
-            nodes.push(nodeID);
-
+            nodes.add(0,nodeID);
         }*/
 
 
@@ -115,6 +114,7 @@ public class RouteComputer {
 
         int toNodeId = nodeID;
         int fromNodeId = nodeID;
+        edges.add(graph,graph.nodeOutEdgeId(predecessor[toNodeId],fromNodeId));
 
     while (fromNodeId != startNodeId) {
             toNodeId =fromNodeId;
