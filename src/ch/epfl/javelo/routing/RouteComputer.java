@@ -114,7 +114,6 @@ public class RouteComputer {
 
         int toNodeId = nodeID;
         int fromNodeId = nodeID;
-        edges.add(graph,graph.nodeOutEdgeId(predecessor[toNodeId],fromNodeId));
 
     while (fromNodeId != startNodeId) {
             toNodeId =fromNodeId;
