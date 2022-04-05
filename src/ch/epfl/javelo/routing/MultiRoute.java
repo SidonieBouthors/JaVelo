@@ -115,7 +115,7 @@ public class MultiRoute implements Route{
     @Override
     public double elevationAt(double position){
         position = Math2.clamp(0, position, length);
-        int i =0;
+        int i = 0;
         while (position > segmentPositions[i+1]){ i++; }
         return segments.get(i).elevationAt(position - segmentPositions[i]);
     }
@@ -126,7 +126,7 @@ public class MultiRoute implements Route{
     @Override
     public int nodeClosestTo(double position){
         position = Math2.clamp(0, position, length);
-        int i =0;
+        int i = 0;
         while (position > segmentPositions[i+1]){ i++; }
         return segments.get(i).nodeClosestTo(position - segmentPositions[i]);
     }

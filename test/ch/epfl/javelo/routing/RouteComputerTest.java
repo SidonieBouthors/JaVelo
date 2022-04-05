@@ -25,7 +25,7 @@ class RouteComputerTest {
         long t0 = System.nanoTime();
         Route r = rc.bestRouteBetween(epfl, sauvabelin);
         long t1 = (System.nanoTime() - t0) / 1_000_000;
-        System.out.printf("Itinéraire (lausanne) epfl-saubavelin calculé en %d ms (should be approx 250ms)\nKML généré lausanne.kml \n", t1);
+        System.out.printf("Itinéraire (lausanne) epfl-saubavelin calculé en %d ms (we have approx 250ms)\nKML généré lausanne.kml \n", t1);
         KmlPrinter.write("lausanne.kml", r);
 
         System.out.println("length lausanne :" + r.length());
@@ -39,7 +39,7 @@ class RouteComputerTest {
         t0 = System.nanoTime();
         r = rc.bestRouteBetween(agoraEpfl, placeEurope);
         t1 = (System.nanoTime() - t0) / 1_000_000;
-        System.out.printf("Itinéraire (lausanne) epfl-flon calculé en %d ms (should be approx 25ms)\n", t1);
+        System.out.printf("Itinéraire (lausanne) epfl-flon calculé en %d ms (we have approx 25ms)\n", t1);
 
         System.out.println("length lausanne :" + r.length());
         System.out.println(r.edges().size());
@@ -52,7 +52,7 @@ class RouteComputerTest {
         t0 = System.nanoTime();
         r = rc.bestRouteBetween(2046055, 2694240);
         t1 = (System.nanoTime() - t0) / 1_000_000;
-        System.out.printf("Itinéraire (ch_west) calculé en %d ms (should be approx 1350ms)\nKML généré ch_west.kml\n", t1);
+        System.out.printf("Itinéraire (ch_west) calculé en %d ms (we have approx 1350ms)\nKML généré ch_west.kml\n", t1);
         KmlPrinter.write("ch_west.kml", r);
 
         System.out.println("length ch ouest :" +r.length());
@@ -68,7 +68,7 @@ class RouteComputerTest {
             r = rc.bestRouteBetween(2000000, 2500000);
         }
         t1 = (System.nanoTime() - t0) / 1_000_000;
-        System.out.printf("Itinéraire 100 fois calculé en %d ms, moyenne de %d ms par calcul", t1, t1/100);
+        System.out.printf("Itinéraire (ch_west) 100 fois calculé en %d ms, moyenne de %d ms par calcul", t1, t1/100);
     }
 
 }

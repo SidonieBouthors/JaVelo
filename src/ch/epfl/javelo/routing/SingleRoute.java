@@ -161,6 +161,7 @@ public final class SingleRoute implements Route{
             distanceToPoint = Math2.norm(closestPoint.e() - point.e(), closestPoint.n() - point.n());
             closestRoutePoint = closestRoutePoint.min(closestPoint,closestPosition + edgePositions[i], distanceToPoint);
         }
+        System.out.println(closestRoutePoint.position());
         return closestRoutePoint;
     }
 }
