@@ -123,7 +123,7 @@ public class RouteComputer {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
                     Edge edge =Edge.of(graph, edgeId, fromNodeId, toNodeId);
-                    edges.add(0,edge);
+                    edges.add(edge);
                     break;
                 }
 
@@ -142,6 +142,7 @@ public class RouteComputer {
                 }
             }
         }*/
+        Collections.reverse(edges);
         return new SingleRoute(edges);
     }
 
