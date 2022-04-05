@@ -117,13 +117,13 @@ public class RouteComputer {
         int fromNodeId = nodeID;
 
     while (fromNodeId != startNodeId) {
-
             toNodeId =fromNodeId;
             fromNodeId = predecessor[toNodeId];
             for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
-                    edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                    Edge edge =Edge.of(graph, edgeId, fromNodeId, toNodeId);
+                    edges.add(0,edge);
                     break;
                 }
 
