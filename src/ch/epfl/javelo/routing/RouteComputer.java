@@ -44,10 +44,9 @@ public class RouteComputer {
         int[] predecessor = new int[graph.nodeCount()];
 
         //set distance and predecessor default for all nodes in the graph
-        for (int i = 0; i < graph.nodeCount(); i++) {
-            distance[i] = Float.POSITIVE_INFINITY;
-            predecessor[i] = 0;
-        }
+        Arrays.fill(distance, Float.POSITIVE_INFINITY);
+        Arrays.fill(predecessor, 0);
+
         //set start node distance and add to toExplore
         distance[startNodeId] = 0;
         toExplore.add(new WeightedNode(startNodeId, 0f));

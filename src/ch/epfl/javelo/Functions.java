@@ -3,6 +3,8 @@ package ch.epfl.javelo;
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * Functions
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
@@ -29,7 +31,7 @@ public final class Functions {
      * @return function obtained by interpolation
      */
     public static DoubleUnaryOperator sampled(float[] samples, double xMax){
-        Preconditions.checkArgument(samples.length>1 && xMax>0);
+        Preconditions.checkArgument(samples.length > 1 && xMax > 0);
         return new Sampled(samples, xMax);
     }
 
@@ -57,12 +59,12 @@ public final class Functions {
 
             double interval = xMax/(maxIndex);
             int indexAbove = 0;
-            while (indexAbove*interval <= x) {
-                indexAbove++;
-            }
+            while (indexAbove * interval <= x) { indexAbove++; }
 
             double xUnder = (indexAbove - 1) * interval;
-            return Math2.interpolate(samples[indexAbove-1], samples[indexAbove], (x-xUnder)/interval);
+            return Math2.interpolate(samples[indexAbove-1],
+                                     samples[indexAbove],
+                                    (x-xUnder)/interval);
         }
     }
 }

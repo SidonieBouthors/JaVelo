@@ -1,6 +1,8 @@
 package ch.epfl.javelo;
 
 /**
+ * Q28.4
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */

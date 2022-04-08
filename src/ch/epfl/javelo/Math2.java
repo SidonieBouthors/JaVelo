@@ -1,7 +1,7 @@
 package ch.epfl.javelo;
 
 /**
- *Math2
+ * Math2
  *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
