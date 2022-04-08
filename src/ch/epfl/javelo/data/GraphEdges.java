@@ -9,8 +9,15 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 /**
+ * GraphEdges
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
+ *
+ * Table containing all the edges of a Graph
+ * @param edgesBuffer   : buffer of all the edges
+ * @param profileIds    : profile IDs of all the edges
+ * @param elevations    : elevations of all the edges
  */
 public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuffer elevations) {
 
@@ -145,17 +152,12 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
                     }
                     sampleIndex++;
                 }
-
                 break;
 
             default : samples = new float[0]; //case 0
         }
 
-        if (isInverted(edgeId)) {
-            return reverseSamples(samples);
-        }
-
-        return samples;
+        return isInverted(edgeId) ? reverseSamples(samples) : samples;
     }
 
     /**

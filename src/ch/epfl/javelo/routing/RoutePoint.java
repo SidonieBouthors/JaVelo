@@ -11,7 +11,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  *
- * Builds RoutePoint with the given parameters
+ * RoutePoint with the given parameters
  * @param point                 : corresponding point
  * @param position              : position along it's Route
  * @param distanceToReference   : distance to reference point

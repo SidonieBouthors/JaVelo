@@ -7,11 +7,21 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * Edge
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
+ *
+ * Edge with the given parameters
+ * @param fromNodeId    : ID of starting node of the edge
+ * @param toNodeId      : ID of ending node of the edge
+ * @param fromPoint     : starting point of the edge
+ * @param toPoint       : ending point of the edge
+ * @param length        : length of the edge
+ * @param profile       : elevation profile of the edge
  */
-public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint,
-                   double length, DoubleUnaryOperator profile) {
+public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint,
+                   PointCh toPoint, double length, DoubleUnaryOperator profile) {
     /**
      * Builds an Edge using edge of given edgeId in graph to obtain last three parameters
      * @param graph         : graph that the edge is a part of
@@ -27,8 +37,8 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPo
         double edgeLength = graph.edgeLength(edgeId);
         DoubleUnaryOperator edgeProfile = graph.edgeProfile(edgeId);
 
-        return new Edge(fromNodeId, toNodeId, edgeFromPoint, edgeToPoint,
-                        edgeLength, edgeProfile);
+        return new Edge(fromNodeId, toNodeId, edgeFromPoint,
+                        edgeToPoint, edgeLength, edgeProfile);
     }
 
     /**

@@ -8,6 +8,8 @@ import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * ElevationProfile
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */

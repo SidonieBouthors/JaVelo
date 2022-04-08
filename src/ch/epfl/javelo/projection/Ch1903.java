@@ -1,6 +1,8 @@
 package ch.epfl.javelo.projection;
 
 /**
+ * Ch1903
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */

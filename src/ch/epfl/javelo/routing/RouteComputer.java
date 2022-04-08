@@ -8,6 +8,8 @@ import ch.epfl.javelo.projection.PointCh;
 import java.util.*;
 
 /**
+ * RouteComputer
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */

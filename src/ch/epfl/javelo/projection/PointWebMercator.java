@@ -3,8 +3,14 @@ package ch.epfl.javelo.projection;
 import ch.epfl.javelo.Preconditions;
 
 /**
+ * PointWebMercator
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
+ *
+ * PointWebMercator with the given coordinates
+ * @param x     : x coordinate
+ * @param y     : y coordinate
  */
 public record PointWebMercator(double x, double y) {
     /**

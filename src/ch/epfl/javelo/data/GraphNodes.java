@@ -7,10 +7,14 @@ import ch.epfl.javelo.Q28_4;
 import java.nio.IntBuffer;
 
 /**
- * Record GraphNodes
- * @param buffer    : the buffer memory containing the value of the attributes of all nodes in the graph
+ * GraphNodes
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
+ *
+ * Table containing the nodes of a Graph
+ * @param buffer    : the buffer memory containing the attributes of all nodes in the graph
+ *
  */
 public record GraphNodes(IntBuffer buffer) {
 
@@ -22,7 +26,9 @@ public record GraphNodes(IntBuffer buffer) {
      * Returns the total number of nodes
      * @return total number of nodes
      */
-    public int count(){return buffer().capacity()/NODE_INTS;}
+    public int count(){
+        return buffer().capacity()/NODE_INTS;
+    }
 
     /**
      * Returns the East coordinate of the node of given ID

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
 /**
+ * Graph
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */

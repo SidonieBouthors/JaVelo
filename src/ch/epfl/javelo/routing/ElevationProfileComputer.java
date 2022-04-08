@@ -6,6 +6,8 @@ import ch.epfl.javelo.Preconditions;
 import java.util.Arrays;
 
 /**
+ * ElevationProfileComputer
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
