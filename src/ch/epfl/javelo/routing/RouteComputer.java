@@ -84,8 +84,7 @@ public class RouteComputer {
         }
 
         //create the corresponding shortest route found
-        int nodeID = endNodeId;
-        if (distance[nodeID] == Float.POSITIVE_INFINITY) {
+        if (distance[endNodeId] == Float.POSITIVE_INFINITY) {
             return null;
         }
         //create list of nodes of the route
@@ -111,8 +110,8 @@ public class RouteComputer {
         //List<Edge> edges = new ArrayList<>();
         LinkedList<Edge> edges = new LinkedList<>();
 
-        int toNodeId = nodeID;
-        int fromNodeId = nodeID;
+        int toNodeId = endNodeId;
+        int fromNodeId = endNodeId;
 
         while (fromNodeId != startNodeId) {
             toNodeId = fromNodeId;
