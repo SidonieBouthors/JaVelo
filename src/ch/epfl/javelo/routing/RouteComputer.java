@@ -45,7 +45,6 @@ public class RouteComputer {
 
         //set distance and predecessor default for all nodes in the graph
         Arrays.fill(distance, Float.POSITIVE_INFINITY);
-        Arrays.fill(predecessor, 0);
 
         //set start node distance and add to toExplore
         distance[startNodeId] = 0;
@@ -87,28 +86,9 @@ public class RouteComputer {
         if (distance[endNodeId] == Float.POSITIVE_INFINITY) {
             return null;
         }
-        //create list of nodes of the route
 
-        /*List<Integer> nodes = new ArrayList<>();
-        nodes.add(nodeID);
+        List<Edge> edges = new ArrayList<>();
 
-        while (nodeID != startNodeId) {
-            nodeID = predecessor[nodeID];
-            nodes.add(0,nodeID);
-        }*/
-
-
-        /*List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
-        while (nodeID != startNodeId) {
-            nodeID = predecessor[nodeID];
-            nodes.add(nodeID);
-
-        }
-        Collections.reverse(nodes);*/
-
-        //create list of edges of the route
-        //List<Edge> edges = new ArrayList<>();
-        LinkedList<Edge> edges = new LinkedList<>();
 
         int toNodeId = endNodeId;
         int fromNodeId = endNodeId;
@@ -120,25 +100,15 @@ public class RouteComputer {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
                     Edge edge = Edge.of(graph, edgeId, fromNodeId, toNodeId);
-                    edges.addFirst(edge);
+                    edges.add(edge);
                     break;
                 }
             }
         }
+        Collections.reverse(edges);
 
 
-        /*for (int i = 0; i < nodes.size() - 1; i++) {
-            int fromNodeId = nodes.get(i);
-            int toNodeId = nodes.get(i+1);
-            for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
-                int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
-                if (graph.edgeTargetNodeId(edgeId) == toNodeId){
-                    edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
-                    break;
-                }
-            }
-        }*/
-        //Collections.reverse(Arrays.asList(edges);
+
         return new SingleRoute(edges);
     }
 

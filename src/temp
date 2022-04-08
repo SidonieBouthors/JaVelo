@@ -64,3 +64,56 @@
                 System.out.println("coteHeight : "+coteHeight);
                 int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
                 System.out.println("coteWidth : " + coteWidth);
+
+****************************************************************************************************************
+
+                    \\\\\\\\\ROUTE COMPUTER/////////
+
+//create list of nodes of the route
+
+        /*List<Integer> nodes = new ArrayList<>();
+        nodes.add(nodeID);
+
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(0,nodeID);
+        }*/
+
+
+        /*List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(nodeID);
+
+        }
+        Collections.reverse(nodes);*/
+
+        //create list of edges of the route
+        //LinkedList<Edge> edges = new LinkedList<>();
+
+                int toNodeId = nodeID;
+                int fromNodeId=nodeID;
+
+                while (fromNodeId != startNodeId) {
+                    toNodeId = fromNodeId;
+                    fromNodeId = predecessor[toNodeId];
+                    for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                        int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                        if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
+                            Edge edge = Edge.of(graph, edgeId, fromNodeId, toNodeId);
+                            edges.addFirst(edge);
+                            break;
+                        }
+                    }
+                }
+    /*for (int i = 0; i < nodes.size() - 1; i++) {
+                int fromNodeId = nodes.get(i);
+                int toNodeId = nodes.get(i+1);
+                for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                    int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                    if (graph.edgeTargetNodeId(edgeId) == toNodeId){
+                        edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                        break;
+                    }
+                }
+            }*/
