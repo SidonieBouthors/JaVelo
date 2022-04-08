@@ -6,6 +6,8 @@ import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 
 /**
+ * RoutePoint
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  *
@@ -15,8 +17,9 @@ import static java.lang.Double.POSITIVE_INFINITY;
  * @param distanceToReference   : distance to reference point
  */
 public record RoutePoint(PointCh point, double position, double distanceToReference) {
+
     /**
-     * Constant representing a non-existent point
+     * Represents a non-existent point
      */
     public static final RoutePoint NONE = new RoutePoint(null, NaN, POSITIVE_INFINITY);
 
@@ -36,12 +39,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return the point with the least distance to reference
      */
     public RoutePoint min(RoutePoint that){
-        if (this.distanceToReference <= that.distanceToReference){
-            return this;
-        }
-        else {
-            return that;
-        }
+        return this.distanceToReference <= that.distanceToReference ? this : that;
     }
 
     /**
@@ -53,11 +51,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @return the point with the least distance to reference between this and a potential that
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
-        if (this.distanceToReference <= thatDistanceToReference){
-            return this;
-        }
-        else {
-            return new RoutePoint(thatPoint, thatPosition, thatDistanceToReference);
-        }
+        return this.distanceToReference <= thatDistanceToReference ?
+                this : new RoutePoint(thatPoint, thatPosition, thatDistanceToReference) ;
     }
 }

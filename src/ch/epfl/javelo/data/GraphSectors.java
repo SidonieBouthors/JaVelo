@@ -45,16 +45,20 @@ public record GraphSectors(ByteBuffer buffer) {
 
         // Distance (north and east distance) from the Swiss border to the different corner of the square
         double bottomLeftEastDistance = (int)Math2.clamp(0,
-                (center.e() - distance - SwissBounds.MIN_E) /SECTOR_WIDTH, GRID_DIMENSIONS-1);
+                (center.e() - distance - SwissBounds.MIN_E) /SECTOR_WIDTH,
+                GRID_DIMENSIONS - 1);
 
         double bottomLeftNorthDistance = (int)Math2.clamp(0,
-                (center.n() - distance - SwissBounds.MIN_N) /SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+                (center.n() - distance - SwissBounds.MIN_N) /SECTOR_HEIGHT,
+                GRID_DIMENSIONS - 1);
 
         double topRightEastDistance = (int) Math2.clamp(0,
-                (center.e() + distance - SwissBounds.MIN_E) /SECTOR_WIDTH, GRID_DIMENSIONS-1);
+                (center.e() + distance - SwissBounds.MIN_E) /SECTOR_WIDTH,
+                GRID_DIMENSIONS - 1);
 
         double topRightNorthDistance = (int)Math2.clamp(0,
-                (center.n() + distance - SwissBounds.MIN_N) /SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+                (center.n() + distance - SwissBounds.MIN_N) /SECTOR_HEIGHT,
+                GRID_DIMENSIONS-1);
 
         //Calculating index of the bottom left corner, and the height and the width of the square
         int indexBottomLeft = (int) bottomLeftEastDistance +

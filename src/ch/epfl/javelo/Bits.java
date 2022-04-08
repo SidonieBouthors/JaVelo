@@ -1,6 +1,8 @@
 package ch.epfl.javelo;
 
 /**
+ * Bits
+ *
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
@@ -19,7 +21,7 @@ public final class Bits {
      */
     public static int extractSigned (int value, int start, int length){
         Preconditions.checkArgument(start + length <= Integer.SIZE
-                                            && start >= 0 && length >= 0);
+                                        && start >= 0 && length >= 0);
 
         return  (value << Integer.SIZE - length - start) >> Integer.SIZE - length;
     }
@@ -33,7 +35,8 @@ public final class Bits {
      */
     public static int extractUnsigned (int value, int start, int length){
         Preconditions.checkArgument(start + length <= Integer.SIZE && start >= 0
-                                               && 0 <= length && length < 32);
+                                        && 0 <= length && length < 32);
+
         return (value <<  Integer.SIZE - length - start) >>> Integer.SIZE - length;
     }
 }

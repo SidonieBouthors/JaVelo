@@ -82,22 +82,24 @@ public class RouteComputer {
             distance[node.nodeId] = Float.NEGATIVE_INFINITY;
         }
 
-        //create the corresponding shortest route found
+        //if no route was found
         if (distance[endNodeId] == Float.POSITIVE_INFINITY) {
             return null;
         }
 
+        //create the corresponding shortest route found
         List<Edge> edges = new ArrayList<>();
-
-
         int toNodeId = endNodeId;
         int fromNodeId = endNodeId;
 
         while (fromNodeId != startNodeId) {
+
             toNodeId = fromNodeId;
             fromNodeId = predecessor[toNodeId];
+
             for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
                     Edge edge = Edge.of(graph, edgeId, fromNodeId, toNodeId);
                     edges.add(edge);
@@ -105,10 +107,8 @@ public class RouteComputer {
                 }
             }
         }
+
         Collections.reverse(edges);
-
-
-
         return new SingleRoute(edges);
     }
 

@@ -65,16 +65,15 @@ public final class ElevationProfileComputer {
 
                 for (int l = firstNaNIndex; l < nextCorrectIndex; l++) {
                     samples[l] = (float) Math2.interpolate(
-                            samples[firstNaNIndex - 1], samples[nextCorrectIndex], x);
+                                        samples[firstNaNIndex - 1],
+                                        samples[nextCorrectIndex], x);
                     x += step;
                 }
                 findNext = false;
             }
             else if (!findNext && Float.isNaN(samples[k])) {
-
                 firstNaNIndex = k;
                 findNext = true;
-
             }
         }
         return new ElevationProfile(routeLength, samples);
