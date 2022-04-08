@@ -13,8 +13,8 @@ import java.util.*;
  */
 public class RouteComputer {
 
-    Graph graph;
-    CostFunction costFunction;
+    private final Graph graph;
+    private final CostFunction costFunction;
 
     /**
      * Builds a RouteComputer for the given graph and cost function

@@ -44,12 +44,7 @@ public record GraphEdges (ByteBuffer edgesBuffer, IntBuffer profileIds, ShortBuf
      */
     public int targetNodeId(int edgeId){
         int index = edgeId * EDGE_BYTES + OFFSET_DESTINATION_NODE_ID;
-        if (isInverted(edgeId)){
-            return ~edgesBuffer.getInt(index);
-        }
-        else {
-            return edgesBuffer.getInt(index);
-        }
+        return isInverted(edgeId) ?  ~edgesBuffer.getInt(index): edgesBuffer.getInt(index);
     }
 
     /**
