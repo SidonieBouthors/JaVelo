@@ -12,27 +12,27 @@ public final class SwissBounds {
     /**
      * Smallest Swiss E coordinate
      */
-    public final static double MIN_E = 2485000;
+    public final static double MIN_E = 2_485_000;
     /**
      * Largest Swiss E coordinate
      */
-    public final static double MAX_E = 2834000;
+    public final static double MAX_E = 2_834_000;
     /**
      * Smallest Swiss N coordinate
      */
-    public final static double MIN_N = 1075000;
+    public final static double MIN_N = 1_075_000;
     /**
      * Largest Swiss N coordinate
      */
-    public final static double MAX_N = 1296000;
+    public final static double MAX_N = 1_296_000;
     /**
      * Width of Switzerland
      */
-    public final static double WIDTH= MAX_E-MIN_E;
+    public final static double WIDTH= MAX_E - MIN_E;
     /**
      * Height of Switzerland
      */
-    public final static double HEIGHT = MAX_N-MIN_N;
+    public final static double HEIGHT = MAX_N - MIN_N;
 
     /**
      * Returns true iff the point at given coordinates are in

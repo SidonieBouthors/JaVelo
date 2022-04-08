@@ -1,7 +1,11 @@
 package ch.epfl.javelo;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class Q28_4 {
-    public static final int POINT_OFFSET = 4;
+    private static final int POINT_OFFSET = 4;
     /**
      * Non instantiable
      */

@@ -5,6 +5,15 @@ import ch.epfl.javelo.projection.PointCh;
 import static java.lang.Double.NaN;
 import static java.lang.Double.POSITIVE_INFINITY;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ *
+ * Builds RoutePoint with the given parameters
+ * @param point                 : corresponding point
+ * @param position              : position along it's Route
+ * @param distanceToReference   : distance to reference point
+ */
 public record RoutePoint(PointCh point, double position, double distanceToReference) {
     /**
      * Constant representing a non-existent point
@@ -41,7 +50,7 @@ public record RoutePoint(PointCh point, double position, double distanceToRefere
      * @param thatPoint                 : parameter for new RoutePoint
      * @param thatPosition              : parameter for new RoutePoint
      * @param thatDistanceToReference   : distanceToReference compared to the one of this
-     * @return the point with the least distance to reference between this and a potential that with given parameters
+     * @return the point with the least distance to reference between this and a potential that
      */
     public RoutePoint min(PointCh thatPoint, double thatPosition, double thatDistanceToReference){
         if (this.distanceToReference <= thatDistanceToReference){

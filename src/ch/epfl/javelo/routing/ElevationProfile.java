@@ -7,6 +7,10 @@ import ch.epfl.javelo.Preconditions;
 import java.util.DoubleSummaryStatistics;
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public class ElevationProfile {
 
     private final double length;

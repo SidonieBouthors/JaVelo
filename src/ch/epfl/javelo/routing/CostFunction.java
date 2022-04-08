@@ -1,5 +1,9 @@
 package ch.epfl.javelo.routing;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public interface CostFunction {
     /**
      * Returns the factor by which the length of the egde of given ID

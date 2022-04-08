@@ -2,6 +2,10 @@ package ch.epfl.javelo.projection;
 
 import ch.epfl.javelo.Math2;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class WebMercator {
 
     private WebMercator (){}

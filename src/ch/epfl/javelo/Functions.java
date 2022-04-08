@@ -2,6 +2,10 @@ package ch.epfl.javelo;
 
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class Functions {
     /**
      * Non instantiable

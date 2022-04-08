@@ -23,6 +23,14 @@ public record GraphSectors(ByteBuffer buffer) {
     private static final int OFFSET_NUMBER_OF_NODES = OFFSET_FIRST_NODE_ID + Integer.BYTES;
     private static final int SECTOR_BYTES = OFFSET_NUMBER_OF_NODES + Short.BYTES;
 
+    /**
+     * @author Sidonie Bouthors (343678)
+     * @author François Théron (346077)
+
+     * Sector with the given parameters
+     * @param startNodeId   : first node of the sector
+     * @param endNodeId     : last node of sector
+     */
     public record Sector(int startNodeId, int endNodeId) {}
 
     /**

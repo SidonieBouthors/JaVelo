@@ -1,5 +1,9 @@
 package ch.epfl.javelo;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class Bits {
     /**
      * Non instantiable

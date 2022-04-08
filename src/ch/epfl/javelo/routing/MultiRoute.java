@@ -19,6 +19,10 @@ public class MultiRoute implements Route{
     private final List<Edge> edges;
     private final double[] segmentPositions;
 
+    /**
+     * Builds a MultiRoute with the given segments
+     * @param segments  : segments of the MultiRoute
+     */
     public MultiRoute(List<Route> segments){
 
         Preconditions.checkArgument(!segments.isEmpty());
@@ -59,9 +63,9 @@ public class MultiRoute implements Route{
         int i = 0;
         Route segment = segments.get(0);
         while (position > segmentPositions[i+1]) {
+            segment = segments.get(i);
             previousIndexes += segment.indexOfSegmentAt(segment.length()) + 1;
             i++;
-            segment = segments.get(i);
         }
         return previousIndexes +
                 segment.indexOfSegmentAt(position - segmentPositions[i]);

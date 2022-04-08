@@ -109,23 +109,22 @@ public class RouteComputer {
         Collections.reverse(nodes);*/
 
         //create list of edges of the route
-        List<Edge> edges = new ArrayList<>();
-
+        //List<Edge> edges = new ArrayList<>();
+        LinkedList<Edge> edges = new LinkedList<>();
 
         int toNodeId = nodeID;
         int fromNodeId = nodeID;
 
-    while (fromNodeId != startNodeId) {
-            toNodeId =fromNodeId;
+        while (fromNodeId != startNodeId) {
+            toNodeId = fromNodeId;
             fromNodeId = predecessor[toNodeId];
             for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
                 int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
                 if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
-                    Edge edge =Edge.of(graph, edgeId, fromNodeId, toNodeId);
-                    edges.add(edge);
+                    Edge edge = Edge.of(graph, edgeId, fromNodeId, toNodeId);
+                    edges.addFirst(edge);
                     break;
                 }
-
             }
         }
 
@@ -141,7 +140,7 @@ public class RouteComputer {
                 }
             }
         }*/
-        Collections.reverse(edges);
+        //Collections.reverse(Arrays.asList(edges);
         return new SingleRoute(edges);
     }
 

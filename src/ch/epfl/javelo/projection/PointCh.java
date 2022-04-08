@@ -3,6 +3,14 @@ package ch.epfl.javelo.projection;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ *
+ * Builds a PointCh with the given coordinates
+ * @param e     : east coordinate
+ * @param n     : north coordinate
+ */
 public record PointCh(double e, double n) {
 
     /**

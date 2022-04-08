@@ -14,7 +14,8 @@ public final class ElevationProfileComputer {
     private ElevationProfileComputer() {}
 
     /**
-     * Returns the profile of the route, guarantying that the spacing between samples is at most maxStepLength
+     * Returns the profile of the route,
+     *  guarantying that the spacing between samples is at most maxStepLength
      * @throws IllegalArgumentException if the maximum spacing is <= 0
      * @param route             : the route
      * @param maxStepLength     : maximum spacing between samples

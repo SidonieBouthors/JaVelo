@@ -6,6 +6,10 @@ import ch.epfl.javelo.projection.PointCh;
 
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint, PointCh toPoint,
                    double length, DoubleUnaryOperator profile) {
     /**

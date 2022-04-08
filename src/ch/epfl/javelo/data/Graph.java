@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleUnaryOperator;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public class Graph {
 
     private final GraphNodes nodes;
@@ -22,6 +26,13 @@ public class Graph {
     private final GraphEdges edges;
     private final List<AttributeSet> attributeSet;
 
+    /**
+     * Return a Graph with the following attributes
+     * @param nodes             : graph nodes
+     * @param sectors           : graph sectors
+     * @param edges             : graph edges
+     * @param attributeSets     : graph attribute sets for the edges
+     */
     public Graph(GraphNodes nodes, GraphSectors sectors, GraphEdges edges, List<AttributeSet> attributeSets){
         this.nodes=nodes;
         this.sectors=sectors;
