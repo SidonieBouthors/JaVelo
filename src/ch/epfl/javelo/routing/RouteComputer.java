@@ -1,6 +1,5 @@
 package ch.epfl.javelo.routing;
 
-import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
@@ -64,8 +63,10 @@ public class RouteComputer {
             if (node.nodeId == endNodeId) {
                 break; //end exploration
             }
+
             //for each edge from the node
             for (int i = 0; i < graph.nodeOutDegree(node.nodeId); i++) {
+
                 int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
                 int toNodeId = graph.edgeTargetNodeId(edgeID);
 

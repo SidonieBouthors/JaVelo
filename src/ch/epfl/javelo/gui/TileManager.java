@@ -1,5 +1,6 @@
 package ch.epfl.javelo.gui;
 
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
