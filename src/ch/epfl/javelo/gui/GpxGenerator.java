@@ -1,0 +1,113 @@
+package ch.epfl.javelo.gui;
+
+import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.routing.Edge;
+import ch.epfl.javelo.routing.Route;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.function.DoubleUnaryOperator;
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ **/
+public class GpxGenerator {
+
+    private GpxGenerator(){}
+
+    /**
+     * Returns the GPX document corresponding to the given route and profile
+     * @param route     : route
+     * @param profile   : profile of the route
+     * @return document corresponding to the route
+     */
+    public static Document createGpx(Route route, DoubleUnaryOperator profile){
+        Document doc = newDocument(); // voir plus bas
+
+        Element root = doc
+                .createElementNS("http://www.topografix.com/GPX/1/1",
+                        "gpx");
+        doc.appendChild(root);
+
+        root.setAttributeNS(
+                "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:schemaLocation",
+                "http://www.topografix.com/GPX/1/1 "
+                        + "http://www.topografix.com/GPX/1/1/gpx.xsd");
+        root.setAttribute("version", "1.1");
+        root.setAttribute("creator", "JaVelo");
+
+        Element metadata = doc.createElement("metadata");
+        root.appendChild(metadata);
+
+        Element name = doc.createElement("name");
+        metadata.appendChild(name);
+        name.setTextContent("Route JaVelo");
+
+        Element rte = doc.createElement("rte");
+        root.appendChild(rte);
+
+        int position = 0;
+
+        for (Edge edge : route.edges()) {
+            PointCh point = edge.fromPoint();
+
+            Element rtept = doc.createElement("rtept");
+            rte.appendChild(rtept);
+            rtept.setAttribute("lat", String.valueOf(point.lat()));
+            rtept.setAttribute("lon", String.valueOf(point.lon()));
+
+            Element ele = doc.createElement("ele");
+            rtept.appendChild(ele);
+            ele.setTextContent(String.valueOf(route.elevationAt(position)));
+
+            position += edge.length();
+        }
+        
+        return doc;
+    }
+
+    /**
+     * Writes the GPX document corresponding to the given route and profile
+     * @param fileName      : file name
+     * @param route     : route
+     * @param profile   : profile of the route
+     * @throws IOException in case of an input/output error
+     */
+    public static void writeGpx(String fileName, Route route, DoubleUnaryOperator profile) throws IOException {
+        Document doc = createGpx(route, profile);
+        Writer w = new FileWriter(fileName,  StandardCharsets.UTF_16);
+
+        try {
+            Transformer transformer = TransformerFactory
+                    .newDefaultInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(new DOMSource(doc),
+                    new StreamResult(w));
+        }
+        catch (TransformerException e) {
+            throw new Error(e); //Should never happen
+        }
+    }
+
+    private static Document newDocument() {
+        try {
+            return DocumentBuilderFactory
+                    .newDefaultInstance()
+                    .newDocumentBuilder()
+                    .newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new Error(e); // Should never happen
+        }
+    }
+}

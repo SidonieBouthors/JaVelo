@@ -26,7 +26,7 @@ public final  class TileManager {
     private static Path cacheDisque;
     private static String nameOfServer;
 
-    LinkedHashMap<String, Image> cacheMemoire =
+        LinkedHashMap<String, Image> cacheMemoire =
             new LinkedHashMap<String, Image>() {
                 protected boolean removeEldestEntry(Map.Entry<String, Image> eldest)
                 {
