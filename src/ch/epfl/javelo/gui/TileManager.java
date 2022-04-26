@@ -88,6 +88,7 @@ public final  class TileManager {
                 i.transferTo(a);
                 a.close();
             }
+            System.out.println(imageName);
             cacheMemoire.put(imageName,new Image(imageName));
             return cacheMemoire.get(imageName);
 
