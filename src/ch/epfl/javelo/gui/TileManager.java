@@ -19,7 +19,12 @@ import javafx.scene.image.Image;
  */
 
 public final  class TileManager {
+
+
+
     private final static int cacheMemoireSize = 100;
+    private static Path cacheDisque;
+    private static String nameOfServer;
 
     LinkedHashMap<String, Image> cacheMemoire =
             new LinkedHashMap<String, Image>() {
@@ -29,13 +34,16 @@ public final  class TileManager {
                 }
             };
 
-    private Path cacheDisque;
-    private String nameOfServer;
 
     public TileManager(Path cacheDisque, String nameOfServer) {
         this.nameOfServer=nameOfServer;
         this.cacheDisque=cacheDisque;
 
+    }
+    public static void main(String[] args) throws IOException {
+        String  a = "cache";
+        TileManager ma = new TileManager(Path.of(a),"https://tile.openstreetmap.org/");
+        ma.imageForTileAt(new TileId(19,271725,185422));
     }
 
     /**
@@ -97,7 +105,8 @@ public final  class TileManager {
          * @return
          */
         public  static boolean isValid(int zoom, int x, int y) {
-            return false;
+            double i = Math.pow(2, zoom);
+            return x >= 0 && x < i && y >= 0 && y < i;
         }
     }
 
