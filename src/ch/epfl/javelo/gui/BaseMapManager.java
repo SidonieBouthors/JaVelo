@@ -37,7 +37,6 @@ public final class BaseMapManager {
         canvas.heightProperty().bind(pane.heightProperty());
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            System.out.println(oldS==null);
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
@@ -49,7 +48,16 @@ public final class BaseMapManager {
             }
         });
 
-        canvas.widthProperty().addListener((w) -> {
+        pane.setOnMousePressed();
+        pane.setOnMouseClicked();
+
+        canvas.widthProperty().addListener( w -> {
+            redrawOnNextPulse();
+        });
+        canvas.heightProperty().addListener( h -> {
+            redrawOnNextPulse();
+        });
+        mapParameters.addListener( p -> {
             redrawOnNextPulse();
         });
 
@@ -60,37 +68,34 @@ public final class BaseMapManager {
     }
 
     private void redrawIfNeeded() {
-        System.out.println("Redraw if needed...");
+
         if (!redrawNeeded) return;
         redrawNeeded = false;
-
+        System.out.println("Redraw...");
         GraphicsContext context = canvas.getGraphicsContext2D();
 
         double width = canvas.getWidth();
         double height = canvas.getHeight();
         int zoom = mapParameters.get().zoomLevel();
-        System.out.println("W :" + width + " H:" + height);
-        System.out.println("Calculating Tiles...");
+
         Point2D topLeft = mapParameters.get().topLeft();
         int topLeftTileX = (int) topLeft.getX() / 256;
         int topLeftTileY = (int) topLeft.getY() / 256;
-        int bottomRightTileX = (int) (topLeft.getX() + width) / 256;
-        int bottomRightTileY = (int) (topLeft.getY() + height) / 256;
+        int bottomRightTileX = (int) (topLeft.getX() + width) / 256 + 1;
+        int bottomRightTileY = (int) (topLeft.getY() + height) / 256 + 1;
         double xShift = -(topLeft.getX() - 256 * topLeftTileX);
-        double yShift = -(topLeft.getY() - 256 * topLeftTileY);
 
-        System.out.println(topLeft.getX()+ "  " + topLeft.getY());
-        System.out.println(topLeftTileX+ "  " + topLeftTileY);
-        System.out.println(bottomRightTileX+ "  " + bottomRightTileY);
         for (int i = topLeftTileX; i < bottomRightTileX; i++) {
+            double yShift = -(topLeft.getY() - 256 * topLeftTileY);
             for (int j = topLeftTileY; j < bottomRightTileY; j++) {
+
                 System.out.println("Tile : " + i + " " + j);
+                System.out.println("Position : " + xShift + " " + yShift);
                 try {
                     Image tile = tileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
                     context.drawImage(tile, xShift, yShift);
-                    System.out.println("Tile drawn");
                 }
-                catch (IOException e) {}
+                catch (IOException ignored) {}
                 yShift+=256;
             }
             xShift+=256;

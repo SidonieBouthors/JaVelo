@@ -23,12 +23,12 @@ public final  class TileManager {
 
 
     private final static int cacheMemoireSize = 100;
-    private static Path cacheDisque;
-    private static String nameOfServer;
+    private final Path cacheDisque;
+    private final String nameOfServer;
 
-        LinkedHashMap<String, Image> cacheMemoire =
-            new LinkedHashMap<String, Image>() {
-                protected boolean removeEldestEntry(Map.Entry<String, Image> eldest)
+        LinkedHashMap<Path, Image> cacheMemoire =
+            new LinkedHashMap<Path, Image>() {
+                protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest)
                 {
                     return size() > cacheMemoireSize;
                 }
@@ -38,7 +38,10 @@ public final  class TileManager {
     public TileManager(Path cacheDisque, String nameOfServer) {
         this.nameOfServer=nameOfServer;
         this.cacheDisque=cacheDisque;
-
+        if(!Files.exists(cacheDisque)){
+            System.out.println("Make Dir");
+            cacheDisque.toFile().mkdir();
+        }
     }
     public static void main(String[] args) throws IOException {
         String  a = "cache";
@@ -52,22 +55,24 @@ public final  class TileManager {
      * @return
      */
     public Image imageForTileAt(TileId id) throws IOException {
-        String zoomPath = cacheDisque.toString()+"/"+id.zoom;
-        String xPath = zoomPath+"/"+id.x;
-        String imageName = xPath+"/"+id.y+".png";
-        File zoomFile = new File(zoomPath);
-        File xPathFile = new File(xPath);
-        File imageNameFile = new File(imageName);
+        Path dirPath = cacheDisque.resolve(String.valueOf(id.zoom))
+                                    .resolve(String.valueOf(id.x));
+        Path imagePath = dirPath.resolve(id.y+".png");
+        //File zoomFile = new File(zoomPath);
+        //File xPathFile = new File(xPath);
+        File imageFile = imagePath.toFile();
 
 
-        if (cacheMemoire.containsKey(imageName)) {
-            return cacheMemoire.get(imageName);
-        } else if (imageNameFile.exists()) {
-            Image image = new Image(imageName);
-            cacheMemoire.put(imageName,image);
+        if (cacheMemoire.containsKey(imagePath)) {
+            return cacheMemoire.get(imagePath);
+        } else if (Files.exists(imagePath)) {
+            InputStream i = new FileInputStream(imageFile);
+            Image image = new Image(i);
+            cacheMemoire.put(imagePath,image);
             return image;
         } else{
             //creating directories/file that doesn't exist in cache disque
+            /*
             if (!zoomFile.exists()) {
                 zoomFile.mkdirs();
                 xPathFile.mkdirs();
@@ -78,19 +83,22 @@ public final  class TileManager {
             } else if (!imageNameFile.exists()) {
                 imageNameFile.createNewFile();
             }
+            */
+            Files.createDirectories(dirPath);
 
             String urlString = "https://"+nameOfServer+"/"+id.zoom+"/"+id.x+"/"+id.y+".png";
             URL u = new URL(urlString);
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
-            try (InputStream i = c.getInputStream()) {
-                FileOutputStream a = new FileOutputStream(imageNameFile);
+
+            try (InputStream i = c.getInputStream(); OutputStream a = new FileOutputStream(imageFile);) {
                 i.transferTo(a);
-                a.close();
             }
-            System.out.println(imageName);
-            cacheMemoire.put(imageName,new Image(imageName));
-            return cacheMemoire.get(imageName);
+
+            InputStream i = new FileInputStream(imageFile);
+            Image image = new Image(i);
+            cacheMemoire.put(imagePath,image);
+            return image;
 
         }
 

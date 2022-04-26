@@ -44,7 +44,7 @@ public record MapViewParameters(int zoomLevel, double x, double y) {
      * @return the corresponding PointWebMercator
      */
     PointWebMercator pointAt(double viewX, double viewY){
-        return new PointWebMercator(x + viewX, y + viewY);
+        return PointWebMercator.of(zoomLevel, x + viewX, y + viewY);
     }
 
     /**
@@ -53,7 +53,7 @@ public record MapViewParameters(int zoomLevel, double x, double y) {
      * @return x coordinate of the point relative to the view
      */
     double viewX(PointWebMercator point){
-        return point.x() - x;
+        return point.xAtZoomLevel(zoomLevel) - x;
     }
 
     /**
@@ -62,6 +62,6 @@ public record MapViewParameters(int zoomLevel, double x, double y) {
      * @return y coordinate of the point relative to the view
      */
     double viewY(PointWebMercator point){
-        return point.y() - y;
+        return point.yAtZoomLevel(zoomLevel) - y;
     }
 }
