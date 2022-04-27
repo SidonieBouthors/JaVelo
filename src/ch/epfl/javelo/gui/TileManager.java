@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import ch.epfl.javelo.Preconditions;
 import javafx.scene.image.Image;
 /**
  * TileManager
@@ -43,11 +44,13 @@ public final  class TileManager {
             cacheDisque.toFile().mkdir();
         }
     }
+
+    /**
     public static void main(String[] args) throws IOException {
         String  a = "cache";
         TileManager ma = new TileManager(Path.of(a),"https://tile.openstreetmap.org/");
         ma.imageForTileAt(new TileId(19,271725,185422));
-    }
+    }**/
 
     /**
      * takes as argument the identity of a tile (of type TileId) and returns its image
@@ -55,8 +58,9 @@ public final  class TileManager {
      * @return
      */
     public Image imageForTileAt(TileId id) throws IOException {
+        Preconditions.checkArgument(TileId.isValid(id.zoom, id.x, id.y));
         Path dirPath = cacheDisque.resolve(String.valueOf(id.zoom))
-                                    .resolve(String.valueOf(id.x));
+                                  .resolve(String.valueOf(id.x));
         Path imagePath = dirPath.resolve(id.y+".png");
         //File zoomFile = new File(zoomPath);
         //File xPathFile = new File(xPath);
@@ -64,13 +68,16 @@ public final  class TileManager {
 
 
         if (cacheMemoire.containsKey(imagePath)) {
+            //System.out.println("from memory cache");
             return cacheMemoire.get(imagePath);
         } else if (Files.exists(imagePath)) {
+            //System.out.println("from disk cache");
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
             cacheMemoire.put(imagePath,image);
             return image;
         } else{
+            //System.out.println("from server");
             //creating directories/file that doesn't exist in cache disque
             /*
             if (!zoomFile.exists()) {
@@ -80,12 +87,11 @@ public final  class TileManager {
             }else if (!xPathFile.exists()) {
                 xPathFile.mkdirs();
                 imageNameFile.createNewFile();
-            } else if (!imageNameFile.exists()) {
-                imageNameFile.createNewFile();
-            }
-            */
-            Files.createDirectories(dirPath);
+            } else if (!imageFile.exists()) {
+                imageFile.createNewFile();
+            }*/
 
+            Files.createDirectories(dirPath);
             String urlString = "https://"+nameOfServer+"/"+id.zoom+"/"+id.x+"/"+id.y+".png";
             URL u = new URL(urlString);
             URLConnection c = u.openConnection();
@@ -93,6 +99,9 @@ public final  class TileManager {
 
             try (InputStream i = c.getInputStream(); OutputStream a = new FileOutputStream(imageFile);) {
                 i.transferTo(a);
+            }
+            catch (Exception e){
+                e.printStackTrace();
             }
 
             InputStream i = new FileInputStream(imageFile);
