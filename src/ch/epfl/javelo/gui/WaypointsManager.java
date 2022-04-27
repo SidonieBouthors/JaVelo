@@ -1,7 +1,10 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.Ch1903;
+import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.WebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
@@ -15,6 +18,7 @@ public final class WaypointsManager {
 
     private final static String firstSVGPathString = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
     private final static String secondSVGPathString = "M0-23A1 1 0 000-29 1 1 0 000-23";
+    private final String errorMessageNoRoad = "Aucune route à proximité !";
 
     private Graph roadNetwork;
     private ObjectProperty<MapViewParameters>fxProperty;
@@ -52,7 +56,12 @@ public final class WaypointsManager {
         firstSVG.setContent(firstSVGPathString);
         secondSVG.setContent(secondSVGPathString);
 
+        MapViewParameters map = fxProperty.get();
+        int zoomLevel = map.zoomLevel();
+
+
         for (int i =0; i<wayPoints.size();i++) {
+
             Waypoint waypoint = wayPoints.get(i);
             //initialize each group at the beggining of the boucle t'as capté chacal ?
             Group waypointGroup = new Group();
@@ -68,9 +77,17 @@ public final class WaypointsManager {
             waypointGroup.getChildren().addAll(firstSVG, secondSVG);
             //creating pointWebMercator for x and y coordinates
             PointWebMercator waypointWeb = PointWebMercator.ofPointCh(waypoint.position());
+            double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
+            double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
+            // finding parameters of the top left map
+            double topLeftX= map.topLeft().getX();
+            double topLeftY = map.topLeft().getY();
+
+            double realX = xAtZoomLevel-topLeftX;
+            double realY = yAtZoomLevel - topLeftY;
             //setting x and y of the group
-            waypointGroup.setLayoutX(waypointWeb.x());
-            waypointGroup.setLayoutX(waypointWeb.y());
+            waypointGroup.setLayoutX(realX);
+            waypointGroup.setLayoutX(realY);
             //setting pane children
             pane.getChildren().add(waypointGroup);
         }
@@ -82,4 +99,18 @@ public final class WaypointsManager {
      * @return
      */
     public Pane pane() {return pane;}
+
+    public void addWaypoint(int x, int y) {
+        double lon = WebMercator.lon(x);
+        double lat = WebMercator.lat(y);
+        double e = Ch1903.e(lon, lat);
+        double n = Ch1903.n(lon, lat);
+        int nodeId = roadNetwork.nodeClosestTo(new PointCh(e, n), 1000);
+        if ( nodeId == -1) {
+            errorSignal.accept(errorMessageNoRoad);
+        } else {
+            PointCh node = roadNetwork.nodePoint(nodeId);
+
+        }
+    }
 }
