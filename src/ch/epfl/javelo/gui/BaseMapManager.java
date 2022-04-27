@@ -1,11 +1,9 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
-import ch.epfl.javelo.Preconditions;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -14,7 +12,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 
 import java.io.IOException;
 
@@ -26,8 +23,9 @@ public final class BaseMapManager {
     private final WaypointsManager waypointManager;
     private final ObjectProperty<MapViewParameters> mapParameters;
     private boolean redrawNeeded;
-    private Canvas canvas;
-    private Pane pane;
+    private final Canvas canvas;
+    private final Pane pane;
+    private PointWebMercator lastMousePosition;
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointManager, ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
@@ -51,15 +49,14 @@ public final class BaseMapManager {
             public void handle(ScrollEvent event) {
                 MapViewParameters params = mapParameters.get();
                 double delta = event.getDeltaY()/10;
-                PointWebMercator mouseCursor = params.pointAt(event.getX(), event.getY());
-                //int oldZoom = ;
-                //double oldX = params.x();
-                //double oldY = params.y();
-                //mapParameters.set(new MapViewParameters(oldZoom, oldX - mouseX, oldY - mouseY));
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+                saveMousePosition(mouseX, mouseY);
 
                 int newZoom = Math2.clamp(8, (int)(params.zoomLevel() + delta), 19);
-                double newX = mouseCursor.xAtZoomLevel(newZoom) - event.getX();
-                double newY = mouseCursor.yAtZoomLevel(newZoom) - event.getY();
+                double newX = lastMousePosition.xAtZoomLevel(newZoom) - mouseX;
+                double newY = lastMousePosition.yAtZoomLevel(newZoom) - mouseY;
+
                 mapParameters.set(new MapViewParameters(newZoom, newX, newY));
             }
         });
@@ -67,26 +64,38 @@ public final class BaseMapManager {
         pane.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-
+                saveMousePosition(event.getX(), event.getY());
             }
         });
         pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                MapViewParameters params = mapParameters.get();
+                PointWebMercator newMousePosition = mapParameters.get().pointAt(event.getX(), event.getY());
+                int zoomLevel = params.zoomLevel();
 
+                double xTranslate = newMousePosition.xAtZoomLevel(zoomLevel) - lastMousePosition.xAtZoomLevel(zoomLevel);
+                double yTranslate = newMousePosition.yAtZoomLevel(zoomLevel) - lastMousePosition.yAtZoomLevel(zoomLevel);
+                //System.out.println("xTranslate : " + xTranslate);
+                //System.out.println("yTranslate : " + yTranslate);
+                double newX = params.topLeft().getX() - xTranslate;
+                double newY = params.topLeft().getY() - yTranslate;
+                mapParameters.set(params.withMinXY(newX, newY));
+
+                saveMousePosition(event.getX(),event.getY());
             }
         });
         pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-
+                saveMousePosition(event.getX(), event.getY());
             }
         });
 
         pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-
+                //waypointManager.addWaypoint(event.getX(), event.getY());
             }
         });
 
@@ -110,7 +119,7 @@ public final class BaseMapManager {
 
         if (!redrawNeeded) return;
         redrawNeeded = false;
-        System.out.println("Redraw...");
+        //System.out.println("Redraw...");
         GraphicsContext context = canvas.getGraphicsContext2D();
 
         double width = canvas.getWidth();
@@ -126,9 +135,9 @@ public final class BaseMapManager {
 
         double xShift = -(topLeft.getX() - TILE_SIZE * topLeftTileX);
 
-        System.out.println("Top Left : " + topLeftTileX + " " + topLeftTileY);
-        System.out.println("Bottom Right : " + bottomRightTileX + " " + bottomRightTileY);
-        System.out.println(zoom);
+        //System.out.println("Top Left : " + topLeftTileX + " " + topLeftTileY);
+        //System.out.println("Bottom Right : " + bottomRightTileX + " " + bottomRightTileY);
+        //System.out.println(zoom);
 
         for (int i = topLeftTileX; i < bottomRightTileX; i++) {
             double yShift = -(topLeft.getY() - TILE_SIZE * topLeftTileY);
@@ -151,5 +160,9 @@ public final class BaseMapManager {
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
+    }
+
+    private void saveMousePosition(double x, double y){
+        lastMousePosition = mapParameters.get().pointAt(x, y);
     }
 }
