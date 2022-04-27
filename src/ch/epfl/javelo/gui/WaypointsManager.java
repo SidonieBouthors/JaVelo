@@ -1,6 +1,7 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
@@ -17,8 +18,9 @@ public final class WaypointsManager {
 
     private Graph roadNetwork;
     private ObjectProperty<MapViewParameters>fxProperty;
-    ObservableList<Waypoint> wayPoints;
-    Consumer<String> errorSignal;
+    private ObservableList<Waypoint> wayPoints;
+    private Consumer<String> errorSignal;
+    private Pane pane;
 
     /**
      *
@@ -35,16 +37,9 @@ public final class WaypointsManager {
         this.fxProperty = fxProperty;
         this.wayPoints = wayPoints;
         this.errorSignal = errorSignal;
-    }
 
-    /**
-     *  retourne le panneau contenant les points de passage
-     * @return
-     */
-    public Pane pane() {
-        //Creating components
-        Pane pane = new Pane();
-        Group waypoint = new Group();
+        pane = new Pane();
+
         SVGPath firstSVG = new SVGPath();
         SVGPath secondSVG = new SVGPath();
 
@@ -52,23 +47,39 @@ public final class WaypointsManager {
         firstSVG.getStyleClass().add("pin_outside");
         secondSVG.getStyleClass().add("pin_inside");
 
-        //setting children
-        waypoint.getChildren().addAll(firstSVG, secondSVG);
 
         //set content of SVG Path
         firstSVG.setContent(firstSVGPathString);
         secondSVG.setContent(secondSVGPathString);
 
-        for (int i = 0; i<wayPoints.size(); i++) {
-
+        for (int i =0; i<wayPoints.size();i++) {
+            Waypoint waypoint = wayPoints.get(i);
+            //initialize each group at the beggining of the boucle t'as capté chacal ?
+            Group waypointGroup = new Group();
+            //setting style class first,middle and last waypoints
+            if (i == 0) {
+                waypointGroup.getStyleClass().add("first");
+            } else if (i == wayPoints.size() - 1) {
+                waypointGroup.getStyleClass().add("last");
+            } else{
+                waypointGroup.getStyleClass().add("middle");
+            }
+            //adding children the group
+            waypointGroup.getChildren().addAll(firstSVG, secondSVG);
+            //creating pointWebMercator for x and y coordinates
+            PointWebMercator waypointWeb = PointWebMercator.ofPointCh(waypoint.position());
+            //setting x and y of the group
+            waypointGroup.setLayoutX(waypointWeb.x());
+            waypointGroup.setLayoutX(waypointWeb.y());
+            //setting pane children
+            pane.getChildren().add(waypointGroup);
         }
 
-
-
-
-
-
-
-    return null;
     }
+
+    /**
+     *  retourne le panneau contenant les points de passage
+     * @return
+     */
+    public Pane pane() {return pane;}
 }
