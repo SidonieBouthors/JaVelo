@@ -11,8 +11,8 @@ public class FunctionsTest {
 
     public void testSample() {
 
-        DoubleUnaryOperator  a = Functions.sampled(new float [] {0, 4, 16},4);
-        assertEquals(9,a.applyAsDouble(3),10e-6);
+        DoubleUnaryOperator  a = Functions.sampled(new float [] {0, 4, 16,32,48},4);
+        assertEquals(4,a.applyAsDouble(0.5),10e-6);
 
     }
 }

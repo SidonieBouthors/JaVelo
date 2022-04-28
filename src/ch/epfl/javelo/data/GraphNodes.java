@@ -55,7 +55,9 @@ public record GraphNodes(IntBuffer buffer) {
      */
     public int outDegree(int nodeId){
         int index = OFFSET_OUT_EDGES + NODE_INTS * nodeId;
-        return Bits.extractUnsigned(buffer.get(index),28,4);
+        int startOutDegree = 28;
+        int lengthToExtract = 4;
+        return Bits.extractUnsigned(buffer.get(index),startOutDegree,lengthToExtract);
     }
 
     /**
@@ -67,6 +69,7 @@ public record GraphNodes(IntBuffer buffer) {
     public int edgeId(int nodeId, int edgeIndex){
        Preconditions.checkArgument(0 <= edgeIndex && edgeIndex < outDegree(nodeId));
        int index = OFFSET_OUT_EDGES + NODE_INTS * nodeId;
-       return Bits.extractUnsigned(buffer.get(index),0,28) + edgeIndex;
+       int lenghtToExtract = 28;
+       return Bits.extractUnsigned(buffer.get(index),OFFSET_E,lenghtToExtract) + edgeIndex;
     }
 }

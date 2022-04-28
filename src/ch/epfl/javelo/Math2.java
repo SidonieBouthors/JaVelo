@@ -58,7 +58,7 @@ public final class Math2 {
      * @return clamped v
      */
     public static double clamp(double min, double v, double max){
-        Preconditions.checkArgument(min<max);
+        Preconditions.checkArgument(min<=max);
         if (v > max) {
             return max;
         } else return Math.max(v, min);

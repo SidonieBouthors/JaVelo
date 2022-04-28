@@ -21,7 +21,7 @@ import java.util.function.DoubleUnaryOperator;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-public class Graph {
+public final class Graph {
 
     private final GraphNodes nodes;
     private final GraphSectors sectors;
@@ -43,6 +43,21 @@ public class Graph {
     }
 
     /**
+     *
+     * @param filePath
+     * @return ByteBuffer from the loaded file
+     * @throws IOException
+     */
+    private static ByteBuffer loadFromFile(Path filePath) throws IOException {
+        ByteBuffer fileBuffer;
+        try (FileChannel channel = FileChannel.open(filePath)) {
+            fileBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+        }
+        return fileBuffer;
+
+    }
+
+    /**
      * Returns the JaVelo graph obtained from the files in the given directory
      * @throws IOException if there is an input/output error (ex: expected file does not exist)
      * @param basePath  : path of the directory containing the files to load from
@@ -57,35 +72,17 @@ public class Graph {
         Path profileIdsPath = basePath.resolve("profile_ids.bin");
         Path elevationsPath =basePath.resolve("elevations.bin");
 
-        ByteBuffer edgesBuffer;
-        IntBuffer nodesBuffer;
-        ByteBuffer sectorBuffer;
+        ByteBuffer edgesBuffer = loadFromFile(edgesPath);
+        IntBuffer nodesBuffer = loadFromFile(nodesPath).asIntBuffer();
+        ByteBuffer sectorBuffer = loadFromFile(sectorPath);
+        LongBuffer attributeSetLong = loadFromFile(attributesPath).asLongBuffer();
         List<AttributeSet> attributeSetList = new ArrayList<>();
-        IntBuffer profilesIds;
-        ShortBuffer elevations;
+        for (int i = 0; i < attributeSetLong.capacity(); i++) {
+            attributeSetList.add( new AttributeSet( attributeSetLong.get(i) ) );
+        }
+        IntBuffer profilesIds = loadFromFile(profileIdsPath).asIntBuffer();
+        ShortBuffer elevations = loadFromFile(elevationsPath).asShortBuffer();
 
-        try (FileChannel channel = FileChannel.open(edgesPath)) {
-            edgesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        }
-        try (FileChannel channel = FileChannel.open(nodesPath)) {
-            nodesBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
-        }
-        try (FileChannel channel = FileChannel.open(sectorPath)) {
-            sectorBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-        }
-        try (FileChannel channel = FileChannel.open(attributesPath)) {
-            LongBuffer attributeSetLong = channel.map(FileChannel.MapMode.READ_ONLY, 0,
-                                                        channel.size()).asLongBuffer();
-            for (int i = 0; i < attributeSetLong.capacity(); i++) {
-                attributeSetList.add( new AttributeSet( attributeSetLong.get(i) ) );
-            }
-        }
-        try (FileChannel channel = FileChannel.open(elevationsPath)) {
-            elevations = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asShortBuffer();
-        }
-        try (FileChannel channel = FileChannel.open(profileIdsPath)) {
-            profilesIds = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size()).asIntBuffer();
-        }
         return new Graph(new GraphNodes(nodesBuffer),
                         new GraphSectors(sectorBuffer),
                         new GraphEdges(edgesBuffer,profilesIds,elevations),

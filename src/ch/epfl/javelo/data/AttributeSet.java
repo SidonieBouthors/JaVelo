@@ -29,7 +29,7 @@ public record AttributeSet(long bits) {
     public static AttributeSet of(Attribute... attributes){
         long attributeBits = 0L;
         for (Attribute attribute : attributes) {
-            attributeBits += (1L << attribute.ordinal());
+            attributeBits = attributeBits | (1L << attribute.ordinal());
         }
         return new AttributeSet(attributeBits);
     }

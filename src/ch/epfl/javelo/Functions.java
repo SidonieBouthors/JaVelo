@@ -58,8 +58,8 @@ public final class Functions {
             if (x == xMax){ return samples[maxIndex]; }
 
             double interval = xMax/(maxIndex);
-            int indexAbove = 0;
-            while (indexAbove * interval <= x) { indexAbove++; }
+
+            int indexAbove = (int)( x/interval) +1;
 
             double xUnder = (indexAbove - 1) * interval;
             return Math2.interpolate(samples[indexAbove-1],

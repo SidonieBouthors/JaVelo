@@ -27,6 +27,7 @@ public record PointWebMercator(double x, double y) {
     public PointWebMercator{
         Preconditions.checkArgument(0 <= x && x <= 1
                                             && 0 <= y && y <= 1);
+
     }
 
     /**
@@ -48,8 +49,8 @@ public record PointWebMercator(double x, double y) {
      */
     public static PointWebMercator ofPointCh(PointCh pointCh){
 
-        double x = WebMercator.x(Ch1903.lon(pointCh.e(), pointCh.n()));
-        double y = WebMercator.y(Ch1903.lat(pointCh.e(), pointCh.n()));
+        double x = WebMercator.x(pointCh.lon());
+        double y = WebMercator.y(pointCh.lat());
 
         return new PointWebMercator(x, y);
     }
