@@ -54,11 +54,15 @@ public final class ElevationProfileComputer {
         while ( Float.isNaN(samples[j]) && 0 <= j) { j--; }
         Arrays.fill(samples, j, nbOfSamples, samples[j]);
 
+        // Keeping track of which samples we still need to fill NaNs between
+        int beginFillIndex = i;
+        int endFillIndex = j + 1;
+
         // Filling the last Nan values
         int firstNaNIndex = -1;
         int nextCorrectIndex;
         boolean findNext = false;
-        for (int k = 0; k < nbOfSamples; k++) {
+        for (int k = beginFillIndex; k < endFillIndex; k++) {
             if (findNext && !Float.isNaN(samples[k])) {
 
                 nextCorrectIndex = k;

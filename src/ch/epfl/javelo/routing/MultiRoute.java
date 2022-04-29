@@ -14,7 +14,7 @@ import java.util.List;
  * @author François Théron (346077)
  */
 
-public class MultiRoute implements Route{
+public final class MultiRoute implements Route{
 
     private final List<Route> segments;
     private final double length;
@@ -31,28 +31,22 @@ public class MultiRoute implements Route{
 
         this.segments= List.copyOf(segments);
 
-        //calculate total length
-        double totalLength = 0;
-        for (Route route : segments) {
-            totalLength+=route.length();
-        }
-        this.length = totalLength;
+        //calculate segment positions, edge list and length of route altogether
 
-        //create edge list
         List<Edge> totalEdges = new ArrayList<>();
-        for (Route route : segments) {
+        segmentPositions = new double[segments.size() + 1];
+        segmentPositions[0] = 0;
+        double position = 0;
+
+        for (int i = 0; i < segments.size(); i++) {
+            Route route = segments.get(i);
+            position += route.length();
+            segmentPositions[i+1] = position;
             totalEdges.addAll(route.edges());
         }
-        this.edges = totalEdges;
 
-        //calculate segment positions
-        segmentPositions = new double[this.segments.size() + 1];
-        double position = 0;
-        segmentPositions[0] = 0;
-        for (int i = 1; i < this.segments.size() + 1; i++) {
-            position += this.segments.get(i-1).length();
-            segmentPositions[i] = position;
-        }
+        this.length = position;
+        this.edges = totalEdges;
     }
 
     /**

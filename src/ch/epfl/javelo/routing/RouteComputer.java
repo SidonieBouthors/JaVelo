@@ -12,7 +12,9 @@ import java.util.*;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-public class RouteComputer {
+public final class RouteComputer {
+
+    private static final float ALREADY_EXPLORED = Float.NEGATIVE_INFINITY;
 
     private final Graph graph;
     private final CostFunction costFunction;
@@ -57,7 +59,7 @@ public class RouteComputer {
             //get the closest node to explore
             do {
                 node = toExplore.remove();
-            } while (distance[node.nodeId] == Float.NEGATIVE_INFINITY);
+            } while (distance[node.nodeId] ==ALREADY_EXPLORED);
 
             //check if last node is reached
             if (node.nodeId == endNodeId) {
@@ -82,7 +84,7 @@ public class RouteComputer {
                 double minimalTotalDistance = distance[toNodeId] + distanceToEnd;
                 toExplore.add(new WeightedNode(toNodeId, (float) minimalTotalDistance));
             }
-            distance[node.nodeId] = Float.NEGATIVE_INFINITY;
+            distance[node.nodeId] = ALREADY_EXPLORED;
         }
 
         //if no route was found
@@ -90,6 +92,10 @@ public class RouteComputer {
             return null;
         }
 
+        return createRoute(startNodeId, endNodeId, predecessor);
+    }
+
+    private SingleRoute createRoute(int startNodeId , int endNodeId, int[] predecessor){
         //create the corresponding shortest route found
         List<Edge> edges = new ArrayList<>();
         int toNodeId = endNodeId;

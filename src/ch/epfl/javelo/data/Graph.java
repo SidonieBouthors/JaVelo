@@ -76,7 +76,7 @@ public final class Graph {
         IntBuffer nodesBuffer = loadFromFile(nodesPath).asIntBuffer();
         ByteBuffer sectorBuffer = loadFromFile(sectorPath);
         LongBuffer attributeSetLong = loadFromFile(attributesPath).asLongBuffer();
-        List<AttributeSet> attributeSetList = new ArrayList<>();
+        List<AttributeSet> attributeSetList = new ArrayList<>(attributeSetLong.capacity());
         for (int i = 0; i < attributeSetLong.capacity(); i++) {
             attributeSetList.add( new AttributeSet( attributeSetLong.get(i) ) );
         }
@@ -140,8 +140,7 @@ public final class Graph {
 
         for (GraphSectors.Sector sector : sectorsToSearch) {
             for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {
-                double squaredDistance = Math2.squaredNorm( nodes.nodeE(i) - point.e(),
-                                                            nodes.nodeN(i) - point.n());
+                double squaredDistance = point.squaredDistanceTo(nodePoint(i));
                 if (squaredDistance < squaredShortestDistance) {
                     squaredShortestDistance = squaredDistance;
                     indexWithShortestDistance = i;

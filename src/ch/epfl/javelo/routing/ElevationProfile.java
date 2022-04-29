@@ -13,13 +13,15 @@ import java.util.function.DoubleUnaryOperator;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-public class ElevationProfile {
+public final class ElevationProfile {
 
     private final double length;
-    private final float[] elevationSamples;
+    private final DoubleUnaryOperator elevationFunction;
     private  final DoubleSummaryStatistics sampleStats;
     private final double totalAscent;
     private final double totalDescent;
+
+
 
     /**
      * Builds the Elevation Profile  of an itinerary of length (in meters),
@@ -33,7 +35,8 @@ public class ElevationProfile {
         Preconditions.checkArgument(length > 0 && elevationSamples.length >= 2);
 
         this.length = length;
-        this.elevationSamples = elevationSamples.clone();
+        this.elevationFunction = Functions.sampled(elevationSamples, length);
+
 
         //Create statistics from which to get min and max
         this.sampleStats = new DoubleSummaryStatistics();
@@ -93,10 +96,6 @@ public class ElevationProfile {
      * @return altitude at position
      */
     public double elevationAt(double position){
-
-        Math2.clamp(0,position,length);
-        DoubleUnaryOperator elevationFunction = Functions.sampled(elevationSamples, length);
-
         return elevationFunction.applyAsDouble(position);
     }
 }

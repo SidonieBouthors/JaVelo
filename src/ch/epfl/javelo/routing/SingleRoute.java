@@ -41,11 +41,12 @@ public final class SingleRoute implements Route{
             this.edgePositions[i] = position;
         }
         //create list of points
-        this.points = new ArrayList<>();
-        this.points.add(edges.get(0).fromPoint());
+        ArrayList<PointCh> pointsList = new ArrayList<>();
+        pointsList.add(edges.get(0).fromPoint());
         for (Edge edge: edges){
-            this.points.add(edge.toPoint());
+            pointsList.add(edge.toPoint());
         }
+        this.points = List.copyOf(pointsList);
         //calculate length
         double length = 0;
         for(Edge edge:edges){
@@ -55,33 +56,33 @@ public final class SingleRoute implements Route{
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int indexOfSegmentAt(double position) { return 0; }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public double length() { return totalLength; }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public List<Edge> edges() {
-        return List.copyOf(edges);
+        return edges;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
-    public List<PointCh> points() { return List.copyOf(points); }
+    public List<PointCh> points() { return points; }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public PointCh pointAt(double position) {
@@ -102,7 +103,7 @@ public final class SingleRoute implements Route{
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public double elevationAt(double position) {
@@ -129,7 +130,7 @@ public final class SingleRoute implements Route{
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int nodeClosestTo(double position) {
@@ -158,7 +159,7 @@ public final class SingleRoute implements Route{
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public RoutePoint pointClosestTo(PointCh point) {
@@ -173,7 +174,7 @@ public final class SingleRoute implements Route{
             edge = edges.get(i);
             closestPosition = Math2.clamp(0, edge.positionClosestTo(point), edge.length());
             closestPoint = edge.pointAt(closestPosition);
-            distanceToPoint = Math2.norm(closestPoint.e() - point.e(), closestPoint.n() - point.n());
+            distanceToPoint = point.distanceTo(closestPoint);
             closestRoutePoint = closestRoutePoint.min(closestPoint,closestPosition + edgePositions[i], distanceToPoint);
         }
 
