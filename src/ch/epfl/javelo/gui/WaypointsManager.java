@@ -8,7 +8,9 @@ import ch.epfl.javelo.projection.WebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
@@ -25,6 +27,12 @@ public final class WaypointsManager {
     private ObservableList<Waypoint> wayPoints;
     private Consumer<String> errorSignal;
     private Pane pane;
+    private SVGPath firstSVG;
+    private SVGPath secondSVG;
+
+
+
+
 
     /**
      *
@@ -44,54 +52,106 @@ public final class WaypointsManager {
 
         pane = new Pane();
 
-        SVGPath firstSVG = new SVGPath();
-        SVGPath secondSVG = new SVGPath();
+
+
+
+
+        for (int i =0; i<wayPoints.size();i++) {
+
+            Waypoint waypoint = wayPoints.get(i);
+            //Creating waypoint group
+            Group waypointGroup = settingGroupsParameters();
+            //Setting coordinates
+            settingCoordinates(waypointGroup,waypoint.position());
+
+            System.out.println("Initial point "+waypoint.position());
+            //setting style class first,middle and last waypoints
+            if (i == 0) {
+                waypointGroup.getStyleClass().add("first");
+            } else if (i == wayPoints.size() - 1) {
+                waypointGroup.getStyleClass().add("last");
+            } else {
+                waypointGroup.getStyleClass().add("middle");
+            }
+            //adding children the group
+
+            //creating pointWebMercator for x and y coordinates
+
+            System.out.println("first svg:"+waypointGroup.getChildren().get(0));
+            System.out.println("second svg"+waypointGroup.getChildren().get(1));
+            //Avoiding events of the pins create problem with map events.
+            pane.setPickOnBounds(false);
+            pane.getChildren().add(waypointGroup);
+
+        }
+
+        for (int i = 0; i < pane.getChildren().size(); i++) {
+            System.out.println(i+": children x :"+pane.getChildren().get(i).getLayoutX());
+            System.out.println(i+": children y :"+pane.getChildren().get(i).getLayoutY());
+
+        }
+
+    }
+
+    private Group settingGroupsParameters() {
+        Group wayPointGroup = new Group();
+        wayPointGroup.getStyleClass().add("pin");
+        firstSVG = new SVGPath();
+        secondSVG = new SVGPath();
+
 
         //setting style for SVGPATH
         firstSVG.getStyleClass().add("pin_outside");
         secondSVG.getStyleClass().add("pin_inside");
 
 
+
         //set content of SVG Path
         firstSVG.setContent(firstSVGPathString);
         secondSVG.setContent(secondSVGPathString);
+        wayPointGroup.getChildren().addAll(firstSVG, secondSVG);
+
+        wayPointGroup.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+
+
+                double mouseX = event.getX();
+                double mouseY = event.getY();
+
+                wayPointGroup.setLayoutX(mouseX);
+                wayPointGroup.setLayoutY(mouseY);
+
+
+            }
+        });
+        wayPointGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                pane.getChildren().remove(wayPointGroup);
+
+            }
+        });
+        return wayPointGroup;
+    }
+
+    private void settingCoordinates(Group wayPointGroup, PointCh node) {
 
         MapViewParameters map = fxProperty.get();
         int zoomLevel = map.zoomLevel();
+        PointWebMercator waypointWeb = PointWebMercator.ofPointCh(node);
+        double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
+        double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
+        // finding parameters of the top left map
+        double topLeftX= map.topLeft().getX();
+        double topLeftY = map.topLeft().getY();
 
+        double realX = xAtZoomLevel-topLeftX;
+        double realY = yAtZoomLevel - topLeftY;
 
-        for (int i =0; i<wayPoints.size();i++) {
-
-            Waypoint waypoint = wayPoints.get(i);
-            //initialize each group at the beggining of the boucle t'as capté chacal ?
-            Group waypointGroup = new Group();
-            //setting style class first,middle and last waypoints
-            if (i == 0) {
-                waypointGroup.getStyleClass().add("first");
-            } else if (i == wayPoints.size() - 1) {
-                waypointGroup.getStyleClass().add("last");
-            } else{
-                waypointGroup.getStyleClass().add("middle");
-            }
-            //adding children the group
-            waypointGroup.getChildren().addAll(firstSVG, secondSVG);
-            //creating pointWebMercator for x and y coordinates
-            PointWebMercator waypointWeb = PointWebMercator.ofPointCh(waypoint.position());
-            double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
-            double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
-            // finding parameters of the top left map
-            double topLeftX= map.topLeft().getX();
-            double topLeftY = map.topLeft().getY();
-
-            double realX = xAtZoomLevel-topLeftX;
-            double realY = yAtZoomLevel - topLeftY;
-            //setting x and y of the group
-            waypointGroup.setLayoutX(realX);
-            waypointGroup.setLayoutX(realY);
-            //setting pane children
-            pane.getChildren().add(waypointGroup);
-        }
-
+        wayPointGroup.setLayoutX(realX);
+        wayPointGroup.setLayoutY(realY);
     }
 
     /**
@@ -110,6 +170,11 @@ public final class WaypointsManager {
             errorSignal.accept(errorMessageNoRoad);
         } else {
             PointCh node = roadNetwork.nodePoint(nodeId);
+            Group wayPointGroup = settingGroupsParameters();
+            settingCoordinates(wayPointGroup,node);
+            wayPointGroup.getStyleClass().add("middle");
+            wayPointGroup.getChildren().addAll(firstSVG, secondSVG);
+            pane.getChildren().add(wayPointGroup);
 
         }
     }
