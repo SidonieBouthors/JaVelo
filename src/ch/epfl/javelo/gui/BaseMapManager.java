@@ -61,42 +61,31 @@ public final class BaseMapManager {
             }
         });
 
-        pane.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                saveMousePosition(event.getX(), event.getY());
-            }
+        pane.setOnMousePressed( event -> {
+            saveMousePosition(event.getX(), event.getY());
         });
-        pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                MapViewParameters params = mapParameters.get();
-                PointWebMercator newMousePosition = mapParameters.get().pointAt(event.getX(), event.getY());
-                int zoomLevel = params.zoomLevel();
+        pane.setOnMouseDragged( event -> {
+            MapViewParameters params = mapParameters.get();
+            PointWebMercator newMousePosition = mapParameters.get().pointAt(event.getX(), event.getY());
+            int zoomLevel = params.zoomLevel();
 
-                double xTranslate = newMousePosition.xAtZoomLevel(zoomLevel) - lastMousePosition.xAtZoomLevel(zoomLevel);
-                double yTranslate = newMousePosition.yAtZoomLevel(zoomLevel) - lastMousePosition.yAtZoomLevel(zoomLevel);
-                //System.out.println("xTranslate : " + xTranslate);
-                //System.out.println("yTranslate : " + yTranslate);
-                double newX = params.topLeft().getX() - xTranslate;
-                double newY = params.topLeft().getY() - yTranslate;
-                mapParameters.set(params.withMinXY(newX, newY));
+            double xTranslate = newMousePosition.xAtZoomLevel(zoomLevel) - lastMousePosition.xAtZoomLevel(zoomLevel);
+            double yTranslate = newMousePosition.yAtZoomLevel(zoomLevel) - lastMousePosition.yAtZoomLevel(zoomLevel);
+            //System.out.println("xTranslate : " + xTranslate);
+            //System.out.println("yTranslate : " + yTranslate);
+            double newX = params.topLeft().getX() - xTranslate;
+            double newY = params.topLeft().getY() - yTranslate;
+            mapParameters.set(params.withMinXY(newX, newY));
 
-                saveMousePosition(event.getX(),event.getY());
-            }
+            saveMousePosition(event.getX(),event.getY());
         });
-        pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                saveMousePosition(event.getX(), event.getY());
-            }
+        pane.setOnMouseReleased( event ->  {
+            saveMousePosition(event.getX(), event.getY());
         });
 
-        pane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                //waypointManager.addWaypoint(event.getX(), event.getY());
-            }
+        pane.setOnMouseClicked( event -> {
+            if (event.isStillSincePress()){
+            waypointManager.addWaypoint(event.getX(), event.getY());}
         });
 
         canvas.widthProperty().addListener( w -> {

@@ -6,11 +6,11 @@ import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
@@ -19,9 +19,9 @@ import java.util.function.Consumer;
 
 public final class WaypointsManager {
 
-    private final static String firstSVGPathString = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
-    private final static String secondSVGPathString = "M0-23A1 1 0 000-29 1 1 0 000-23";
-    private final String errorMessageNoRoad = "Aucune route à proximité !";
+    private final static String FIRST_SVG_PATH_STRING = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
+    private final static String SECOND_SVG_PATH_STRING = "M0-23A1 1 0 000-29 1 1 0 000-23";
+    private final static String NO_ROAD_ERROR_MESSAGE = "Aucune route à proximité !";
 
     private Graph roadNetwork;
     private ObjectProperty<MapViewParameters> fxProperty;
