@@ -46,12 +46,12 @@ public final class WaypointsManager {
         this.roadNetwork = roadNetwork;
         this.fxProperty = fxProperty;
         this.wayPoints = wayPoints;
-        this.wayPointGroup = errorSignal;
+        this.errorSignal = errorSignal;
 
 
         pane = new Pane();
         settingWayPointsTab();
-        wayPoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
+        this.wayPoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
             settingWayPointsTab();
         });
         fxProperty.addListener( listen -> {
