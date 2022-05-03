@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
@@ -23,11 +24,11 @@ public final class WaypointsManager {
     private final static String SECOND_SVG_PATH_STRING = "M0-23A1 1 0 000-29 1 1 0 000-23";
     private final static String NO_ROAD_ERROR_MESSAGE = "Aucune route à proximité !";
 
-    private Graph roadNetwork;
-    private ObjectProperty<MapViewParameters> fxProperty;
-    private ObservableList<Waypoint> wayPoints;
-    private Consumer<String> wayPointGroup;
-    private Pane pane;
+    private final Graph roadNetwork;
+    private final ObjectProperty<MapViewParameters> fxProperty;
+    private final ObservableList<Waypoint> wayPoints;
+    private final Consumer<String> errorSignal;
+    private final Pane pane;
     private SVGPath firstSVG;
     private SVGPath secondSVG;
     private double lastMousePositionX, lastMousePositionY;
@@ -56,10 +57,6 @@ public final class WaypointsManager {
         fxProperty.addListener( listen -> {
             settingWayPointsTab();
         });
-
-
-
-
     }
 
     private void settingWayPointsTab() {
@@ -175,7 +172,7 @@ public final class WaypointsManager {
 
         int nodeId = roadNetwork.nodeClosestTo(a, 1000);
         if (nodeId == -1) {
-            wayPointGroup.accept(NO_ROAD_ERROR_MESSAGE);
+            errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
         } else {
             PointCh node = roadNetwork.nodePoint(nodeId);
             wayPoints.add(new Waypoint(node, nodeId));

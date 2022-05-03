@@ -4,6 +4,7 @@ import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
@@ -26,6 +27,7 @@ public final class BaseMapManager {
     private final Canvas canvas;
     private final Pane pane;
     private PointWebMercator lastMousePosition;
+    SimpleLongProperty minScrollTime = new SimpleLongProperty();
 
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointManager, ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
@@ -44,9 +46,12 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
 
-        pane.setOnScroll(new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(ScrollEvent event) {
+        pane.setOnScroll(event -> {
+                long currentTime = System.currentTimeMillis();
+                if (currentTime < minScrollTime.get()) return;
+                minScrollTime.set(currentTime + 250);
+                double zoomDelta = Math.signum(event.getDeltaY());
+
                 MapViewParameters params = mapParameters.get();
                 double delta = event.getDeltaY()/10;
                 double mouseX = event.getX();
@@ -58,7 +63,6 @@ public final class BaseMapManager {
                 double newY = lastMousePosition.yAtZoomLevel(newZoom) - mouseY;
 
                 mapParameters.set(new MapViewParameters(newZoom, newX, newY));
-            }
         });
 
         pane.setOnMousePressed( event -> {
