@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public final class RouteBean {
 
-    private final ObservableList<Waypoint> waypoints;
+    private static ObservableList<Waypoint> waypoints;
     private final DoubleProperty highlightedPosition;
 
     private final ObjectProperty<Route> route;
@@ -34,7 +34,7 @@ public final class RouteBean {
             new LinkedHashMap<Pair<Integer,Integer>, Route>() {
                 protected boolean removeEldestEntry(Map.Entry<Pair<Integer,Integer>, Route> eldest)
                     {
-                    return size() > cacheMemoireSize;
+                    return cacheMemoire.size() > cacheMemoireSize;
                 }
             };
 
@@ -49,13 +49,19 @@ public final class RouteBean {
 
         int minimalSize = 2;
         waypoints = FXCollections.observableArrayList();
-        waypoints.addListener((InvalidationListener) o -> {
+        waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
+
+
             if (waypoints.size() < minimalSize) {
+                System.out.println("Listener put road to null");
+
                 route.set(null);
                 elevationProfile.set(null);
+            }else {
+                routeComputer();
+                elevationProfileComputer();
+
             }
-            routeComputer();
-            elevationProfileComputer();
 
         });
     }
@@ -63,20 +69,27 @@ public final class RouteBean {
     private void routeComputer() {
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
-        for (int i = 0; i < waypoints.size() - 1; i++) {
+
+        for (int i = 0; i < waypoints.size()-1; i++) {
             int startNodeId = waypoints.get(i).closestNodeId();
             int endNodeId = waypoints.get(i + 1).closestNodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
+            System.out.println(routePair);
+
 
             //
-            if (cacheMemoire.containsKey(routePair)) {
+            if (cacheMemoire.containsKey(routePair) ) {
+                System.out.println("the key is :" + cacheMemoire.get(routePair));
                 miniRoute = cacheMemoire.get(routePair);
-            } else{
+                routeList.add(miniRoute);
+            } else if (startNodeId != endNodeId){
+
                 miniRoute = computer.bestRouteBetween(startNodeId, endNodeId);
                 if (miniRoute != null) {
                     cacheMemoire.put(routePair, miniRoute);
                     routeList.add(miniRoute);
                 } else {
+                    System.out.println("road was null in routecomputer");
                     elevationProfile.set(null);
                     route.set(null);
                 }
@@ -87,8 +100,10 @@ public final class RouteBean {
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
         } else {
+            System.out.println("routeList was empty in route computer");
             route.set(null);
         }
+        System.out.println(routeList);
     }
     private void elevationProfileComputer() {
         if (route.get() == null) {
@@ -131,7 +146,7 @@ public final class RouteBean {
         return route;
     }
 
-    public ObservableList<Waypoint> getWaypoints() {
+    public static ObservableList<Waypoint> getWaypoints() {
         return waypoints;
     }
 }

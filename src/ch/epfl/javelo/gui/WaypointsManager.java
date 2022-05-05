@@ -40,12 +40,12 @@ public final class WaypointsManager {
      * @param errorSignal
      */
     public WaypointsManager(Graph roadNetwork, ObjectProperty<MapViewParameters> fxProperty,
-                            ObservableList<Waypoint> wayPoints,
+
                             Consumer<String> errorSignal) {
 
         this.roadNetwork = roadNetwork;
         this.fxProperty = fxProperty;
-        this.wayPoints = wayPoints;
+        this.wayPoints = RouteBean.getWaypoints();
         this.errorSignal = errorSignal;
 
 
@@ -55,6 +55,7 @@ public final class WaypointsManager {
             settingWayPointsTab();
         });
         fxProperty.addListener( listen -> {
+
             settingWayPointsTab();
         });
     }
