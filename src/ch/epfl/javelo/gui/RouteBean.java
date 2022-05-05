@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public final class RouteBean {
 
-    private static ObservableList<Waypoint> waypoints;
+    private final ObservableList<Waypoint> waypoints;
     private final DoubleProperty highlightedPosition;
 
     private final ObjectProperty<Route> route;
@@ -142,7 +142,7 @@ public final class RouteBean {
         return route;
     }
 
-    public static ObservableList<Waypoint> getWaypoints() {
+    public ObservableList<Waypoint> getWaypoints() {
         return waypoints;
     }
 }

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 public final class RouteManager {
 
+    private static final String ERROR_POINT_PRESENT = "Un point de passage est déjà present à cet endroit !";
     private final RouteBean routeBean;
     private final ObjectProperty<MapViewParameters> mapProperty;
     private final Consumer<String> errorSignal;
@@ -83,9 +84,15 @@ public final class RouteManager {
             PointCh pointCh = pointWebMercator.toPointCh();
             double position = routeBean.highlightedPosition();
 
+            ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
+
+            for (Waypoint waypoint:waypoints){
+                if (waypoint.position().distanceTo(pointCh) == 0){
+                    errorSignal.accept(ERROR_POINT_PRESENT);
+                }
+            }
             Waypoint waypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
 
-            ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
             waypoints.add(route.indexOfSegmentAt(position)+1, waypoint);
         });
     }
