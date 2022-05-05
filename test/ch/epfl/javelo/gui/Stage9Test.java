@@ -48,6 +48,7 @@ public final class Stage9Test extends Application {
         WaypointsManager waypointsManager =
                 new WaypointsManager(graph,
                         mapViewParametersP,
+                        waypoints,
                         errorConsumer);
         BaseMapManager baseMapManager =
                 new BaseMapManager(tileManager,

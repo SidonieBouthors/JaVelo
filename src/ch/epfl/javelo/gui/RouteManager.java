@@ -5,6 +5,7 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.routing.Route;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
@@ -19,8 +20,8 @@ public final class RouteManager {
     private final ObjectProperty<MapViewParameters> mapProperty;
     private final Consumer<String> errorSignal;
     private final Pane pane;
-    private Polyline routeLine;
-    private Circle highlightDisc;
+    private final Polyline routeLine;
+    private final Circle highlightDisc;
 
     RouteManager (RouteBean routeBean, ObjectProperty<MapViewParameters> mapProperty, Consumer<String> errorSignal){
         this.routeBean = routeBean;
@@ -41,15 +42,14 @@ public final class RouteManager {
         PointWebMercator highlightPoint = PointWebMercator.ofPointCh(
                 routeBean.routeProperty().get().pointAt(routeBean.highlightedPosition()));
 
-        this.highlightDisc = new Circle(params.viewX(highlightPoint),
-                                        params.viewY(highlightPoint),
-                                  5);
+        this.highlightDisc = new Circle(5);
 
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
 
         installHandlers();
         installListeners();
+        repositionRouteLine();
     }
 
     public Pane pane(){
@@ -78,15 +78,15 @@ public final class RouteManager {
             MapViewParameters params = mapProperty.get();
             Route route = routeBean.routeProperty().get();
 
-            PointWebMercator pointWebMercator = params.pointAt(event.getX(), event.getY());
+            Point2D point = highlightDisc.localToParent(event.getX(), event.getY());
+            PointWebMercator pointWebMercator = params.pointAt(point.getX(), point.getY());
             PointCh pointCh = pointWebMercator.toPointCh();
             double position = routeBean.highlightedPosition();
 
-            Waypoint waypoint = new Waypoint(pointCh,
-                                             route.nodeClosestTo(position));
+            Waypoint waypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
 
             ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
-            waypoints.add(waypoints.size()-1, waypoint);
+            waypoints.add(route.indexOfSegmentAt(position)+1, waypoint);
         });
     }
 
@@ -135,7 +135,8 @@ public final class RouteManager {
     private void repositionHighlightCircle(){
         Route route = routeBean.routeProperty().get();
         MapViewParameters params = mapProperty.get();
-        routeLine.setVisible(route != null);
+        highlightDisc.setVisible(route != null);
+        System.out.println(highlightDisc.isVisible());
         if (route != null) {
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
@@ -143,6 +144,7 @@ public final class RouteManager {
                             routeBean.highlightedPosition()));
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
+            System.out.println(highlightDisc.getLayoutX() + "  " + highlightDisc.getLayoutY());
         }
     }
 }

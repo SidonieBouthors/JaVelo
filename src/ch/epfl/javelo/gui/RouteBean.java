@@ -45,12 +45,11 @@ public final class RouteBean {
         this.computer = computer;
 
         //test
-        highlightedPosition.set(7000);
+        highlightedPosition.set(5000);
 
         int minimalSize = 2;
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
-
 
             if (waypoints.size() < minimalSize) {
                 System.out.println("Listener put road to null");
@@ -60,9 +59,7 @@ public final class RouteBean {
             }else {
                 routeComputer();
                 elevationProfileComputer();
-
             }
-
         });
     }
 
@@ -75,7 +72,6 @@ public final class RouteBean {
             int endNodeId = waypoints.get(i + 1).closestNodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
             System.out.println(routePair);
-
 
             //
             if (cacheMemoire.containsKey(routePair) ) {

@@ -26,7 +26,7 @@ public final class WaypointsManager {
 
     private final Graph roadNetwork;
     private final ObjectProperty<MapViewParameters> fxProperty;
-    private final ObservableList<Waypoint> wayPoints;
+    private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorSignal;
     private final Pane pane;
     private SVGPath firstSVG;
@@ -36,41 +36,38 @@ public final class WaypointsManager {
     /**
      * @param roadNetwork
      * @param fxProperty
-     * @param wayPoints
+     * @param waypoints
      * @param errorSignal
      */
-    public WaypointsManager(Graph roadNetwork, ObjectProperty<MapViewParameters> fxProperty,
-
+    public WaypointsManager(Graph roadNetwork, ObjectProperty<MapViewParameters> fxProperty, ObservableList<Waypoint> waypoints,
                             Consumer<String> errorSignal) {
 
         this.roadNetwork = roadNetwork;
         this.fxProperty = fxProperty;
-        this.wayPoints = RouteBean.getWaypoints();
+        this.waypoints = waypoints;
         this.errorSignal = errorSignal;
 
 
         pane = new Pane();
         settingWayPointsTab();
-        this.wayPoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
+        waypoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
+            System.out.println("redraw");
             settingWayPointsTab();
         });
         fxProperty.addListener( listen -> {
-
             settingWayPointsTab();
         });
     }
 
     private void settingWayPointsTab() {
         pane.getChildren().clear();
-        for (int i = 0; i < wayPoints.size(); i++) {
+        for (int i = 0; i < waypoints.size(); i++) {
             int index = i;
 
-            Waypoint waypoint = wayPoints.get(i);
+            Waypoint waypoint = waypoints.get(i);
             //Creating waypoint group
 
             //Setting coordinates
-
-
             //setting style class first,middle and last waypoints
             //adding children the group
             Group wayPointGroup = new Group();
@@ -80,7 +77,7 @@ public final class WaypointsManager {
 
             if (i==0) {
                 wayPointGroup.getStyleClass().add("first");
-            } else if (i == wayPoints.size()-1) {
+            } else if (i == waypoints.size()-1) {
                 wayPointGroup.getStyleClass().add("last");
             } else {
                 wayPointGroup.getStyleClass().add("middle");
@@ -118,7 +115,7 @@ public final class WaypointsManager {
 
             wayPointGroup.setOnMouseClicked(event -> {
                 if (event.isStillSincePress()) {
-                    wayPoints.remove(index);
+                    waypoints.remove(index);
                 }
             });
 
@@ -167,27 +164,24 @@ public final class WaypointsManager {
     }
 
     public void addWaypoint(double x, double y) {
+        PointCh point = fxProperty.get().pointAt(x,y).toPointCh();
 
-
-        PointCh a = fxProperty.get().pointAt(x,y).toPointCh();
-
-        int nodeId = roadNetwork.nodeClosestTo(a, 1000);
+        int nodeId = roadNetwork.nodeClosestTo(point, 1000);
         if (nodeId == -1) {
             errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
         } else {
-            PointCh node = roadNetwork.nodePoint(nodeId);
-            wayPoints.add(new Waypoint(node, nodeId));
+            waypoints.add(new Waypoint(point, nodeId));
         }
     }
     private void addWaypoint(Waypoint waypoint, double x, double y){
-        int oldSize = wayPoints.size();
+        int oldSize = waypoints.size();
         addWaypoint(x,y);
 
-        if (wayPoints.size() != oldSize) {
-            int index = wayPoints.indexOf(waypoint);
+        if (waypoints.size() != oldSize) {
+            int index = waypoints.indexOf(waypoint);
 
-            wayPoints.set(index,wayPoints.get(wayPoints.size()-1));
-            wayPoints.remove(wayPoints.size()-1);
+            waypoints.set(index,waypoints.get(waypoints.size()-1));
+            waypoints.remove(waypoints.size()-1);
         }
     }
 }
