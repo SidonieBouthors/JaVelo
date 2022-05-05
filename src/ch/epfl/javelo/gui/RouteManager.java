@@ -87,13 +87,14 @@ public final class RouteManager {
             ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
 
             for (Waypoint waypoint:waypoints){
-                if (waypoint.position().distanceTo(pointCh) == 0){
+                if (route.nodeClosestTo(position) == waypoint.closestNodeId()){
                     errorSignal.accept(ERROR_POINT_PRESENT);
+                    return;
                 }
             }
-            Waypoint waypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
+            Waypoint newWaypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
+            waypoints.add(route.indexOfSegmentAt(position)+1, newWaypoint);
 
-            waypoints.add(route.indexOfSegmentAt(position)+1, waypoint);
         });
     }
 
