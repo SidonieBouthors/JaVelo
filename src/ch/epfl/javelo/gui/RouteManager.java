@@ -2,10 +2,9 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.WebMercator;
 import ch.epfl.javelo.routing.Route;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
+import javafx.collections.ObservableList;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
@@ -20,18 +19,19 @@ public final class RouteManager {
     private final ObjectProperty<MapViewParameters> mapProperty;
     private final Consumer<String> errorSignal;
     private final Pane pane;
+    private Polyline routeLine;
+    private Circle highlightDisc;
 
     RouteManager (RouteBean routeBean, ObjectProperty<MapViewParameters> mapProperty, Consumer<String> errorSignal){
         this.routeBean = routeBean;
         this.mapProperty = mapProperty;
         this.errorSignal = errorSignal;
         this.pane = new Pane();
+
         pane.setPickOnBounds(false);
-        pane.setPrefSize(600, 300);
         MapViewParameters params = mapProperty.get();
 
-
-        Polyline routeLine = new Polyline();
+        this.routeLine = new Polyline();
         routeLine.setLayoutX( - params.topLeft().getX());
         routeLine.setLayoutY( - params.topLeft().getY());
         routeLine.getPoints().setAll(points());
@@ -40,36 +40,16 @@ public final class RouteManager {
 
         PointWebMercator highlightPoint = PointWebMercator.ofPointCh(
                 routeBean.routeProperty().get().pointAt(routeBean.highlightedPosition()));
-        Circle highlightDisc = new Circle(params.viewX(highlightPoint),
-                                          params.viewY(highlightPoint),
-                                    5);
+
+        this.highlightDisc = new Circle(params.viewX(highlightPoint),
+                                        params.viewY(highlightPoint),
+                                  5);
+
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
 
-        /*
-        highlightDisc.setOnMouseClicked( event -> {
-
-        });*/
-
-        routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
-            if (routeBean.routeProperty() == null) {
-
-            }
-        });
-        routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
-            //reconstruire totalement et/ou rendre (in)visible la polyligne
-        });
-        mapProperty.addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
-            // SI LE ZOOM CHANGE
-            //reconstruire totalement et/ou rendre (in)visible la polyligne
-            // SI LA CARTE EST GLISSE MAIS LE ZOOM NE CHANGE PAS
-            // repositionner - sans la reconstruire - la polyligne représentant l'itinéraire
-        });
-
-
+        installHandlers();
+        installListeners();
     }
 
     public Pane pane(){
@@ -88,7 +68,81 @@ public final class RouteManager {
             points.add(point.xAtZoomLevel(params.zoomLevel()));
             points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
-        System.out.println("points calculated");
+
         return points;
+    }
+
+
+    private void installHandlers() {
+        highlightDisc.setOnMouseClicked( event -> {
+            MapViewParameters params = mapProperty.get();
+            Route route = routeBean.routeProperty().get();
+
+            PointWebMercator pointWebMercator = params.pointAt(event.getX(), event.getY());
+            PointCh pointCh = pointWebMercator.toPointCh();
+            double position = routeBean.highlightedPosition();
+
+            Waypoint waypoint = new Waypoint(pointCh,
+                                             route.nodeClosestTo(position));
+
+            ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
+            waypoints.add(waypoints.size()-1, waypoint);
+        });
+    }
+
+    private void installListeners(){
+        routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
+            //positionner et/ou rendre (in)visible le disque
+            repositionHighlightCircle();
+        });
+        routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
+            //positionner et/ou rendre (in)visible le disque
+            //reconstruire totalement et/ou rendre (in)visible la polyligne
+            rebuildRouteLine();
+        });
+        mapProperty.addListener( (p, oldValue, newValue) -> {
+            //positionner et/ou rendre (in)visible le disque
+            // SI LE ZOOM CHANGE
+            //reconstruire totalement et/ou rendre (in)visible la polyligne
+            if (oldValue.zoomLevel() != newValue.zoomLevel()) {
+                rebuildRouteLine();
+            }
+            // SI LA CARTE EST GLISSE MAIS LE ZOOM NE CHANGE PAS
+            // repositionner - sans la reconstruire - la polyligne représentant l'itinéraire
+            else {
+                repositionRouteLine();
+            }
+        });
+    }
+
+    private void repositionRouteLine(){
+        MapViewParameters params = mapProperty.get();
+        routeLine.setLayoutX( - params.topLeft().getX());
+        routeLine.setLayoutY( - params.topLeft().getY());
+        repositionHighlightCircle();
+    }
+
+    private void rebuildRouteLine(){
+        Route route = routeBean.routeProperty().get();
+        routeLine.setVisible(route != null);
+        if (route != null){
+            repositionRouteLine();
+            routeLine.getPoints().setAll(points());
+        }
+        repositionHighlightCircle();
+    }
+
+    private void repositionHighlightCircle(){
+        Route route = routeBean.routeProperty().get();
+        MapViewParameters params = mapProperty.get();
+        routeLine.setVisible(route != null);
+        if (route != null) {
+            PointWebMercator highlightPoint =
+                    PointWebMercator.ofPointCh(
+                        routeBean.routeProperty().get().pointAt(
+                            routeBean.highlightedPosition()));
+            highlightDisc.setLayoutX(params.viewX(highlightPoint));
+            highlightDisc.setLayoutY(params.viewY(highlightPoint));
+        }
     }
 }

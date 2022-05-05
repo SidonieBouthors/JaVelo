@@ -84,9 +84,17 @@ public final class RouteBean {
             }
 
         }
-        route.set(new MultiRoute(routeList));
+        if (!routeList.isEmpty()) {
+            route.set(new MultiRoute(routeList));
+        } else {
+            route.set(null);
+        }
     }
     private void elevationProfileComputer() {
+        if (route.get() == null) {
+            elevationProfile.set(null);
+            return;
+        }
         int maxStepLength = 5;
         ElevationProfileComputer.elevationProfile(route.get(),5);
     }
