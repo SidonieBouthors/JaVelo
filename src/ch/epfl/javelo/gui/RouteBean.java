@@ -21,12 +21,12 @@ import java.util.Map;
  */
 public final class RouteBean {
 
-    private ObservableList<Waypoint> waypoints;
-    private DoubleProperty highlightedPosition;
+    private final ObservableList<Waypoint> waypoints;
+    private final DoubleProperty highlightedPosition;
 
-    private ObjectProperty<Route> route;
-    private ObjectProperty<ElevationProfile> elevationProfile;
-    private RouteComputer computer;
+    private final ObjectProperty<Route> route;
+    private final ObjectProperty<ElevationProfile> elevationProfile;
+    private final RouteComputer computer;
     private final int cacheMemoireSize = 50;
 
 
@@ -39,8 +39,14 @@ public final class RouteBean {
             };
 
     public RouteBean(RouteComputer computer) {
-        route = new SimpleObjectProperty<Route>();
-        highlightedPosition = new SimpleDoubleProperty();
+        this.route = new SimpleObjectProperty<Route>();
+        this.highlightedPosition = new SimpleDoubleProperty();
+        this.elevationProfile = new SimpleObjectProperty();
+        this.computer = computer;
+
+        //test
+        highlightedPosition.set(7000);
+
         int minimalSize = 2;
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((InvalidationListener) o -> {
@@ -57,9 +63,9 @@ public final class RouteBean {
     private void routeComputer() {
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
-        for (int i = 0; i < waypoints.size(); i++) {
+        for (int i = 0; i < waypoints.size() - 1; i++) {
             int startNodeId = waypoints.get(i).closestNodeId();
-            int endNodeId = waypoints.get(i).closestNodeId();
+            int endNodeId = waypoints.get(i + 1).closestNodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
 
             //

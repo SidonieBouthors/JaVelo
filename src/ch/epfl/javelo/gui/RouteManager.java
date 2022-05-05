@@ -27,25 +27,29 @@ public final class RouteManager {
         this.errorSignal = errorSignal;
         this.pane = new Pane();
         pane.setPickOnBounds(false);
-
+        pane.setPrefSize(600, 300);
         MapViewParameters params = mapProperty.get();
 
+
         Polyline routeLine = new Polyline();
-        routeLine.setLayoutX(params.topLeft().getX());
-        routeLine.setLayoutY(params.topLeft().getY());
+        routeLine.setLayoutX( - params.topLeft().getX());
+        routeLine.setLayoutY( - params.topLeft().getY());
         routeLine.getPoints().setAll(points());
-
         routeLine.setId("route");
-
-        Circle highlightDisc = new Circle(5);
-        highlightDisc.setId("highlight");
-
         pane.getChildren().add(routeLine);
+
+        PointWebMercator highlightPoint = PointWebMercator.ofPointCh(
+                routeBean.routeProperty().get().pointAt(routeBean.highlightedPosition()));
+        Circle highlightDisc = new Circle(params.viewX(highlightPoint),
+                                          params.viewY(highlightPoint),
+                                    5);
+        highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
 
+        /*
         highlightDisc.setOnMouseClicked( event -> {
 
-        });
+        });*/
 
         routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
             //positionner et/ou rendre (in)visible le disque
@@ -84,6 +88,7 @@ public final class RouteManager {
             points.add(point.xAtZoomLevel(params.zoomLevel()));
             points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
+        System.out.println("points calculated");
         return points;
     }
 }
