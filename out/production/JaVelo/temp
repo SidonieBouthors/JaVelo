@@ -1,0 +1,119 @@
+        double bottomLeftEastDistance = (int)Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+        System.out.println("bottom left east : " +bottomLeftEastDistance);
+        double bottomLeftNorthDistance = (int)Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+        System.out.println("bottom left north : " +bottomLeftNorthDistance);
+        double topRightEastDistance = (int)Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+        System.out.println("top right east : " +topRightEastDistance);
+        double topRightNorthDistance = (int)Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+        System.out.println("top right north : " +topRightNorthDistance);
+
+        int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * GRID_DIMENSIONS;
+        System.out.println("index bottom left : "+indexBottomLeft);
+        int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
+        System.out.println("coteHeight : "+coteHeight);
+        int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
+        System.out.println("coteWidth : " + coteWidth);
+*********************************************************
+        double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("bottom left east : " +bottomLeftEastDistance);
+        double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("bottom left north : " +bottomLeftNorthDistance);
+        double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        System.out.println("top right east : " +topRightEastDistance);
+        double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        System.out.println("top right north : " +topRightNorthDistance);
+
+        int indexBottomLeft = (int)(bottomLeftEastDistance/SECTOR_WIDTH) + (int)(bottomLeftNorthDistance/SECTOR_HEIGHT) * GRID_DIMENSIONS;
+        System.out.println("bottom left east distance / sectorwidth :"+bottomLeftEastDistance/SECTOR_WIDTH);
+        System.out.println("bottom left north distance / sectorheight :"+(bottomLeftNorthDistance/SECTOR_HEIGHT));
+        System.out.println("index bottom left : "+indexBottomLeft);
+        int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/SECTOR_HEIGHT);
+        System.out.println("coteHeight : "+coteHeight);
+        int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/SECTOR_WIDTH);
+        System.out.println("coteWidth : " + coteWidth);
+
+*******************************************
+
+
+        double bottomLeftEastDistance = Math2.clamp(0, center.e() - distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        double bottomLeftNorthDistance = Math2.clamp(0, center.n() - distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+        double topRightEastDistance = Math2.clamp(0, center.e() + distance - SwissBounds.MIN_E, SwissBounds.WIDTH);
+        double topRightNorthDistance = Math2.clamp(0, center.n() + distance - SwissBounds.MIN_N, SwissBounds.HEIGHT);
+
+        int indexBottomLeft = (int)(bottomLeftEastDistance/(double)SECTOR_WIDTH)
+                            + (int)(bottomLeftNorthDistance/(double)SECTOR_HEIGHT) * GRID_DIMENSIONS;
+
+        int coteHeight = (int)Math.ceil((topRightNorthDistance-bottomLeftNorthDistance)/(double)SECTOR_HEIGHT);
+        int coteWidth = (int)Math.ceil((topRightEastDistance-bottomLeftEastDistance)/(double)SECTOR_WIDTH);
+
+******************************************************
+
+                double bottomLeftEastDistance = Math2.clamp(0, (center.e() - distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+                System.out.println("bottom left east : " +bottomLeftEastDistance);
+                double bottomLeftNorthDistance = Math2.clamp(0, (center.n() - distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+                System.out.println("bottom left north : " +bottomLeftNorthDistance);
+                System.out.println(center.n() - distance - SwissBounds.MIN_N);
+                double topRightEastDistance = Math2.clamp(0, (center.e() + distance - SwissBounds.MIN_E)/SECTOR_WIDTH, GRID_DIMENSIONS-1);
+                System.out.println("top right east : " +topRightEastDistance);
+                double topRightNorthDistance = Math2.clamp(0, (center.n() + distance - SwissBounds.MIN_N)/SECTOR_HEIGHT, GRID_DIMENSIONS-1);
+                System.out.println("top right north : " +topRightNorthDistance);
+
+                int indexBottomLeft = (int)bottomLeftEastDistance + (int)bottomLeftNorthDistance * GRID_DIMENSIONS;
+                System.out.println("index bottom left : "+indexBottomLeft);
+                int coteHeight = (int)Math.ceil(topRightNorthDistance-bottomLeftNorthDistance);
+                System.out.println("coteHeight : "+coteHeight);
+                int coteWidth = (int)Math.ceil(topRightEastDistance-bottomLeftEastDistance);
+                System.out.println("coteWidth : " + coteWidth);
+
+****************************************************************************************************************
+
+                    \\\\\\\\\ROUTE COMPUTER/////////
+
+//create list of nodes of the route
+
+        /*List<Integer> nodes = new ArrayList<>();
+        nodes.add(nodeID);
+
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(0,nodeID);
+        }*/
+
+
+        /*List<Integer> nodes = new ArrayList<>(List.of(new Integer[]{nodeID}));
+        while (nodeID != startNodeId) {
+            nodeID = predecessor[nodeID];
+            nodes.add(nodeID);
+
+        }
+        Collections.reverse(nodes);*/
+
+        //create list of edges of the route
+        //LinkedList<Edge> edges = new LinkedList<>();
+
+                int toNodeId = nodeID;
+                int fromNodeId=nodeID;
+
+                while (fromNodeId != startNodeId) {
+                    toNodeId = fromNodeId;
+                    fromNodeId = predecessor[toNodeId];
+                    for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                        int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                        if (graph.edgeTargetNodeId(edgeId) == toNodeId) {
+                            Edge edge = Edge.of(graph, edgeId, fromNodeId, toNodeId);
+                            edges.addFirst(edge);
+                            break;
+                        }
+                    }
+                }
+    /*for (int i = 0; i < nodes.size() - 1; i++) {
+                int fromNodeId = nodes.get(i);
+                int toNodeId = nodes.get(i+1);
+                for (int j = 0; j < graph.nodeOutDegree(fromNodeId); j++) {
+                    int edgeId = graph.nodeOutEdgeId(fromNodeId, j);
+                    if (graph.edgeTargetNodeId(edgeId) == toNodeId){
+                        edges.add(Edge.of(graph, edgeId, fromNodeId, toNodeId));
+                        break;
+                    }
+                }
+            }*/
