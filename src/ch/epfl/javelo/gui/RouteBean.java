@@ -1,9 +1,9 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -39,18 +39,19 @@ public final class RouteBean {
             };
 
     public RouteBean(RouteComputer computer) {
+        route = new SimpleObjectProperty<Route>();
+        highlightedPosition = new SimpleDoubleProperty();
         int minimalSize = 2;
-        waypoints.addListener((ListChangeListener<? super Waypoint>)  listener ->
-                {
-                    if (waypoints.size() < minimalSize) {
-                        route.set(null);
-                        elevationProfile.set(null);
-                    }
-                    routeComputer();
-                    elevationProfileComputer();
+        waypoints = FXCollections.observableArrayList();
+        waypoints.addListener((InvalidationListener) o -> {
+            if (waypoints.size() < minimalSize) {
+                route.set(null);
+                elevationProfile.set(null);
+            }
+            routeComputer();
+            elevationProfileComputer();
 
-                }
-        );
+        });
     }
 
     private void routeComputer() {

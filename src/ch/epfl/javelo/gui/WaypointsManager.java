@@ -187,7 +187,6 @@ public final class WaypointsManager {
 
             wayPoints.set(index,wayPoints.get(wayPoints.size()-1));
             wayPoints.remove(wayPoints.size()-1);
-
         }
     }
 }

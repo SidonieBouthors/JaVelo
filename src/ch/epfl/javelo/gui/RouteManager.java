@@ -1,9 +1,11 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
+import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.projection.WebMercator;
 import ch.epfl.javelo.routing.Route;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
@@ -29,9 +31,10 @@ public final class RouteManager {
         MapViewParameters params = mapProperty.get();
 
         Polyline routeLine = new Polyline();
-        routeLine.getPoints().setAll(points());
         routeLine.setLayoutX(params.topLeft().getX());
         routeLine.setLayoutY(params.topLeft().getY());
+        routeLine.getPoints().setAll(points());
+
         routeLine.setId("route");
 
         Circle highlightDisc = new Circle(5);
@@ -44,14 +47,17 @@ public final class RouteManager {
 
         });
 
-        routeBean.highlightedPositionProperty().addListener(l -> {
+        routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
             //positionner et/ou rendre (in)visible le disque
+            if (routeBean.routeProperty() == null) {
+
+            }
         });
-        routeBean.routeProperty().addListener(l -> {
+        routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
             //positionner et/ou rendre (in)visible le disque
             //reconstruire totalement et/ou rendre (in)visible la polyligne
         });
-        mapProperty.addListener( l -> {
+        mapProperty.addListener( (p, oldValue, newValue) -> {
             //positionner et/ou rendre (in)visible le disque
             // SI LE ZOOM CHANGE
             //reconstruire totalement et/ou rendre (in)visible la polyligne
@@ -67,12 +73,16 @@ public final class RouteManager {
     }
 
     private List<Double> points(){
-        List<PointCh> pointsCh = routeBean.routeProperty().get().points();
+        Route route = routeBean.routeProperty().get();
+        if (route == null) return new ArrayList<>();
+        List<PointCh> pointsCh = route.points();
         List<Double> points = new ArrayList<>();
+        MapViewParameters params = mapProperty.get();
 
         for (PointCh pointCh:pointsCh){
-            points.add(WebMercator.x(pointCh.lon()));
-            points.add(WebMercator.y(pointCh.lat()));
+            PointWebMercator point = PointWebMercator.ofPointCh(pointCh);
+            points.add(point.xAtZoomLevel(params.zoomLevel()));
+            points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
         return points;
     }
