@@ -54,13 +54,12 @@ public final class RouteManager {
                 routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition()));
 
         this.highlightDisc = new Circle(5);
-
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
 
+        repositionRouteLine();
         installHandlers();
         installListeners();
-        repositionRouteLine();
     }
 
     /**
@@ -117,7 +116,6 @@ public final class RouteManager {
         routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
             repositionHighlightCircle();
         });
-        routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
         routeBean.getRouteProperty().addListener( (p, oldValue, newValue) -> {
             rebuildRouteLine();
         });
