@@ -23,14 +23,13 @@ public final class RouteBean {
 
     private final ObservableList<Waypoint> waypoints;
     private final DoubleProperty highlightedPosition;
-
     private final ObjectProperty<Route> route;
     private final ObjectProperty<ElevationProfile> elevationProfile;
     private final RouteComputer computer;
     private final int cacheMemoireSize = 50;
 
 
-    LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
+    private LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
             new LinkedHashMap<Pair<Integer,Integer>, Route>() {
                 protected boolean removeEldestEntry(Map.Entry<Pair<Integer,Integer>, Route> eldest)
                     {
@@ -38,8 +37,12 @@ public final class RouteBean {
                 }
             };
 
+    /**
+     * Construct Route Bean
+     * @param computer Route Computer
+     */
     public RouteBean(RouteComputer computer) {
-        this.route = new SimpleObjectProperty<Route>();
+        this.route = new SimpleObjectProperty<>();
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty();
         this.computer = computer;
@@ -52,8 +55,6 @@ public final class RouteBean {
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
 
             if (waypoints.size() < minimalSize) {
-                System.out.println("Listener put road to null");
-
                 route.set(null);
                 elevationProfile.set(null);
             }else {
@@ -63,6 +64,11 @@ public final class RouteBean {
         });
     }
 
+    /**
+     * compute route
+     *
+     */
+
     private void routeComputer() {
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
@@ -71,11 +77,9 @@ public final class RouteBean {
             int startNodeId = waypoints.get(i).closestNodeId();
             int endNodeId = waypoints.get(i + 1).closestNodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
-            System.out.println(routePair);
 
             //
             if (cacheMemoire.containsKey(routePair) ) {
-                System.out.println("the key is :" + cacheMemoire.get(routePair));
                 miniRoute = cacheMemoire.get(routePair);
                 routeList.add(miniRoute);
             } else if (startNodeId != endNodeId){
@@ -85,7 +89,6 @@ public final class RouteBean {
                     cacheMemoire.put(routePair, miniRoute);
                     routeList.add(miniRoute);
                 } else {
-                    System.out.println("road was null in routecomputer");
                     elevationProfile.set(null);
                     route.set(null);
                     routeList.clear();
@@ -101,6 +104,10 @@ public final class RouteBean {
             route.set(null);
         }
     }
+
+    /**
+     * compute Elevation Profile
+     */
     private void elevationProfileComputer() {
         if (route.get() == null) {
             elevationProfile.set(null);
@@ -111,37 +118,51 @@ public final class RouteBean {
     }
 
     /**
-     * retournant la propriété elle-même, de type DoubleProperty
-     * @return
+     * return the  highlighted DoubleProperty
+     * @return highlighted DoubleProperty
      */
     public DoubleProperty highlightedPositionProperty() {
         return highlightedPosition;
     }
 
     /**
-     * retournant le contenu de la propriété, de type double ;
-     * @return
+     * return the Highlighted Position
+     * @return Highlighted Position
      */
     public Double highlightedPosition() {
         return highlightedPosition.get();
     }
 
     /**
-     * prenant une valeur de type double et la stockant dans la propriété.
+     * Setter HighLighted Position
      * @param highlightedPosition
      */
     public void setHighlightedPosition(double highlightedPosition) {
         this.highlightedPosition.set(highlightedPosition);
     }
 
+    /**
+     * getter Elevation Profile property
+     * @return elevation profile property
+     */
+
     public ReadOnlyObjectProperty<ElevationProfile> getElevationProfile() {
         return elevationProfile;
     }
 
-    public ReadOnlyObjectProperty<Route> routeProperty() {
+    /**
+     * getter Route property
+     * @return route property
+     */
+
+    public ReadOnlyObjectProperty<Route> getRouteProperty() {
         return route;
     }
 
+    /**
+     * getter Observable List of waypoints
+     * @return observable list of waypoints
+     */
     public ObservableList<Waypoint> getWaypoints() {
         return waypoints;
     }

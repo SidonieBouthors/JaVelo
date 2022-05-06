@@ -51,7 +51,7 @@ public final class RouteManager {
         pane.getChildren().add(routeLine);
 
         PointWebMercator highlightPoint = PointWebMercator.ofPointCh(
-                routeBean.routeProperty().get().pointAt(routeBean.highlightedPosition()));
+                routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition()));
 
         this.highlightDisc = new Circle(5);
 
@@ -73,7 +73,7 @@ public final class RouteManager {
 
     // Returns the list of point coordinates of the route
     private List<Double> points(){
-        Route route = routeBean.routeProperty().get();
+        Route route = routeBean.getRouteProperty().get();
         if (route == null) return new ArrayList<>();
         List<PointCh> pointsCh = route.points();
         List<Double> points = new ArrayList<>();
@@ -84,6 +84,7 @@ public final class RouteManager {
             points.add(point.xAtZoomLevel(params.zoomLevel()));
             points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
+
         return points;
     }
 
@@ -91,7 +92,7 @@ public final class RouteManager {
     private void installHandlers() {
         highlightDisc.setOnMouseClicked( event -> {
             MapViewParameters params = mapProperty.get();
-            Route route = routeBean.routeProperty().get();
+            Route route = routeBean.getRouteProperty().get();
 
             Point2D point = highlightDisc.localToParent(event.getX(), event.getY());
             PointWebMercator pointWebMercator = params.pointAt(point.getX(), point.getY());
@@ -117,6 +118,7 @@ public final class RouteManager {
             repositionHighlightCircle();
         });
         routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
+        routeBean.getRouteProperty().addListener( (p, oldValue, newValue) -> {
             rebuildRouteLine();
         });
         mapProperty.addListener( (p, oldValue, newValue) -> {
@@ -141,7 +143,7 @@ public final class RouteManager {
 
     // rebuilds the route line with the new route
     private void rebuildRouteLine(){
-        Route route = routeBean.routeProperty().get();
+        Route route = routeBean.getRouteProperty().get();
         routeLine.setVisible(route != null);
 
         if (route != null){
@@ -154,18 +156,19 @@ public final class RouteManager {
     // repositions the highlight circle on the route line
     private void repositionHighlightCircle(){
 
-        Route route = routeBean.routeProperty().get();
+        Route route = routeBean.getRouteProperty().get();
         MapViewParameters params = mapProperty.get();
         highlightDisc.setVisible(route != null);
 
         if (route != null) {
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
-                        routeBean.routeProperty().get().pointAt(
+                        routeBean.getRouteProperty().get().pointAt(
                             routeBean.highlightedPosition()));
 
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
+            System.out.println(highlightDisc.getLayoutX() + "  " + highlightDisc.getLayoutY());
         }
     }
 }
