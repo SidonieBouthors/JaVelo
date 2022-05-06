@@ -60,7 +60,6 @@ public final class Stage9Test extends Application {
                         errorConsumer);
 
         StackPane mainPane =
-                //new StackPane(baseMapManager.pane());
                 new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
         mainPane.getStylesheets().add("map.css");
         primaryStage.setMinWidth(600);

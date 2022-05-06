@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class RouteManager {
 
     private static final String ERROR_POINT_PRESENT = "Un point de passage est déjà present à cet endroit !";
@@ -24,6 +28,12 @@ public final class RouteManager {
     private final Polyline routeLine;
     private final Circle highlightDisc;
 
+    /**
+     * Builds a RouteManager with the given properties
+     * @param routeBean     : RouteBean associated the route manager
+     * @param mapProperty   : Properties of the map (zoom, top left)
+     * @param errorSignal   : error consumer
+     */
     RouteManager (RouteBean routeBean, ObjectProperty<MapViewParameters> mapProperty, Consumer<String> errorSignal){
         this.routeBean = routeBean;
         this.mapProperty = mapProperty;
@@ -53,10 +63,15 @@ public final class RouteManager {
         repositionRouteLine();
     }
 
+    /**
+     * Returns the pane containing the route and highlight point
+     * @return the pane
+     */
     public Pane pane(){
         return pane;
     }
 
+    // Returns the list of point coordinates of the route
     private List<Double> points(){
         Route route = routeBean.routeProperty().get();
         if (route == null) return new ArrayList<>();
@@ -69,11 +84,10 @@ public final class RouteManager {
             points.add(point.xAtZoomLevel(params.zoomLevel()));
             points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
-
         return points;
     }
 
-
+    // installs the event handlers
     private void installHandlers() {
         highlightDisc.setOnMouseClicked( event -> {
             MapViewParameters params = mapProperty.get();
@@ -93,46 +107,43 @@ public final class RouteManager {
                 }
             }
             Waypoint newWaypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
-            waypoints.add(route.indexOfSegmentAt(position)+1, newWaypoint);
-
+            waypoints.add(route.indexOfSegmentAt(position) + 1, newWaypoint);
         });
     }
 
+    //installs the listeners
     private void installListeners(){
         routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
             repositionHighlightCircle();
         });
         routeBean.routeProperty().addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
-            //reconstruire totalement et/ou rendre (in)visible la polyligne
             rebuildRouteLine();
         });
         mapProperty.addListener( (p, oldValue, newValue) -> {
-            //positionner et/ou rendre (in)visible le disque
-            // SI LE ZOOM CHANGE
-            //reconstruire totalement et/ou rendre (in)visible la polyligne
             if (oldValue.zoomLevel() != newValue.zoomLevel()) {
                 rebuildRouteLine();
             }
-            // SI LA CARTE EST GLISSE MAIS LE ZOOM NE CHANGE PAS
-            // repositionner - sans la reconstruire - la polyligne représentant l'itinéraire
             else {
                 repositionRouteLine();
             }
         });
     }
 
+    // repositions the route line according to the map
     private void repositionRouteLine(){
         MapViewParameters params = mapProperty.get();
+
         routeLine.setLayoutX( - params.topLeft().getX());
         routeLine.setLayoutY( - params.topLeft().getY());
+
         repositionHighlightCircle();
     }
 
+    // rebuilds the route line with the new route
     private void rebuildRouteLine(){
         Route route = routeBean.routeProperty().get();
         routeLine.setVisible(route != null);
+
         if (route != null){
             repositionRouteLine();
             routeLine.getPoints().setAll(points());
@@ -140,19 +151,21 @@ public final class RouteManager {
         repositionHighlightCircle();
     }
 
+    // repositions the highlight circle on the route line
     private void repositionHighlightCircle(){
+
         Route route = routeBean.routeProperty().get();
         MapViewParameters params = mapProperty.get();
         highlightDisc.setVisible(route != null);
-        System.out.println(highlightDisc.isVisible());
+
         if (route != null) {
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
                         routeBean.routeProperty().get().pointAt(
                             routeBean.highlightedPosition()));
+
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
-            System.out.println(highlightDisc.getLayoutX() + "  " + highlightDisc.getLayoutY());
         }
     }
 }
