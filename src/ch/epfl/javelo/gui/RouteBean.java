@@ -88,6 +88,8 @@ public final class RouteBean {
                     System.out.println("road was null in routecomputer");
                     elevationProfile.set(null);
                     route.set(null);
+                    routeList.clear();
+                    break;
                 }
 
             }
@@ -96,10 +98,8 @@ public final class RouteBean {
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
         } else {
-            System.out.println("routeList was empty in route computer");
             route.set(null);
         }
-        System.out.println(routeList);
     }
     private void elevationProfileComputer() {
         if (route.get() == null) {
