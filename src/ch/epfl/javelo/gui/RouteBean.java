@@ -21,21 +21,22 @@ import java.util.Map;
  */
 public final class RouteBean {
 
+    private static final int CACHE_MEMOIRE_SIZE = 50;
     private final ObservableList<Waypoint> waypoints;
     private final DoubleProperty highlightedPosition;
     private final ObjectProperty<Route> route;
     private final ObjectProperty<ElevationProfile> elevationProfile;
     private final RouteComputer computer;
-    private final int cacheMemoireSize = 50;
 
 
-    private LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
-            new LinkedHashMap<Pair<Integer,Integer>, Route>() {
-                protected boolean removeEldestEntry(Map.Entry<Pair<Integer,Integer>, Route> eldest)
-                    {
-                    return cacheMemoire.size() > cacheMemoireSize;
+
+    private final LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
+            new LinkedHashMap<>() {
+                protected boolean removeEldestEntry(Map.Entry<Pair<Integer,Integer>, Route> eldest) {
+                    return cacheMemoire.size() > CACHE_MEMOIRE_SIZE;
                 }
             };
+
 
     /**
      * Construct Route Bean

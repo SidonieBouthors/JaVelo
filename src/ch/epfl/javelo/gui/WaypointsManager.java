@@ -51,7 +51,6 @@ public final class WaypointsManager {
         pane = new Pane();
         settingWayPointsTab();
         waypoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
-            System.out.println("redraw");
             settingWayPointsTab();
         });
         fxProperty.addListener( listen -> {
@@ -108,7 +107,7 @@ public final class WaypointsManager {
 
             wayPointGroup.setOnMouseReleased(event -> {
                 if (!event.isStillSincePress()) {
-                    addWaypoint(waypoint,wayPointGroup.getLayoutX(), wayPointGroup.getLayoutY());
+                    addWaypoint(index, wayPointGroup.getLayoutX(), wayPointGroup.getLayoutY());
                     settingWayPointsTab();
                 }
             });
@@ -131,9 +130,11 @@ public final class WaypointsManager {
         }
     }
 
-
-
-
+    /**
+     * setting coordinates of the Group at a given Point ch
+     * @param wayPointGroup
+     * @param node position to set the group
+     */
     private void settingCoordinates(Group wayPointGroup, PointCh node) {
 
         MapViewParameters map = fxProperty.get();
@@ -164,24 +165,24 @@ public final class WaypointsManager {
     }
 
     public void addWaypoint(double x, double y) {
+        addWaypoint(waypoints.size(), x,y);
+    }
+    private void addWaypoint(int index, double x, double y){
+
         PointCh point = fxProperty.get().pointAt(x,y).toPointCh();
 
         int nodeId = roadNetwork.nodeClosestTo(point, 1000);
+
         if (nodeId == -1) {
             errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
-        } else {
-            waypoints.add(new Waypoint(point, nodeId));
         }
-    }
-    private void addWaypoint(Waypoint waypoint, double x, double y){
-        int oldSize = waypoints.size();
-        addWaypoint(x,y);
-
-        if (waypoints.size() != oldSize) {
-            int index = waypoints.indexOf(waypoint);
-
-            waypoints.set(index,waypoints.get(waypoints.size()-1));
-            waypoints.remove(waypoints.size()-1);
+        else {
+            if (index >= waypoints.size()) {
+                waypoints.add(index, new Waypoint(point, nodeId));
+            }
+            else {
+                waypoints.set(index, new Waypoint(point, nodeId));
+            }
         }
     }
 }

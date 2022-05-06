@@ -166,7 +166,6 @@ public final class RouteManager {
 
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
-            System.out.println(highlightDisc.getLayoutX() + "  " + highlightDisc.getLayoutY());
         }
     }
 }
