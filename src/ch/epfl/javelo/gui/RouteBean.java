@@ -1,15 +1,12 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.*;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.image.Image;
 import javafx.util.Pair;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,7 +51,6 @@ public final class RouteBean {
         int minimalSize = 2;
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
-
             if (waypoints.size() < minimalSize) {
                 route.set(null);
                 elevationProfile.set(null);

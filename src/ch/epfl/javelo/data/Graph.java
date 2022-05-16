@@ -133,10 +133,14 @@ public final class Graph {
      * @return the ID of the closest node, or -1 if there are none within search distance
      */
     public int nodeClosestTo(PointCh point, double searchDistance){
+        int indexWithShortestDistance = -1;
+        if (point == null) {
+            return  indexWithShortestDistance;
+        }
 
         List<GraphSectors.Sector> sectorsToSearch = sectors.sectorsInArea(point, searchDistance);
         double squaredShortestDistance = searchDistance * searchDistance;
-        int indexWithShortestDistance = -1;
+
 
         for (GraphSectors.Sector sector : sectorsToSearch) {
             for (int i = sector.startNodeId(); i < sector.endNodeId(); i++) {

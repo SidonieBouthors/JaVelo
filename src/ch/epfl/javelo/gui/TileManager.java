@@ -27,7 +27,7 @@ public final  class TileManager {
     private final Path cacheDisque;
     private final String nameOfServer;
 
-        LinkedHashMap<Path, Image> cacheMemoire =
+        private final LinkedHashMap<Path, Image> cacheMemoire =
             new LinkedHashMap<Path, Image>() {
                 protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest)
                 {
@@ -35,22 +35,19 @@ public final  class TileManager {
                 }
             };
 
-
+    /**
+     * Constructor of  a Tile Manager
+     * @param cacheDisque Place where you want to store your cache
+     * @param nameOfServer Name of the server you want to extract data
+     */
     public TileManager(Path cacheDisque, String nameOfServer) {
         this.nameOfServer=nameOfServer;
         this.cacheDisque=cacheDisque;
         if(!Files.exists(cacheDisque)){
-            System.out.println("Make Dir");
             cacheDisque.toFile().mkdir();
         }
     }
 
-    /**
-    public static void main(String[] args) throws IOException {
-        String  a = "cache";
-        TileManager ma = new TileManager(Path.of(a),"https://tile.openstreetmap.org/");
-        ma.imageForTileAt(new TileId(19,271725,185422));
-    }**/
 
     /**
      * takes as argument the identity of a tile (of type TileId) and returns its image
@@ -68,28 +65,14 @@ public final  class TileManager {
 
 
         if (cacheMemoire.containsKey(imagePath)) {
-            //System.out.println("from memory cache");
             return cacheMemoire.get(imagePath);
         } else if (Files.exists(imagePath)) {
-            //System.out.println("from disk cache");
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
             cacheMemoire.put(imagePath,image);
             return image;
         } else{
-            //System.out.println("from server");
-            //creating directories/file that doesn't exist in cache disque
-            /*
-            if (!zoomFile.exists()) {
-                zoomFile.mkdirs();
-                xPathFile.mkdirs();
-                imageNameFile.createNewFile();
-            }else if (!xPathFile.exists()) {
-                xPathFile.mkdirs();
-                imageNameFile.createNewFile();
-            } else if (!imageFile.exists()) {
-                imageFile.createNewFile();
-            }*/
+
 
             Files.createDirectories(dirPath);
             String urlString = "https://"+nameOfServer+"/"+id.zoom+"/"+id.x+"/"+id.y+".png";
@@ -113,6 +96,7 @@ public final  class TileManager {
 
 
     }
+
 
     record TileId(int zoom,int x, int y){
         /**

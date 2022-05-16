@@ -18,6 +18,11 @@ import javafx.scene.shape.SVGPath;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
+
 public final class WaypointsManager {
 
     private final static String FIRST_SVG_PATH_STRING = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
@@ -31,13 +36,12 @@ public final class WaypointsManager {
     private final Pane pane;
     private SVGPath firstSVG;
     private SVGPath secondSVG;
-    private double lastMousePositionX, lastMousePositionY;
 
     /**
-     * @param roadNetwork
-     * @param fxProperty
-     * @param waypoints
-     * @param errorSignal
+     * @param roadNetwork Graph of the roadNetwork
+     * @param fxProperty property containing map parameters
+     * @param waypoints Observable list of waypoints
+     * @param errorSignal error signal
      */
     public WaypointsManager(Graph roadNetwork, ObjectProperty<MapViewParameters> fxProperty, ObservableList<Waypoint> waypoints,
                             Consumer<String> errorSignal) {
@@ -58,6 +62,9 @@ public final class WaypointsManager {
         });
     }
 
+    /**
+     * Setting and Updating waypoints on the pane
+     */
     private void settingWayPointsTab() {
         pane.getChildren().clear();
         for (int i = 0; i < waypoints.size(); i++) {
@@ -156,7 +163,7 @@ public final class WaypointsManager {
     }
 
     /**
-     * retourne le panneau contenant les points de passage
+     * return the pane containing the waypoints
      *
      * @return
      */
@@ -164,6 +171,11 @@ public final class WaypointsManager {
         return pane;
     }
 
+    /**
+     * add waypoint at a given position x,y
+     * @param x
+     * @param y
+     */
     public void addWaypoint(double x, double y) {
         addWaypoint(waypoints.size(), x,y);
     }
