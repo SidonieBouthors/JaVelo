@@ -20,10 +20,8 @@ import java.util.function.Consumer;
  */
 public final class RouteManager {
 
-    private static final String ERROR_POINT_PRESENT = "Un point de passage est déjà present à cet endroit !";
     private final RouteBean routeBean;
     private final ObjectProperty<MapViewParameters> mapProperty;
-    private final Consumer<String> errorSignal;
     private final Pane pane;
     private final Polyline routeLine;
     private final Circle highlightDisc;
@@ -32,12 +30,10 @@ public final class RouteManager {
      * Builds a RouteManager with the given properties
      * @param routeBean     : RouteBean associated the route manager
      * @param mapProperty   : Properties of the map (zoom, top left)
-     * @param errorSignal   : error consumer
      */
-    RouteManager (RouteBean routeBean, ObjectProperty<MapViewParameters> mapProperty, Consumer<String> errorSignal){
+    RouteManager (RouteBean routeBean, ObjectProperty<MapViewParameters> mapProperty){
         this.routeBean = routeBean;
         this.mapProperty = mapProperty;
-        this.errorSignal = errorSignal;
         this.pane = new Pane();
 
         pane.setPickOnBounds(false);
@@ -100,14 +96,15 @@ public final class RouteManager {
 
             ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
 
+            /*
             for (Waypoint waypoint:waypoints){
-                if (route.nodeClosestTo(position) == waypoint.closestNodeId()){
+                if (route.nodeClosestTo(position) == waypoint.nodeId()){
                     errorSignal.accept(ERROR_POINT_PRESENT);
                     return;
                 }
-            }
+            }*/
             Waypoint newWaypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
-            waypoints.add(route.indexOfSegmentAt(position) + 1, newWaypoint);
+            waypoints.add(routeBean.indexOfNonEmptySegmentAt(position) + 1, newWaypoint);
         });
     }
 

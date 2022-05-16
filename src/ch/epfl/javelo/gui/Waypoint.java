@@ -10,6 +10,6 @@ import ch.epfl.javelo.projection.PointCh;
  *
  * Waypoint with the given parameters
  * @param position          : position of the waypoint in Swiss coordinates
- * @param closestNodeId     : ID of the closest node
+ * @param nodeId     : ID of the closest node
  */
-public record Waypoint(PointCh position, int closestNodeId) { }
+public record Waypoint(PointCh position, int nodeId) { }

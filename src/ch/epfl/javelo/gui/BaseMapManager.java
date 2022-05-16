@@ -60,7 +60,6 @@ public final class BaseMapManager {
         redrawNeeded = false;
 
         GraphicsContext context = canvas.getGraphicsContext2D();
-        Point2D topLeft = mapParameters.get().topLeft();
         MapViewParameters params = mapParameters.get();
         double width = canvas.getWidth();
         double height = canvas.getHeight();
@@ -116,18 +115,18 @@ public final class BaseMapManager {
 
     private void installHandlers(){
         pane.setOnScroll(event -> {
+            if (event.getDeltaY() == 0d) return;
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
-            minScrollTime.set(currentTime + 250);
-            double zoomDelta = Math.signum(event.getDeltaY());
+            minScrollTime.set(currentTime + 200);
+            int zoomDelta = (int) Math.signum(event.getDeltaY());
 
             MapViewParameters params = mapParameters.get();
-            double delta = event.getDeltaY()/10;
             double mouseX = event.getX();
             double mouseY = event.getY();
             saveMousePosition(mouseX, mouseY);
 
-            int newZoom = Math2.clamp(8, (int)(params.zoomLevel() + delta), 19);
+            int newZoom = Math2.clamp(8, (int)(params.zoomLevel() + zoomDelta), 19);
             double newX = lastMousePosition.xAtZoomLevel(newZoom) - mouseX;
             double newY = lastMousePosition.yAtZoomLevel(newZoom) - mouseY;
 

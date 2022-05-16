@@ -56,8 +56,7 @@ public final class Stage9Test extends Application {
                         mapViewParametersP);
         RouteManager routeManager =
                 new RouteManager( routeBean,
-                        mapViewParametersP,
-                        errorConsumer);
+                        mapViewParametersP);
 
         StackPane mainPane =
                 new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
