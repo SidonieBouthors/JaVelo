@@ -34,8 +34,8 @@ public final class AnnotatedMapManager {
         this.mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
-
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
+        this.currentMousePosition = new SimpleObjectProperty<>();
 
         this.routeBean = routeBean;
         this.waypointsManager =
@@ -72,7 +72,7 @@ public final class AnnotatedMapManager {
     private void installBindings(){
         mousePositionOnRouteProperty.bind(Bindings.createObjectBinding(() -> {
             Route route = routeBean.getRouteProperty().get();
-            if (route == null) {
+            if (route == null || currentMousePosition.get() == null) {
                 return Double.NaN;
             }
             int zoomLevel = mapViewParametersP.get().zoomLevel();
@@ -97,8 +97,7 @@ public final class AnnotatedMapManager {
             currentMousePosition.set(new Point2D(event.getX(), event.getY()));
         });
         mainPane.setOnMouseExited(event -> {
-            currentMousePosition = null;
-            mousePositionOnRouteProperty.set(Double.NaN);
+            currentMousePosition.set(null);
         });
     }
 }

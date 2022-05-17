@@ -74,6 +74,9 @@ public final class JaVelo extends Application {
         mainPane.orientationProperty().set(Orientation.VERTICAL);
         SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
 
+        mainPane.setMaxHeight(600);
+        mainPane.setMaxWidth(800);
+
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setMaxWidth(800);
