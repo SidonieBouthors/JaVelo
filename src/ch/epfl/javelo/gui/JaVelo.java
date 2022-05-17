@@ -15,6 +15,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -70,9 +72,22 @@ public final class JaVelo extends Application {
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager = new ElevationProfileManager(routeBean.getElevationProfile(), routeBean.highlightedPositionProperty());
         StackPane mapPane = new StackPane(mapManager.pane(), errorManager.pane(), menuBar);
-        SplitPane mainPane = new SplitPane(mapPane, elevationProfileManager.pane());
+        SplitPane mainPane = new SplitPane(mapPane);//, elevationProfileManager.pane()
         mainPane.orientationProperty().set(Orientation.VERTICAL);
         SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
+
+        BorderPane paneWithMenu = new BorderPane();
+        paneWithMenu.setTop(menuBar);
+        paneWithMenu.setCenter(mainPane);
+
+       routeBean.getElevationProfile().addListener((p, oldValue, newValue) -> {
+          if (newValue == null){
+             mainPane.getItems().setAll(mapPane);
+          }
+          else {
+              mainPane.getItems().setAll(mapPane, elevationProfileManager.pane());
+          }
+       });
 
         mainPane.setMaxHeight(600);
         mainPane.setMaxWidth(800);
@@ -82,7 +97,7 @@ public final class JaVelo extends Application {
         primaryStage.setMaxWidth(800);
         primaryStage.setMaxHeight(600);
         primaryStage.setTitle("JaVelo");
-        primaryStage.setScene(new Scene(mainPane));
+        primaryStage.setScene(new Scene(paneWithMenu));
         primaryStage.show();
     }
 }
