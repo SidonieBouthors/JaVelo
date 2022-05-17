@@ -71,8 +71,8 @@ public final class JaVelo extends Application {
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager = new ElevationProfileManager(routeBean.getElevationProfile(), routeBean.highlightedPositionProperty());
-        StackPane mapPane = new StackPane(mapManager.pane(), errorManager.pane(), menuBar);
-        SplitPane mainPane = new SplitPane(mapPane);//, elevationProfileManager.pane()
+        StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
+        SplitPane mainPane = new SplitPane(mapPane, elevationProfileManager.pane());//
         mainPane.orientationProperty().set(Orientation.VERTICAL);
         SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
 
@@ -80,17 +80,20 @@ public final class JaVelo extends Application {
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
 
-       routeBean.getElevationProfile().addListener((p, oldValue, newValue) -> {
-          if (newValue == null){
+       routeBean.getElevationProfile().addListener(e -> {
+           System.out.println("elevation profile change");
+          if (routeBean.getElevationProfile().get() == null){
+              System.out.println("null");
              mainPane.getItems().setAll(mapPane);
           }
           else {
+              System.out.println("not null");
               mainPane.getItems().setAll(mapPane, elevationProfileManager.pane());
           }
        });
 
-        mainPane.setMaxHeight(600);
-        mainPane.setMaxWidth(800);
+
+
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

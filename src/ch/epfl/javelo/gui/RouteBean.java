@@ -25,7 +25,11 @@ public final class RouteBean {
     private final ObjectProperty<ElevationProfile> elevationProfile;
     private final RouteComputer computer;
 
+    // for listener in RouteBean Constructor
+    private static final int  minimalSize = 2;
 
+    //for elevation profile computer
+    private static final int maxStepLength = 5;
 
     private final LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
             new LinkedHashMap<>() {

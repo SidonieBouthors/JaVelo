@@ -55,8 +55,7 @@ public final class AnnotatedMapManager {
         this.mainPane =
                 new StackPane(baseMapManager.pane(),
                         routeManager.pane(),
-                        waypointsManager.pane()
-                        );
+                        waypointsManager.pane());
         mainPane.getStylesheets().add("map.css");
 
         installBindings();
