@@ -37,18 +37,21 @@ public final class BaseMapManager {
                           ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
         this.waypointManager = waypointManager;
+
+
         this.mapParameters = mapParameters;
-
-        this.redrawNeeded = true;
         this.pane = new Pane();
-        this.canvas = new Canvas(pane.getWidth(), pane.getHeight());
-
+        this.canvas = new Canvas();
+        System.out.println(pane.getWidth()+" "+pane.getHeight());
         pane.getChildren().add(canvas);
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
+        System.out.println(pane.getWidth()+" "+pane.getHeight());
+
 
         installListeners();
         installHandlers();
+        this.redrawNeeded = true;
     }
 
     public Pane pane(){
@@ -69,6 +72,9 @@ public final class BaseMapManager {
         int topLeftTileY = (int) params.y() / TILE_SIZE;
         int bottomRightTileX = (int) (params.x() + width) / TILE_SIZE + 1;
         int bottomRightTileY = (int) (params.y() + height) / TILE_SIZE + 1;
+
+        System.out.println("topLeftTileX :"+topLeftTileX+" TopLeftTileY :"+topLeftTileY);
+        System.out.println("bottomRightTileX :"+bottomRightTileX+" bottomRightTileY :"+bottomRightTileY);
 
         double xShift = -(params.x() - TILE_SIZE * topLeftTileX);
         for (int i = topLeftTileX; i < bottomRightTileX; i++) {
@@ -103,9 +109,12 @@ public final class BaseMapManager {
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         canvas.widthProperty().addListener( w -> {
+            System.out.println("pane width : "+pane.getWidth());
             redrawOnNextPulse();
         });
         canvas.heightProperty().addListener( h -> {
+            System.out.println("pane height : "+pane.getHeight());
+
             redrawOnNextPulse();
         });
         mapParameters.addListener( p -> {

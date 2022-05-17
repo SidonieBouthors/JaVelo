@@ -44,18 +44,24 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty();
         this.computer = computer;
+        route.set(null);
+        elevationProfile.set(null);
 
         //test
-        highlightedPosition.set(5000);
+        //highlightedPosition.set(5000);
 
-        int minimalSize = 2;
+
+
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
+            System.out.println("hheoooo");
             if (waypoints.size() < minimalSize) {
                 route.set(null);
                 elevationProfile.set(null);
             }else {
+                System.out.println("computing ?");
                 routeComputer();
+                System.out.println(route.get());
                 elevationProfileComputer();
             }
         });
@@ -67,6 +73,8 @@ public final class RouteBean {
      */
 
     private void routeComputer() {
+
+
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
 
@@ -97,8 +105,6 @@ public final class RouteBean {
         }
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
-        } else {
-            route.set(null);
         }
     }
 
@@ -110,8 +116,8 @@ public final class RouteBean {
             elevationProfile.set(null);
             return;
         }
-        int maxStepLength = 5;
-        ElevationProfileComputer.elevationProfile(route.get(),5);
+
+        ElevationProfileComputer.elevationProfile(route.get(),maxStepLength);
     }
 
     /**

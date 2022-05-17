@@ -40,8 +40,7 @@ public final class RouteManager {
         MapViewParameters params = mapProperty.get();
 
         this.routeLine = new Polyline();
-        routeLine.setLayoutX( - params.topLeft().getX());
-        routeLine.setLayoutY( - params.topLeft().getY());
+
         routeLine.getPoints().setAll(points());
         routeLine.setId("route");
         pane.getChildren().add(routeLine);
@@ -54,8 +53,9 @@ public final class RouteManager {
         this.highlightDisc = new Circle(5);
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
-
-        repositionRouteLine();
+        //routeLine.setLayoutX( - params.topLeft().getX());
+        //routeLine.setLayoutY( - params.topLeft().getY());
+        //repositionRouteLine();
         installHandlers();
         installListeners();
     }

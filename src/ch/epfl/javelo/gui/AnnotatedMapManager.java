@@ -46,7 +46,7 @@ public final class AnnotatedMapManager {
                         errorConsumer);
         this.baseMapManager =
                 new BaseMapManager(tileManager,
-                        waypointsManager,
+                        this.waypointsManager,
                         mapViewParametersP);
         this.routeManager =
                 new RouteManager(routeBean,
@@ -67,7 +67,7 @@ public final class AnnotatedMapManager {
         return mainPane;
     }
 
-    public DoubleProperty mousePositionOneRouteProperty(){return mousePositionOnRouteProperty;
+    public DoubleProperty mousePositionOnRouteProperty(){return mousePositionOnRouteProperty;
     }
 
     private void installBindings(){

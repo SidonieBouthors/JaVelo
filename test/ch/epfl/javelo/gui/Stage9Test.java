@@ -33,16 +33,15 @@ public final class Stage9Test extends Application {
 
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer computer = new RouteComputer(graph, costFunction);
-        System.out.println(computer);
         RouteBean routeBean = new RouteBean(computer);
+
+
 
         MapViewParameters mapViewParameters =
                 new MapViewParameters(12, 543200, 370650);
         ObjectProperty<MapViewParameters> mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
-        waypoints.addAll(new Waypoint(new PointCh(2532697, 1152350), 159049),
-                         new Waypoint(new PointCh(2538659, 1154350), 117669));
         Consumer<String> errorConsumer = new ErrorConsumer();
 
         WaypointsManager waypointsManager =
@@ -59,7 +58,7 @@ public final class Stage9Test extends Application {
                         mapViewParametersP);
 
         StackPane mainPane =
-                new StackPane(baseMapManager.pane(), waypointsManager.pane(), routeManager.pane());
+                new StackPane(baseMapManager.pane(),routeManager.pane(), waypointsManager.pane());
         mainPane.getStylesheets().add("map.css");
         primaryStage.setMinWidth(600);
         primaryStage.setMinHeight(300);

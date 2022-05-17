@@ -94,8 +94,7 @@ public final class JaVelo extends Application {
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-        primaryStage.setMaxWidth(800);
-        primaryStage.setMaxHeight(600);
+
         primaryStage.setTitle("JaVelo");
         primaryStage.setScene(new Scene(paneWithMenu));
         primaryStage.show();

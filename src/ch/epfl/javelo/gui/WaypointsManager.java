@@ -53,6 +53,7 @@ public final class WaypointsManager {
 
 
         pane = new Pane();
+        pane.setPickOnBounds(false);
         settingWayPointsTab();
         waypoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
             settingWayPointsTab();
@@ -67,6 +68,7 @@ public final class WaypointsManager {
      */
     private void settingWayPointsTab() {
         pane.getChildren().clear();
+
         for (int i = 0; i < waypoints.size(); i++) {
             int index = i;
 
@@ -110,7 +112,6 @@ public final class WaypointsManager {
                 double y = wayPointGroup.getLayoutY();
                 wayPointGroup.setLayoutX(dragged.getX() + x - point.get().getX());
                 wayPointGroup.setLayoutY(dragged.getY() + y - point.get().getY());
-                System.out.println("mouse dragging");
             });
 
             wayPointGroup.setOnMouseReleased(event -> {
@@ -132,7 +133,7 @@ public final class WaypointsManager {
 
 
             //Avoiding events of the pins create problem with map events.
-            pane.setPickOnBounds(false);
+
             pane.getChildren().add(wayPointGroup);
 
         }
