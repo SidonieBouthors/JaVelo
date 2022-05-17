@@ -46,7 +46,7 @@ class RouteComputerTest {
         assertEquals(6404.1875, r.length());
         assertEquals(357, r.edges().size());
 
-        g = Graph.loadFrom(Path.of("ch_west"));
+        g = Graph.loadFrom(Path.of("javelo-data"));
         cf = new CityBikeCF(g);
         rc = new RouteComputer(g, cf);
         t0 = System.nanoTime();
@@ -60,7 +60,7 @@ class RouteComputerTest {
         assertEquals(168378.875, r.length());
         assertEquals(6046, r.edges().size());
 
-        g = Graph.loadFrom(Path.of("ch_west"));
+        g = Graph.loadFrom(Path.of("javelo-data"));
         cf = new CityBikeCF(g);
         rc = new RouteComputer(g, cf);
         t0 = System.nanoTime();

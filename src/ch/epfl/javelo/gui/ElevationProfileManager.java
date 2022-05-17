@@ -91,11 +91,13 @@ public final  class ElevationProfileManager {
         borderPane.setBottom(vbox);
         //borderPane.getChildren().add(pane);
 
-        createTransforms();
-        installBindings();
-        installHandler();
-        installListeners();
-        createStatistics();
+        if (elevationProfile.get() != null) {
+            createTransforms();
+            installBindings();
+            installHandler();
+            installListeners();
+            createStatistics();
+        }
     }
 
     public Pane pane() {
