@@ -110,6 +110,7 @@ public final class WaypointsManager {
                 double y = wayPointGroup.getLayoutY();
                 wayPointGroup.setLayoutX(dragged.getX() + x - point.get().getX());
                 wayPointGroup.setLayoutY(dragged.getY() + y - point.get().getY());
+                System.out.println("mouse dragging");
             });
 
             wayPointGroup.setOnMouseReleased(event -> {

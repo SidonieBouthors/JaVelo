@@ -15,6 +15,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import java.util.Stack;
 import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
@@ -24,7 +25,7 @@ public final class AnnotatedMapManager {
     private final RouteManager routeManager;
     private final RouteBean routeBean;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
-    private final Pane mainPane;
+    private final StackPane mainPane;
     private ObjectProperty<Point2D> currentMousePosition;
     private DoubleProperty mousePositionOnRouteProperty;
 
@@ -53,20 +54,20 @@ public final class AnnotatedMapManager {
 
         this.mainPane =
                 new StackPane(baseMapManager.pane(),
-                        waypointsManager.pane(),
-                        routeManager.pane());
+                        routeManager.pane(),
+                        waypointsManager.pane()
+                        );
         mainPane.getStylesheets().add("map.css");
 
         installBindings();
         installHandlers();
     }
 
-    public Pane pane(){
+    public StackPane pane(){
         return mainPane;
     }
 
-    public DoubleProperty mousePositionOneRouteProperty(){
-        return new SimpleDoubleProperty();
+    public DoubleProperty mousePositionOneRouteProperty(){return mousePositionOnRouteProperty;
     }
 
     private void installBindings(){
