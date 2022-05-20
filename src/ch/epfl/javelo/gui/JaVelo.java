@@ -92,6 +92,16 @@ public final class JaVelo extends Application {
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });
+       DoubleProperty mousePostion = mapManager.mousePositionOnRouteProperty();
+
+       mousePostion.addListener(a->{
+           Double mouse = mousePostion.get();
+           if (!mouse.isNaN()) {
+
+           }
+
+       }
+       );
 
 
 

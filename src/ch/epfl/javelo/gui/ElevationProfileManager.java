@@ -91,12 +91,11 @@ public final  class ElevationProfileManager {
         borderPane.setBottom(vbox);
         //borderPane.getChildren().add(pane);
 
-        System.out.println("from inside "+ elevationProfile);
+
 
         installHandler();
         installListeners();
         if (elevationProfile.get() != null) {
-            System.out.println("show profile");
             createTransforms();
             installBindings();
         }
@@ -282,7 +281,6 @@ public final  class ElevationProfileManager {
             createTransforms();
             createGrid();
             createProfile();
-            System.out.println("Elevation Profile is " + elevationProfile.get()+ "in listenner");
         });
 
         elevationProfile.addListener((p, oldP, newP) -> {

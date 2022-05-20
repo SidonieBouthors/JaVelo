@@ -66,11 +66,14 @@ public final class AnnotatedMapManager {
         return mainPane;
     }
 
-    public DoubleProperty mousePositionOnRouteProperty(){return mousePositionOnRouteProperty;
+    public DoubleProperty mousePositionOnRouteProperty(){
+        return mousePositionOnRouteProperty;
+
     }
 
     private void installBindings(){
         mousePositionOnRouteProperty.bind(Bindings.createObjectBinding(() -> {
+            System.out.println("salut");
             Route route = routeBean.getRouteProperty().get();
             if (route == null || currentMousePosition.get() == null) {
                 return Double.NaN;
@@ -84,13 +87,17 @@ public final class AnnotatedMapManager {
                     topLeftX + currentMousePosition.get().getX(),
                     topLeftY + currentMousePosition.get().getY()).toPointCh();
             RoutePoint closestPoint = route.pointClosestTo(mousePosition);
-            if (closestPoint.distanceToReference() <= 15){
+
+            if (closestPoint.distanceToReference() <= 50){
+                System.out.println(closestPoint.position());
                 return closestPoint.position();
             }
             else {
+                System.out.println(Double.NaN);
                 return Double.NaN;
             }
-        }));
+
+        },routeBean.getRouteProperty(),currentMousePosition));
     }
     private void installHandlers(){
         mainPane.setOnMouseMoved(event -> {

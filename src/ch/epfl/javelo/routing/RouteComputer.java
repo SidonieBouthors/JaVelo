@@ -85,13 +85,12 @@ public final class RouteComputer {
             }
             distance[node.nodeId] = ALREADY_EXPLORED;
         }
-        System.out.println(distance[endNodeId]);
-        System.out.println("end node "+endNodeId);
+
         //if no route was found
         if (distance[endNodeId] == Float.POSITIVE_INFINITY) {
             return null;
         }
-        System.out.println(predecessor);
+
 
         return createRoute(startNodeId, endNodeId, predecessor);
     }

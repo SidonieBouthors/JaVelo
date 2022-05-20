@@ -110,6 +110,7 @@ public final class RouteManager {
      * Install the listeners
      */
     private void installListeners(){
+
         routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
             repositionHighlightCircle();
         });
@@ -162,7 +163,7 @@ public final class RouteManager {
         //highlightDisc.setVisible(route != null);
         //highlightDisc.setVisible(route != null && !routeBean.highlightedPosition().isNaN());
 
-        if (route != null && !routeBean.highlightedPosition().isNaN()) {
+        if (route != null && (!routeBean.highlightedPosition().isNaN())) {
             highlightDisc.setVisible(true);
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
