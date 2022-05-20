@@ -37,7 +37,7 @@ public final  class ElevationProfileManager {
     private static final int MIN_HORIZONTAL_SPACING = 50;
     private static final int MIN_VERTICAL_SPACING = 25;
 
-    private final  ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
+    private final ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
     private final ReadOnlyDoubleProperty positionAlongTheProfile;
     private final BorderPane borderPane;
     private final Pane pane;

@@ -175,6 +175,7 @@ public final class WaypointsManager {
 
         int nodeId = roadNetwork.nodeClosestTo(point, 1000);
 
+
         if (nodeId == -1) {
             errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
         }

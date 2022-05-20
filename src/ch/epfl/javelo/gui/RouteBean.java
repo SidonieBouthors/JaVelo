@@ -60,6 +60,7 @@ public final class RouteBean {
                 route.set(null);
                 elevationProfile.set(null);
             }else {
+                System.out.println(waypoints);
                 routeComputer();
                 elevationProfileComputer();
             }
@@ -81,11 +82,13 @@ public final class RouteBean {
             int startNodeId = waypoints.get(i).nodeId();
             int endNodeId = waypoints.get(i + 1).nodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
-
+            System.out.println(routePair);
             if (cacheMemoire.containsKey(routePair) ) {
+                System.out.println("cacheMemoire contains");
                 miniRoute = cacheMemoire.get(routePair);
                 routeList.add(miniRoute);
             } else if (startNodeId != endNodeId){
+                System.out.println("Je calcule");
                 miniRoute = computer.bestRouteBetween(startNodeId, endNodeId);
                 if (miniRoute != null) {
                     cacheMemoire.put(routePair, miniRoute);
@@ -100,6 +103,7 @@ public final class RouteBean {
 
             }
         }
+        System.out.println(routeList);
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
         }
@@ -155,6 +159,7 @@ public final class RouteBean {
      */
 
     public ReadOnlyObjectProperty<Route> getRouteProperty() {
+        System.out.println(route);
         return route;
     }
 
