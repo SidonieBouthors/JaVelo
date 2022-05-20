@@ -93,13 +93,12 @@ public final  class ElevationProfileManager {
 
         System.out.println("from inside "+ elevationProfile);
 
+        installHandler();
+        installListeners();
         if (elevationProfile.get() != null) {
             System.out.println("show profile");
             createTransforms();
             installBindings();
-            installHandler();
-            installListeners();
-            //createStatistics();
         }
     }
 
@@ -233,6 +232,15 @@ public final  class ElevationProfileManager {
     }
 
     private void installBindings(){
+        if (elevationProfile == null) {
+            rectProperty.unbind();
+            line.layoutXProperty().unbind();
+            line.startYProperty().unbind();
+            line.endYProperty().unbind();
+            line.visibleProperty().unbind();
+            return;
+        }
+
         rectProperty.bind(Bindings.createObjectBinding(() -> {
                 double rectWidth = Math.max(0d, pane.getWidth() - rectInsets.getLeft() - rectInsets.getRight());
                 double rectHeight = Math.max(0d, pane.getHeight() - rectInsets.getTop() - rectInsets.getBottom());
@@ -242,26 +250,17 @@ public final  class ElevationProfileManager {
                 pane.heightProperty(), pane.widthProperty()
         ));
 
-        DoubleProperty layoutX= line.layoutXProperty();
-        DoubleProperty startY = line.startYProperty();
-        DoubleProperty endY = line.endYProperty();
-        BooleanProperty visible = line.visibleProperty();
-
-        DoubleBinding bindToPosition = Bindings.createDoubleBinding(()->
+        line.layoutXProperty().bind(Bindings.createDoubleBinding(()->
                 worldToScreen.get().transform(positionAlongTheProfile.get(),0).getX(),
-                positionAlongTheProfile);
-        layoutX.bind(bindToPosition);
-        ObjectBinding<Double> bindMinY = Bindings.select(rectProperty,"minY");
-        startY.bind(bindMinY);
-        ObjectBinding<Double> bindMaxY = Bindings.select(rectProperty,"maxY");
-        endY.bind(bindMaxY);
-        BooleanBinding bindVisible = bindToPosition.greaterThanOrEqualTo(0);
-        visible.bind(bindVisible);
+                positionAlongTheProfile));
+        line.startYProperty().bind(Bindings.select(rectProperty,"minY"));
+        line.endYProperty().bind(Bindings.select(rectProperty,"maxY"));
+        line.visibleProperty().bind(line.layoutXProperty().greaterThanOrEqualTo(0));
+
     }
 
     private void installHandler(){
         pane.setOnMouseMoved(event ->{
-            System.out.println("mousemoved");
             if (event == null
                     || event.getX() < rectInsets.getLeft()
                     || event.getY() < rectInsets.getTop()
@@ -274,23 +273,21 @@ public final  class ElevationProfileManager {
             }
         });
         pane.setOnMouseExited(event ->{
-            System.out.println("exited");
             mousePositionOnProfile.set(Double.NaN);
         });
 
     }
     private void installListeners(){
         rectProperty.addListener((p, oldR, newR) -> {
-            System.out.println("rect resized");
             createTransforms();
             createGrid();
             createProfile();
         });
 
         elevationProfile.addListener((p, oldP, newP) -> {
-            System.out.println("Elevation Profile is " + elevationProfile.get());
+            installBindings();
             if(newP != null) {
-                System.out.println("show profile");
+                //installBindings();
                 createTransforms();
                 createStatistics();
                 createProfile();

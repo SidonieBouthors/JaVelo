@@ -68,11 +68,10 @@ public class GpxGenerator {
 
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
-            ele.setTextContent(String.valueOf(route.elevationAt(position)));
+            ele.setTextContent(String.valueOf(profile.applyAsDouble(position)));
 
             position += edge.length();
         }
-        
         return doc;
     }
 

@@ -1,21 +1,19 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.WebMercator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -34,8 +32,6 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorSignal;
     private final Pane pane;
-    private SVGPath firstSVG;
-    private SVGPath secondSVG;
 
     /**
      * @param roadNetwork Graph of the roadNetwork
@@ -51,136 +47,128 @@ public final class WaypointsManager {
         this.waypoints = waypoints;
         this.errorSignal = errorSignal;
 
-
         pane = new Pane();
         pane.setPickOnBounds(false);
-        settingWayPointsTab();
+        updateWaypoints();
+
         waypoints.addListener((ListChangeListener<? super Waypoint>) l -> {
-            settingWayPointsTab();
+            updateWaypoints();
         });
         fxProperty.addListener((p, oldP, newP) -> {
-            settingWayPointsTab();
+            updateWaypoints();
         });
     }
 
     /**
      * Setting and Updating waypoints on the pane
      */
-    private void settingWayPointsTab() {
-        pane.getChildren().clear();
+    private void updateWaypoints() {
+
+        List<Group> waypointGroups = new ArrayList<>();
 
         for (int i = 0; i < waypoints.size(); i++) {
-            int index = i;
 
-            Waypoint waypoint = waypoints.get(i);
-            //Creating waypoint group
-
-            //Setting coordinates
-            //setting style class first,middle and last waypoints
-            //adding children the group
-            Group wayPointGroup = new Group();
-            wayPointGroup.getStyleClass().add("pin");
-            firstSVG = new SVGPath();
-            secondSVG = new SVGPath();
-
-            if (i==0) {
-                wayPointGroup.getStyleClass().add("first");
-            } else if (i == waypoints.size()-1) {
-                wayPointGroup.getStyleClass().add("last");
-            } else {
-                wayPointGroup.getStyleClass().add("middle");
-            }
-
-
-            //setting style for SVGPATH
+            //create SVG
+            SVGPath firstSVG = new SVGPath();
+            SVGPath secondSVG = new SVGPath();
             firstSVG.getStyleClass().add("pin_outside");
             secondSVG.getStyleClass().add("pin_inside");
-
-            //set content of SVG Path
             firstSVG.setContent(FIRST_SVG_PATH_STRING);
             secondSVG.setContent(SECOND_SVG_PATH_STRING);
-            wayPointGroup.getChildren().addAll(firstSVG, secondSVG);
 
-            SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
-            wayPointGroup.setOnMousePressed(pressed -> {
-                Point2D pt = new Point2D(pressed.getX(), pressed.getY());
-                point.set(pt);
-            });
+            Waypoint waypoint = waypoints.get(i);
+            Group waypointGroup = new Group();
+            waypointGroup.getStyleClass().add("pin");
 
-            wayPointGroup.setOnMouseDragged(dragged -> {
-                double x = wayPointGroup.getLayoutX();
-                double y = wayPointGroup.getLayoutY();
-                wayPointGroup.setLayoutX(dragged.getX() + x - point.get().getX());
-                wayPointGroup.setLayoutY(dragged.getY() + y - point.get().getY());
-            });
+            //setting style class first,middle and last waypoints
+            if (i==0) {
+                waypointGroup.getStyleClass().add("first");
+            } else if (i == waypoints.size()-1) {
+                waypointGroup.getStyleClass().add("last");
+            } else {
+                waypointGroup.getStyleClass().add("middle");
+            }
 
-            wayPointGroup.setOnMouseReleased(event -> {
-                if (!event.isStillSincePress()) {
-                    addWaypoint(index, wayPointGroup.getLayoutX(), wayPointGroup.getLayoutY());
-                    settingWayPointsTab();
-                }
-            });
+            waypointGroup.getChildren().addAll(firstSVG, secondSVG);
 
-            wayPointGroup.setOnMouseClicked(event -> {
-                if (event.isStillSincePress()) {
-                    waypoints.remove(index);
-                }
-            });
+            installGroupHandlers(waypointGroup, i);
+            setGroupCoordinates(waypointGroup, waypoint.position());
 
-            //creating pointWebMercator for x and y coordinates
-            ;
-            settingCoordinates(wayPointGroup, waypoint.position());
-
-
-            //Avoiding events of the pins create problem with map events.
-
-            pane.getChildren().add(wayPointGroup);
-
+            waypointGroups.add(waypointGroup);
         }
+        pane.getChildren().setAll(waypointGroups);
+    }
+
+    private void installGroupHandlers(Group waypointGroup, int index){
+
+        SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
+
+        waypointGroup.setOnMousePressed(pressed -> {
+            point.set(new Point2D(pressed.getX(), pressed.getY()));
+        });
+
+        waypointGroup.setOnMouseDragged(dragged -> {
+            double x = waypointGroup.getLayoutX();
+            double y = waypointGroup.getLayoutY();
+            waypointGroup.setLayoutX(dragged.getX() + x - point.get().getX());
+            waypointGroup.setLayoutY(dragged.getY() + y - point.get().getY());
+        });
+
+        waypointGroup.setOnMouseReleased(event -> {
+            if (!event.isStillSincePress()) {
+                addWaypoint(index, waypointGroup.getLayoutX(), waypointGroup.getLayoutY());
+                updateWaypoints();
+            }
+        });
+
+        waypointGroup.setOnMouseClicked(event -> {
+            if (event.isStillSincePress()) {
+                waypoints.remove(index);
+            }
+        });
     }
 
     /**
-     * setting coordinates of the Group at a given Point ch
+     * Setting coordinates of the Group at a given Point ch
      * @param wayPointGroup
      * @param node position to set the group
      */
-    private void settingCoordinates(Group wayPointGroup, PointCh node) {
+    private void setGroupCoordinates(Group wayPointGroup, PointCh node) {
 
         MapViewParameters map = fxProperty.get();
         int zoomLevel = map.zoomLevel();
         PointWebMercator waypointWeb = PointWebMercator.ofPointCh(node);
         double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
         double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
-        // finding parameters of the top left map
-        double topLeftX = map.topLeft().getX();
-        double topLeftY = map.topLeft().getY();
 
-        double realX = xAtZoomLevel - topLeftX;
-        double realY = yAtZoomLevel - topLeftY;
-
+        double realX = xAtZoomLevel - map.topLeft().getX();
+        double realY = yAtZoomLevel - map.topLeft().getY();
 
         wayPointGroup.setLayoutX(realX);
         wayPointGroup.setLayoutY(realY);
-
     }
 
     /**
-     * return the pane containing the waypoints
-     *
-     * @return
+     * Return the pane containing the waypoints
+     * @return waypoints pane
      */
     public Pane pane() {
         return pane;
     }
 
     /**
-     * add waypoint at a given position x,y
-     * @param x
-     * @param y
+     * Add waypoint at a given position
+     * @param x     : x coordinate
+     * @param y     : y coordinate
      */
     public void addWaypoint(double x, double y) {
         addWaypoint(waypoints.size(), x,y);
     }
+    /**
+     * Add waypoint at a given position and index in the list
+     * @param x     : x coordinate
+     * @param y     : y coordinate
+     */
     private void addWaypoint(int index, double x, double y){
 
         PointCh point = fxProperty.get().pointAt(x,y).toPointCh();

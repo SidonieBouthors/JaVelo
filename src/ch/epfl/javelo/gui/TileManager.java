@@ -1,12 +1,10 @@
 package ch.epfl.javelo.gui;
 
-import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -18,20 +16,16 @@ import javafx.scene.image.Image;
  * @author Sidonie Bouthors (343678)
  * @author François Théron (346077)
  */
-
 public final  class TileManager {
 
-
-
-    private final static int cacheMemoireSize = 100;
+    private final static int CACHE_MEMOIRE_SIZE = 100;
     private final Path cacheDisque;
     private final String nameOfServer;
-
-        private final LinkedHashMap<Path, Image> cacheMemoire =
+    private final LinkedHashMap<Path, Image> cacheMemoire =
             new LinkedHashMap<Path, Image>() {
                 protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest)
                 {
-                    return size() > cacheMemoireSize;
+                    return size() > CACHE_MEMOIRE_SIZE;
                 }
             };
 
@@ -50,9 +44,9 @@ public final  class TileManager {
 
 
     /**
-     * takes as argument the identity of a tile (of type TileId) and returns its image
-     * @param id
-     * @return
+     * Returns the image of the tile of given ID
+     * @param id    : ID of the tile
+     * @return image of the tile
      */
     public Image imageForTileAt(TileId id) throws IOException {
         Preconditions.checkArgument(TileId.isValid(id.zoom, id.x, id.y));
@@ -66,14 +60,14 @@ public final  class TileManager {
 
         if (cacheMemoire.containsKey(imagePath)) {
             return cacheMemoire.get(imagePath);
-        } else if (Files.exists(imagePath)) {
+        }
+        else if (Files.exists(imagePath)) {
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
             cacheMemoire.put(imagePath,image);
             return image;
-        } else{
-
-
+        }
+        else{
             Files.createDirectories(dirPath);
             String urlString = "https://"+nameOfServer+"/"+id.zoom+"/"+id.x+"/"+id.y+".png";
             URL u = new URL(urlString);
@@ -86,19 +80,17 @@ public final  class TileManager {
             catch (Exception e){
                 e.printStackTrace();
             }
-
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
             cacheMemoire.put(imagePath,image);
             return image;
-
         }
-
-
     }
 
-
-    record TileId(int zoom,int x, int y){
+    /**
+     * TileId with the given zoom, x and y coordinates
+     */
+    public record TileId(int zoom,int x, int y){
         /**
          * Returns true if and only if they constitute a valid tile identity
          * @param zoom
@@ -111,5 +103,4 @@ public final  class TileManager {
             return x >= 0 && x < i && y >= 0 && y < i;
         }
     }
-
 }

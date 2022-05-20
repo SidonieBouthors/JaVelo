@@ -46,7 +46,6 @@ public final class BaseMapManager {
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
 
-
         installListeners();
         installHandlers();
         this.redrawNeeded = true;

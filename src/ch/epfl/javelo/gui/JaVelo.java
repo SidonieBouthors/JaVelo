@@ -71,18 +71,17 @@ public final class JaVelo extends Application {
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager = new ElevationProfileManager(routeBean.getElevationProfile(), routeBean.highlightedPositionProperty());
         StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
-        SplitPane mainPane = new SplitPane(mapPane, elevationProfileManager.pane());
+        SplitPane mainPane = new SplitPane(mapPane);
         mainPane.orientationProperty().set(Orientation.VERTICAL);
-        //SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
 
         BorderPane paneWithMenu = new BorderPane();
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
 
-        /*
-       routeBean.getElevationProfile().addListener((p, oldE, newE) -> {
+
+       routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
            //System.out.println("elevation profile change");
-          if (routeBean.getElevationProfile().get() == null){
+          if (newE == null){
               System.out.println("remove profile");
              mainPane.getItems().remove(elevationProfileManager.pane());
           }
@@ -90,8 +89,12 @@ public final class JaVelo extends Application {
               System.out.println(elevationProfileManager.pane().getChildren().get(0));
               System.out.println("add profile");
               mainPane.getItems().add(1, elevationProfileManager.pane());
+              SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
-       });*/
+       });
+
+        /*routeBean.highlightedPositionProperty().bind(
+                elevationProfileManager.mousePositionOnProfileProperty());*/
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
