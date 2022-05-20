@@ -39,7 +39,9 @@ public final class WaypointsManager {
      * @param waypoints Observable list of waypoints
      * @param errorSignal error signal
      */
-    public WaypointsManager(Graph roadNetwork, ObjectProperty<MapViewParameters> fxProperty, ObservableList<Waypoint> waypoints,
+    public WaypointsManager(Graph roadNetwork,
+                            ObjectProperty<MapViewParameters> fxProperty,
+                            ObservableList<Waypoint> waypoints,
                             Consumer<String> errorSignal) {
 
         this.roadNetwork = roadNetwork;
@@ -60,7 +62,7 @@ public final class WaypointsManager {
     }
 
     /**
-     * Setting and Updating waypoints on the pane
+     * Redrawing the waypoints on the pane
      */
     private void updateWaypoints() {
 
@@ -88,7 +90,6 @@ public final class WaypointsManager {
             } else {
                 waypointGroup.getStyleClass().add("middle");
             }
-
             waypointGroup.getChildren().addAll(firstSVG, secondSVG);
 
             installGroupHandlers(waypointGroup, i);
@@ -99,6 +100,11 @@ public final class WaypointsManager {
         pane.getChildren().setAll(waypointGroups);
     }
 
+    /**
+     * Install handlers of the given waypoint group
+     * @param waypointGroup     : group
+     * @param index             : index of the waypoint
+     */
     private void installGroupHandlers(Group waypointGroup, int index){
 
         SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
@@ -130,14 +136,14 @@ public final class WaypointsManager {
 
     /**
      * Setting coordinates of the Group at a given Point ch
-     * @param wayPointGroup
-     * @param node position to set the group
+     * @param wayPointGroup     : group
+     * @param position              : position of the group
      */
-    private void setGroupCoordinates(Group wayPointGroup, PointCh node) {
+    private void setGroupCoordinates(Group wayPointGroup, PointCh position) {
 
         MapViewParameters map = fxProperty.get();
         int zoomLevel = map.zoomLevel();
-        PointWebMercator waypointWeb = PointWebMercator.ofPointCh(node);
+        PointWebMercator waypointWeb = PointWebMercator.ofPointCh(position);
         double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
         double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
 
@@ -166,26 +172,23 @@ public final class WaypointsManager {
     }
     /**
      * Add waypoint at a given position and index in the list
+     * @param index : index at which to add waypoint
      * @param x     : x coordinate
      * @param y     : y coordinate
      */
     private void addWaypoint(int index, double x, double y){
 
         PointCh point = fxProperty.get().pointAt(x,y).toPointCh();
-
         int nodeId = roadNetwork.nodeClosestTo(point, 1000);
-
 
         if (nodeId == -1) {
             errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
         }
+        else if (index >= waypoints.size()) {
+            waypoints.add(index, new Waypoint(point, nodeId));
+        }
         else {
-            if (index >= waypoints.size()) {
-                waypoints.add(index, new Waypoint(point, nodeId));
-            }
-            else {
-                waypoints.set(index, new Waypoint(point, nodeId));
-            }
+            waypoints.set(index, new Waypoint(point, nodeId));
         }
     }
 }
