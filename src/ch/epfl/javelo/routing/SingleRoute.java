@@ -95,6 +95,7 @@ public final class SingleRoute implements Route{
             return points.get(found);
         }
         else {
+
             found = -(found+2);
             Edge edge = edges.get(found);
             double positionOnEdge = position - edgePositions[found];

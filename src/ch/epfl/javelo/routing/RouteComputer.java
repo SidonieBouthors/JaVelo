@@ -71,8 +71,6 @@ public final class RouteComputer {
 
                 int edgeID = graph.nodeOutEdgeId(node.nodeId, i);
                 int toNodeId = graph.edgeTargetNodeId(edgeID);
-                System.out.println("edge id" + edgeID);
-                System.out.println("to node id" + toNodeId);
                 double d = distance[node.nodeId] + graph.edgeLength(edgeID) * costFunction.costFactor(node.nodeId, edgeID);
                 if (d < distance[toNodeId]) {
                     distance[toNodeId] = d;

@@ -155,16 +155,19 @@ public final class RouteManager {
 
         Route route = routeBean.getRouteProperty().get();
         MapViewParameters params = mapProperty.get();
-        highlightDisc.setVisible(route != null);
+        //highlightDisc.setVisible(route != null);
 
-        if (route != null) {
+        if (route != null && !routeBean.highlightedPosition().isNaN()) {
+            highlightDisc.setVisible(true);
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
                         routeBean.getRouteProperty().get().pointAt(
-                            routeBean.highlightedPosition()));
+                                routeBean.highlightedPosition()));
 
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
+        } else {
+            highlightDisc.setVisible(false);
         }
     }
 }

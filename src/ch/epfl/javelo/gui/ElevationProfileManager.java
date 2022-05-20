@@ -156,7 +156,7 @@ public final  class ElevationProfileManager {
                 "     Descente : %3$.0f m" +
                 "     Altitude : de %4$.0f m à %5$.0f m";
         ElevationProfile elevation = elevationProfile.get();
-        b = String.format(b,elevation.length(),elevation.totalAscent(),elevation.totalDescent(),elevation.minElevation(),elevation.maxElevation());
+        b = String.format(b,elevation.length()/1000,elevation.totalAscent(),elevation.totalDescent(),elevation.minElevation(),elevation.maxElevation());
         textVbox.setText(b);
     }
 
@@ -282,6 +282,7 @@ public final  class ElevationProfileManager {
             createTransforms();
             createGrid();
             createProfile();
+            System.out.println("Elevation Profile is " + elevationProfile.get()+ "in listenner");
         });
 
         elevationProfile.addListener((p, oldP, newP) -> {

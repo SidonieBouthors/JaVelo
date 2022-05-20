@@ -42,9 +42,9 @@ public final class JaVelo extends Application {
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
-        routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
-                new Waypoint(new PointCh(2532697, 1152350), 159049),
-                new Waypoint(new PointCh(2538659, 1154350), 117669)));
+        /*routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
+                new Waypoint(new PointCh(2532697, 1152500), 159049),
+                new Waypoint(new PointCh(2538659, 1154350), 117669)));*/
 
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
@@ -73,7 +73,8 @@ public final class JaVelo extends Application {
         StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
         SplitPane mainPane = new SplitPane(mapPane);
         mainPane.orientationProperty().set(Orientation.VERTICAL);
-
+        routeBean.highlightedPositionProperty().bind(
+                elevationProfileManager.mousePositionOnProfileProperty());
         BorderPane paneWithMenu = new BorderPane();
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
@@ -82,19 +83,17 @@ public final class JaVelo extends Application {
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
            //System.out.println("elevation profile change");
           if (newE == null){
-              System.out.println("remove profile");
+
              mainPane.getItems().remove(elevationProfileManager.pane());
           }
           else if (oldE == null){
-              System.out.println(elevationProfileManager.pane().getChildren().get(0));
-              System.out.println("add profile");
+
               mainPane.getItems().add(1, elevationProfileManager.pane());
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });
 
-        /*routeBean.highlightedPositionProperty().bind(
-                elevationProfileManager.mousePositionOnProfileProperty());*/
+
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
