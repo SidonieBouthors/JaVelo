@@ -147,8 +147,8 @@ public final class WaypointsManager {
         double xAtZoomLevel = waypointWeb.xAtZoomLevel(zoomLevel);
         double yAtZoomLevel = waypointWeb.yAtZoomLevel(zoomLevel);
 
-        double realX = xAtZoomLevel - map.topLeft().getX();
-        double realY = yAtZoomLevel - map.topLeft().getY();
+        double realX = xAtZoomLevel - map.x();
+        double realY = yAtZoomLevel - map.y();
 
         wayPointGroup.setLayoutX(realX);
         wayPointGroup.setLayoutY(realY);

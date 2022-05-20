@@ -2,6 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.Edge;
+import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.Route;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -30,7 +31,7 @@ public class GpxGenerator {
      * @param profile   : profile of the route
      * @return document corresponding to the route
      */
-    public static Document createGpx(Route route, DoubleUnaryOperator profile){
+    public static Document createGpx(Route route, ElevationProfile profile){
         Document doc = newDocument(); // voir plus bas
 
         Element root = doc
@@ -63,12 +64,12 @@ public class GpxGenerator {
 
             Element rtept = doc.createElement("rtept");
             rte.appendChild(rtept);
-            rtept.setAttribute("lat", String.valueOf(point.lat()));
-            rtept.setAttribute("lon", String.valueOf(point.lon()));
+            rtept.setAttribute("lat", String.valueOf(Math.toDegrees(point.lat())));
+            rtept.setAttribute("lon", String.valueOf(Math.toDegrees(point.lon())));
 
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
-            ele.setTextContent(String.valueOf(profile.applyAsDouble(position)));
+            ele.setTextContent(String.valueOf(profile.elevationAt(position)));
 
             position += edge.length();
         }
@@ -82,7 +83,7 @@ public class GpxGenerator {
      * @param profile   : profile of the route
      * @throws IOException in case of an input/output error
      */
-    public static void writeGpx(String fileName, Route route, DoubleUnaryOperator profile) throws IOException {
+    public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException {
         Document doc = createGpx(route, profile);
         Writer w = new FileWriter(fileName,  StandardCharsets.UTF_16);
 

@@ -133,8 +133,8 @@ public final class RouteManager {
     private void repositionRouteLine(){
         MapViewParameters params = mapProperty.get();
 
-        routeLine.setLayoutX( - params.topLeft().getX());
-        routeLine.setLayoutY( - params.topLeft().getY());
+        routeLine.setLayoutX( - params.x());
+        routeLine.setLayoutY( - params.y());
 
         repositionHighlightCircle();
     }

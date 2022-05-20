@@ -21,14 +21,12 @@ import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
 
-    private final BaseMapManager baseMapManager;
-    private final WaypointsManager waypointsManager;
-    private final RouteManager routeManager;
     private final RouteBean routeBean;
     private final ObjectProperty<MapViewParameters> mapViewParametersP;
     private final StackPane mainPane;
-    private ObjectProperty<Point2D> currentMousePosition;
-    private DoubleProperty mousePositionOnRouteProperty;
+    private final ObjectProperty<Point2D> currentMousePosition;
+    private final DoubleProperty mousePositionOnRouteProperty;
+    private final static int MAX_CURSOR_ROUTE_DISTANCE = 15;
 
     public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean, Consumer<String> errorConsumer){
         MapViewParameters mapViewParameters =
@@ -36,22 +34,19 @@ public final class AnnotatedMapManager {
         this.mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
-        this.mousePositionOnRouteProperty = new SimpleDoubleProperty();
+        this.mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         this.currentMousePosition = new SimpleObjectProperty<>();
 
         this.routeBean = routeBean;
-        this.waypointsManager =
-                new WaypointsManager(graph,
-                        mapViewParametersP,
-                        waypoints,
-                        errorConsumer);
-        this.baseMapManager =
-                new BaseMapManager(tileManager,
-                        this.waypointsManager,
-                        mapViewParametersP);
-        this.routeManager =
-                new RouteManager(routeBean,
-                        mapViewParametersP);
+        WaypointsManager waypointsManager = new WaypointsManager(graph,
+                mapViewParametersP,
+                waypoints,
+                errorConsumer);
+        BaseMapManager baseMapManager = new BaseMapManager(tileManager,
+                waypointsManager,
+                mapViewParametersP);
+        RouteManager routeManager = new RouteManager(routeBean,
+                mapViewParametersP);
 
         this.mainPane =
                 new StackPane(baseMapManager.pane(),
@@ -82,14 +77,18 @@ public final class AnnotatedMapManager {
             double topLeftX = mapViewParametersP.get().x();
             double topLeftY = mapViewParametersP.get().y();
 
-            PointCh mousePosition = PointWebMercator.of(
+            PointWebMercator mousePosition = PointWebMercator.of(
                     zoomLevel,
                     topLeftX + currentMousePosition.get().getX(),
-                    topLeftY + currentMousePosition.get().getY()).toPointCh();
-            RoutePoint closestPoint = route.pointClosestTo(mousePosition);
+                    topLeftY + currentMousePosition.get().getY());
+            RoutePoint closestPoint = route.pointClosestTo(mousePosition.toPointCh());
+            PointWebMercator point = PointWebMercator.ofPointCh(closestPoint.point());
 
-            if (closestPoint.distanceToReference() <= 50){
-                System.out.println(closestPoint.position());
+            double distance = Math2.squaredNorm(
+                    mapViewParametersP.get().viewX(mousePosition) - mapViewParametersP.get().viewX(point),
+                    mapViewParametersP.get().viewY(mousePosition) - mapViewParametersP.get().viewY(point));
+
+            if (distance <= MAX_CURSOR_ROUTE_DISTANCE){
                 return closestPoint.position();
             }
             else {

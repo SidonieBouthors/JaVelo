@@ -7,10 +7,12 @@ import ch.epfl.javelo.routing.CostFunction;
 import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -49,8 +51,6 @@ public final class JaVelo extends Application {
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
-        DoubleProperty positionAlongTheProfile = new SimpleDoubleProperty();
-
         MenuItem exportOption = new MenuItem("Exporter GPX");
         exportOption.disableProperty().set(
                 routeBean.getRouteProperty().get() != null);//itineraire non nul
@@ -58,7 +58,7 @@ public final class JaVelo extends Application {
             try {
                 GpxGenerator.writeGpx("javelo.gpx",
                         routeBean.getRouteProperty().get(),
-                        x -> routeBean.getElevationProfile().get().elevationAt(x));
+                        routeBean.getElevationProfile().get());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -69,45 +69,41 @@ public final class JaVelo extends Application {
         menuBar.setUseSystemMenuBar(true);
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
-        ElevationProfileManager elevationProfileManager = new ElevationProfileManager(routeBean.getElevationProfile(), routeBean.highlightedPositionProperty());
+        ElevationProfileManager elevationProfileManager =
+                new ElevationProfileManager(routeBean.getElevationProfile(),
+                                            routeBean.highlightedPositionProperty());
         StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
         SplitPane mainPane = new SplitPane(mapPane);
         mainPane.orientationProperty().set(Orientation.VERTICAL);
-        routeBean.highlightedPositionProperty().bind(
-                elevationProfileManager.mousePositionOnProfileProperty());
+
         BorderPane paneWithMenu = new BorderPane();
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
 
 
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
-           //System.out.println("elevation profile change");
           if (newE == null){
-
              mainPane.getItems().remove(elevationProfileManager.pane());
+
           }
           else if (oldE == null){
-
               mainPane.getItems().add(1, elevationProfileManager.pane());
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });
-       DoubleProperty mousePostion = mapManager.mousePositionOnRouteProperty();
 
-       mousePostion.addListener(a->{
-           Double mouse = mousePostion.get();
-           if (!mouse.isNaN()) {
-
+       routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
+           if (Double.isNaN(elevationProfileManager.mousePositionOnProfileProperty().get())) {
+               return mapManager.mousePositionOnRouteProperty().get();
            }
-
-       }
-       );
-
+           else {
+               return elevationProfileManager.mousePositionOnProfileProperty().get();
+           }
+       }, mapManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));
 
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
-
         primaryStage.setTitle("JaVelo");
         primaryStage.setScene(new Scene(paneWithMenu));
         primaryStage.show();

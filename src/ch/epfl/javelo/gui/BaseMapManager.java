@@ -145,8 +145,8 @@ public final class BaseMapManager {
             double xTranslate = newMousePosition.xAtZoomLevel(zoomLevel) - lastMousePosition.xAtZoomLevel(zoomLevel);
             double yTranslate = newMousePosition.yAtZoomLevel(zoomLevel) - lastMousePosition.yAtZoomLevel(zoomLevel);
 
-            double newX = params.topLeft().getX() - xTranslate;
-            double newY = params.topLeft().getY() - yTranslate;
+            double newX = params.x() - xTranslate;
+            double newY = params.y() - yTranslate;
             mapParameters.set(params.withMinXY(newX, newY));
 
             saveMousePosition(event.getX(),event.getY());
