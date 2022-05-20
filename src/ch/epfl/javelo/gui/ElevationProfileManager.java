@@ -53,7 +53,7 @@ public final  class ElevationProfileManager {
     private final DoubleProperty mousePositionOnProfile;
 
 
-    public ElevationProfileManager (ReadOnlyObjectProperty<ElevationProfile>elevationProfile,
+    public ElevationProfileManager (ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
                                     ReadOnlyDoubleProperty positionAlongTheProfile){
         this.elevationProfile = elevationProfile;
         this.positionAlongTheProfile = positionAlongTheProfile;
@@ -91,12 +91,15 @@ public final  class ElevationProfileManager {
         borderPane.setBottom(vbox);
         //borderPane.getChildren().add(pane);
 
+        System.out.println("from inside "+ elevationProfile);
+
         if (elevationProfile.get() != null) {
+            System.out.println("show profile");
             createTransforms();
             installBindings();
             installHandler();
             installListeners();
-            createStatistics();
+            //createStatistics();
         }
     }
 
@@ -134,7 +137,6 @@ public final  class ElevationProfileManager {
         ElevationProfile profile = elevationProfile.get();
 
         List<Double> points = new ArrayList<>();
-        double y = 0;
         for (int i = 0; i <= profile.length(); i++) {
             Point2D point = worldToScreen.get().transform(i, profile.elevationAt(i));
             points.add(point.getX());
@@ -148,6 +150,7 @@ public final  class ElevationProfileManager {
 
         polygon.getPoints().setAll(points);
     }
+
     private void createStatistics() {
         String b = "Longueur : %1$.1f km" +
                 "     Montée : %2$.0f m" +
@@ -239,7 +242,6 @@ public final  class ElevationProfileManager {
                 pane.heightProperty(), pane.widthProperty()
         ));
 
-
         DoubleProperty layoutX= line.layoutXProperty();
         DoubleProperty startY = line.startYProperty();
         DoubleProperty endY = line.endYProperty();
@@ -259,7 +261,7 @@ public final  class ElevationProfileManager {
 
     private void installHandler(){
         pane.setOnMouseMoved(event ->{
-
+            System.out.println("mousemoved");
             if (event == null
                     || event.getX() < rectInsets.getLeft()
                     || event.getY() < rectInsets.getTop()
@@ -272,16 +274,27 @@ public final  class ElevationProfileManager {
             }
         });
         pane.setOnMouseExited(event ->{
+            System.out.println("exited");
             mousePositionOnProfile.set(Double.NaN);
         });
 
-
     }
     private void installListeners(){
-        rectProperty.addListener(a -> {
+        rectProperty.addListener((p, oldR, newR) -> {
+            System.out.println("rect resized");
             createTransforms();
             createGrid();
             createProfile();
+        });
+
+        elevationProfile.addListener((p, oldP, newP) -> {
+            System.out.println("Elevation Profile is " + elevationProfile.get());
+            if(newP != null) {
+                System.out.println("show profile");
+                createTransforms();
+                createStatistics();
+                createProfile();
+            }
         });
 
     }

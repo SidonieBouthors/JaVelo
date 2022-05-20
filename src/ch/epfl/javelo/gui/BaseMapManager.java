@@ -42,11 +42,9 @@ public final class BaseMapManager {
         this.mapParameters = mapParameters;
         this.pane = new Pane();
         this.canvas = new Canvas();
-        System.out.println(pane.getWidth()+" "+pane.getHeight());
         pane.getChildren().add(canvas);
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
-        System.out.println(pane.getWidth()+" "+pane.getHeight());
 
 
         installListeners();
@@ -72,9 +70,6 @@ public final class BaseMapManager {
         int topLeftTileY = (int) params.y() / TILE_SIZE;
         int bottomRightTileX = (int) (params.x() + width) / TILE_SIZE + 1;
         int bottomRightTileY = (int) (params.y() + height) / TILE_SIZE + 1;
-
-        System.out.println("topLeftTileX :"+topLeftTileX+" TopLeftTileY :"+topLeftTileY);
-        System.out.println("bottomRightTileX :"+bottomRightTileX+" bottomRightTileY :"+bottomRightTileY);
 
         double xShift = -(params.x() - TILE_SIZE * topLeftTileX);
         for (int i = topLeftTileX; i < bottomRightTileX; i++) {
@@ -105,15 +100,14 @@ public final class BaseMapManager {
 
     private void installListeners(){
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            System.out.println("scene");
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
         canvas.widthProperty().addListener( w -> {
-            System.out.println("pane width : "+pane.getWidth());
             redrawOnNextPulse();
         });
         canvas.heightProperty().addListener( h -> {
-            System.out.println("pane height : "+pane.getHeight());
 
             redrawOnNextPulse();
         });

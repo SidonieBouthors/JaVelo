@@ -55,10 +55,10 @@ public final class WaypointsManager {
         pane = new Pane();
         pane.setPickOnBounds(false);
         settingWayPointsTab();
-        waypoints.addListener((ListChangeListener<? super Waypoint>) listen -> {
+        waypoints.addListener((ListChangeListener<? super Waypoint>) l -> {
             settingWayPointsTab();
         });
-        fxProperty.addListener( listen -> {
+        fxProperty.addListener((p, oldP, newP) -> {
             settingWayPointsTab();
         });
     }

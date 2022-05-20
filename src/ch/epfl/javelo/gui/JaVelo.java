@@ -8,6 +8,7 @@ import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -41,14 +42,12 @@ public final class JaVelo extends Application {
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
+        routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
+                new Waypoint(new PointCh(2532697, 1152350), 159049),
+                new Waypoint(new PointCh(2538659, 1154350), 117669)));
 
         ErrorManager errorManager = new ErrorManager();
-        Consumer<String> errorConsumer = new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                errorManager.displayError(s);
-            }
-        };
+        Consumer<String> errorConsumer = errorManager::displayError;
 
         DoubleProperty positionAlongTheProfile = new SimpleDoubleProperty();
 
@@ -72,28 +71,27 @@ public final class JaVelo extends Application {
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager = new ElevationProfileManager(routeBean.getElevationProfile(), routeBean.highlightedPositionProperty());
         StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
-        SplitPane mainPane = new SplitPane(mapPane, elevationProfileManager.pane());//
+        SplitPane mainPane = new SplitPane(mapPane, elevationProfileManager.pane());
         mainPane.orientationProperty().set(Orientation.VERTICAL);
-        SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
+        //SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
 
         BorderPane paneWithMenu = new BorderPane();
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
 
-       routeBean.getElevationProfile().addListener(e -> {
-           System.out.println("elevation profile change");
+        /*
+       routeBean.getElevationProfile().addListener((p, oldE, newE) -> {
+           //System.out.println("elevation profile change");
           if (routeBean.getElevationProfile().get() == null){
-              System.out.println("null");
-             mainPane.getItems().setAll(mapPane);
+              System.out.println("remove profile");
+             mainPane.getItems().remove(elevationProfileManager.pane());
           }
-          else {
-              System.out.println("not null");
-              mainPane.getItems().setAll(mapPane, elevationProfileManager.pane());
+          else if (oldE == null){
+              System.out.println(elevationProfileManager.pane().getChildren().get(0));
+              System.out.println("add profile");
+              mainPane.getItems().add(1, elevationProfileManager.pane());
           }
-       });
-
-
-
+       });*/
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);

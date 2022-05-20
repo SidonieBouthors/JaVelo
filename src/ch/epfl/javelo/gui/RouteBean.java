@@ -46,7 +46,7 @@ public final class RouteBean {
     public RouteBean(RouteComputer computer) {
         this.route = new SimpleObjectProperty<>();
         this.highlightedPosition = new SimpleDoubleProperty();
-        this.elevationProfile = new SimpleObjectProperty();
+        this.elevationProfile = new SimpleObjectProperty<>();
         this.computer = computer;
         route.set(null);
         elevationProfile.set(null);
@@ -54,21 +54,17 @@ public final class RouteBean {
         //test
         //highlightedPosition.set(5000);
 
-
-
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
-            System.out.println("hheoooo");
             if (waypoints.size() < minimalSize) {
                 route.set(null);
                 elevationProfile.set(null);
             }else {
-                System.out.println("computing ?");
                 routeComputer();
-                System.out.println(route.get());
                 elevationProfileComputer();
             }
         });
+        routeComputer();
     }
 
     /**
@@ -78,7 +74,6 @@ public final class RouteBean {
 
     private void routeComputer() {
 
-
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
 
@@ -87,25 +82,23 @@ public final class RouteBean {
             int endNodeId = waypoints.get(i + 1).nodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
 
-            //
             if (cacheMemoire.containsKey(routePair) ) {
                 miniRoute = cacheMemoire.get(routePair);
                 routeList.add(miniRoute);
             } else if (startNodeId != endNodeId){
-
                 miniRoute = computer.bestRouteBetween(startNodeId, endNodeId);
                 if (miniRoute != null) {
                     cacheMemoire.put(routePair, miniRoute);
                     routeList.add(miniRoute);
                 } else {
-                    elevationProfile.set(null);
+                    //elevationProfile.set(null); (pas besoin c'est fait dans l'autre methode?
                     route.set(null);
-                    routeList.clear();
-                    break;
+                    return;
+                    /*routeList.clear();
+                    break;*/
                 }
 
             }
-
         }
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
@@ -120,8 +113,7 @@ public final class RouteBean {
             elevationProfile.set(null);
             return;
         }
-
-        ElevationProfileComputer.elevationProfile(route.get(),maxStepLength);
+        elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(),maxStepLength));
     }
 
     /**
