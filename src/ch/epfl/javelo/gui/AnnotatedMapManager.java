@@ -1,8 +1,11 @@
 package ch.epfl.javelo.gui;
 
+import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
+import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import ch.epfl.javelo.projection.WebMercator;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.binding.Bindings;
@@ -12,10 +15,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-import java.util.Stack;
 import java.util.function.Consumer;
 
 public final class AnnotatedMapManager {
@@ -73,7 +74,6 @@ public final class AnnotatedMapManager {
 
     private void installBindings(){
         mousePositionOnRouteProperty.bind(Bindings.createObjectBinding(() -> {
-            System.out.println("salut");
             Route route = routeBean.getRouteProperty().get();
             if (route == null || currentMousePosition.get() == null) {
                 return Double.NaN;
@@ -93,9 +93,10 @@ public final class AnnotatedMapManager {
                 return closestPoint.position();
             }
             else {
-                System.out.println(Double.NaN);
                 return Double.NaN;
             }
+
+
 
         },routeBean.getRouteProperty(),currentMousePosition));
     }

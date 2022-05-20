@@ -99,7 +99,6 @@ public final class BaseMapManager {
 
     private void installListeners(){
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            System.out.println("scene");
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });

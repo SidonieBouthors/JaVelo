@@ -60,7 +60,8 @@ public final  class ElevationProfileManager {
         this.rectProperty = new SimpleObjectProperty<>();
         this.screenToWorld = new SimpleObjectProperty<>();
         this.worldToScreen = new SimpleObjectProperty<>();
-        this.mousePositionOnProfile = new SimpleDoubleProperty();
+        this.mousePositionOnProfile = new SimpleDoubleProperty(Double.NaN);
+
 
         //Text Vbox
         this.textVbox = new Text();
