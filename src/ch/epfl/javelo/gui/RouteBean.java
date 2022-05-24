@@ -27,7 +27,6 @@ public final class RouteBean {
 
     // for listener in RouteBean Constructor
     private static final int MINIMAL_SIZE = 2;
-
     //for elevation profile computer
     private static final int MAX_STEP_LENGTH = 5;
 
@@ -48,21 +47,16 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.computer = computer;
-
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
-            System.out.println("list changed");
             if (waypoints.size() < MINIMAL_SIZE) {
-                System.out.println("too small");
                 route.set(null);
                 elevationProfile.set(null);
             }else {
-                System.out.println("calculated");
-                routeComputer();
-                elevationProfileComputer();
+                computeRoute();
+                computeElevationProfile();
             }
         });
-        //routeComputer();
     }
 
     /**

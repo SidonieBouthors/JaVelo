@@ -15,6 +15,12 @@ public final class ErrorManager {
     private final Text errorText;
     private final VBox errorBox;
     private final SequentialTransition animation;
+    private final static String CSS_ERROR = "error.css";
+    private final static double MAX_OPACITY = 0.8;
+    private final static double MIN_OPACITY = 0;
+    private final static Duration APPEAR_DURATION = new Duration(200);
+    private final static Duration SHOW_DURATION = new Duration(2000);
+    private final static Duration DISAPPEAR_DURATION = new Duration(500);
 
     public ErrorManager(){
         this.errorText = new Text();

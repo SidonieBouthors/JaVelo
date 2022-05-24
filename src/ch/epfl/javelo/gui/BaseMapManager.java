@@ -5,14 +5,10 @@ import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.canvas.Canvas;
 
 import java.io.IOException;
 
@@ -93,6 +89,11 @@ public final class BaseMapManager {
         Platform.requestNextPulse();
     }
 
+    /**
+     * Save mouse position for Handler Use (setOnMouseScroll, setOnMouseClicked..)
+     * @param x
+     * @param y
+     */
     private void saveMousePosition(double x, double y){
         lastMousePosition = mapParameters.get().pointAt(x, y);
     }
@@ -116,6 +117,7 @@ public final class BaseMapManager {
 
     private void installHandlers(){
         pane.setOnScroll(event -> {
+
             if (event.getDeltaY() == 0d) return;
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
@@ -127,16 +129,14 @@ public final class BaseMapManager {
             double mouseY = event.getY();
             saveMousePosition(mouseX, mouseY);
 
-            int newZoom = Math2.clamp(8, (int)(params.zoomLevel() + zoomDelta), 19);
+            int newZoom = Math2.clamp(8, params.zoomLevel() + zoomDelta, 19);
             double newX = lastMousePosition.xAtZoomLevel(newZoom) - mouseX;
             double newY = lastMousePosition.yAtZoomLevel(newZoom) - mouseY;
 
             mapParameters.set(new MapViewParameters(newZoom, newX, newY));
         });
 
-        pane.setOnMousePressed( event -> {
-            saveMousePosition(event.getX(), event.getY());
-        });
+        pane.setOnMousePressed( event -> saveMousePosition(event.getX(), event.getY()));
         pane.setOnMouseDragged( event -> {
             MapViewParameters params = mapParameters.get();
             PointWebMercator newMousePosition = mapParameters.get().pointAt(event.getX(), event.getY());

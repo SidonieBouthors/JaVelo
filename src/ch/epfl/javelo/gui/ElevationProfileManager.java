@@ -2,9 +2,6 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.routing.ElevationProfile;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -150,6 +147,9 @@ public final  class ElevationProfileManager {
         polygon.getPoints().setAll(points);
     }
 
+    /**
+     * create the elevation profile statistics with length (in Km) and the rest in meters.
+     */
     private void createStatistics() {
         String b = "Longueur : %1$.1f km" +
                 "     Montée : %2$.0f m" +

@@ -12,7 +12,6 @@ import javafx.scene.shape.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author Sidonie Bouthors (343678)
@@ -25,6 +24,7 @@ public final class RouteManager {
     private final Pane pane;
     private final Polyline routeLine;
     private final Circle highlightDisc;
+    private final static double CIRCLE_RADIUS = 5.0;
 
     /**
      * Builds a RouteManager with the given properties
@@ -49,7 +49,7 @@ public final class RouteManager {
                 routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition()));
         */
 
-        this.highlightDisc = new Circle(5);
+        this.highlightDisc = new Circle(CIRCLE_RADIUS);
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
         rebuildRouteLine();
@@ -109,12 +109,12 @@ public final class RouteManager {
      */
     private void installListeners(){
 
-        routeBean.highlightedPositionProperty().addListener( (p, oldValue, newValue) -> {
-            repositionHighlightCircle();
-        });
-        routeBean.getRouteProperty().addListener( (p, oldValue, newValue) -> {
-            rebuildRouteLine();
-        });
+        routeBean.highlightedPositionProperty().addListener(
+                (p, oldValue, newValue) -> repositionHighlightCircle());
+
+        routeBean.getRouteProperty().addListener(
+                (p, oldValue, newValue) -> rebuildRouteLine());
+
         mapProperty.addListener( (p, oldValue, newValue) -> {
             if (oldValue.zoomLevel() != newValue.zoomLevel()) {
                 rebuildRouteLine();
@@ -130,10 +130,8 @@ public final class RouteManager {
      */
     private void repositionRouteLine(){
         MapViewParameters params = mapProperty.get();
-
         routeLine.setLayoutX( - params.x());
         routeLine.setLayoutY( - params.y());
-
         repositionHighlightCircle();
     }
 

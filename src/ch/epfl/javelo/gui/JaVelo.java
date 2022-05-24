@@ -1,24 +1,17 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.routing.CityBikeCF;
 import ch.epfl.javelo.routing.CostFunction;
-import ch.epfl.javelo.routing.ElevationProfile;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -52,6 +45,19 @@ public final class JaVelo extends Application {
         Consumer<String> errorConsumer = errorManager::displayError;
 
         MenuItem exportOption = new MenuItem("Exporter GPX");
+
+        /**
+         * MenuItem clearWaypoints = new MenuItem("Supprimer tous les points");
+         *
+         *         clearWaypoints.setOnAction(event ->{
+         *             routeBean.getWaypoints().clear();
+         *        }
+         *        );
+         */
+        
+
+
+
         exportOption.disableProperty().set(
                 routeBean.getRouteProperty().get() != null);//itineraire non nul
         exportOption.setOnAction(event -> {
@@ -67,6 +73,11 @@ public final class JaVelo extends Application {
         //menu.getItems().add(exportOption);
         MenuBar menuBar = new MenuBar(menu);
         menuBar.setUseSystemMenuBar(true);
+
+        /**
+         * menu.getItems().add(clearWaypoints);
+         */
+
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager =
