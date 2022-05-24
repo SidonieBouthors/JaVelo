@@ -31,10 +31,10 @@ public final  class TileManager {
 
     /**
      * Constructor of  a Tile Manager
-     * @param cacheDisque Place where you want to store your cache
+     * @param diskCache Place where you want to store your cache
      * @param nameOfServer Name of the server you want to extract data
      */
-    public TileManager(Path cacheDisque, String nameOfServer) {
+    public TileManager(Path diskCache, String nameOfServer) {
         this.nameOfServer=nameOfServer;
         this.cacheDisque=cacheDisque;
         if(!Files.exists(cacheDisque)){
@@ -91,6 +91,7 @@ public final  class TileManager {
      * TileId with the given zoom, x and y coordinates
      */
     public record TileId(int zoom,int x, int y){
+
         /**
          * Returns true if and only if they constitute a valid tile identity
          * @param zoom

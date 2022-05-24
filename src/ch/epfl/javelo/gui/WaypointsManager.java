@@ -32,6 +32,7 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorSignal;
     private final Pane pane;
+    private final static int SEARCH_DISTANCE_WAYPOINTS = 1000;
 
     /**
      * @param roadNetwork Graph of the roadNetwork
@@ -179,7 +180,7 @@ public final class WaypointsManager {
     private void addWaypoint(int index, double x, double y){
 
         PointCh point = fxProperty.get().pointAt(x,y).toPointCh();
-        int nodeId = roadNetwork.nodeClosestTo(point, 1000);
+        int nodeId = roadNetwork.nodeClosestTo(point, SEARCH_DISTANCE_WAYPOINTS);
 
         if (nodeId == -1) {
             errorSignal.accept(NO_ROAD_ERROR_MESSAGE);
