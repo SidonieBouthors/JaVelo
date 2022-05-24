@@ -2,10 +2,7 @@ package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.Ch1903;
-import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.WebMercator;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.binding.Bindings;
@@ -94,17 +91,14 @@ public final class AnnotatedMapManager {
             else {
                 return Double.NaN;
             }
-
-
-
         },routeBean.getRouteProperty(),currentMousePosition));
     }
     private void installHandlers(){
-        mainPane.setOnMouseMoved(event -> {
-            currentMousePosition.set(new Point2D(event.getX(), event.getY()));
-        });
-        mainPane.setOnMouseExited(event -> {
-            currentMousePosition.set(null);
-        });
+        mainPane.setOnMouseMoved(event ->
+            currentMousePosition.set(new Point2D(event.getX(), event.getY()))
+        );
+        mainPane.setOnMouseExited(event ->
+            currentMousePosition.set(null)
+        );
     }
 }

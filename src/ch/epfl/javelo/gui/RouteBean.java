@@ -26,10 +26,10 @@ public final class RouteBean {
     private final RouteComputer computer;
 
     // for listener in RouteBean Constructor
-    private static final int  minimalSize = 2;
+    private static final int MINIMAL_SIZE = 2;
 
     //for elevation profile computer
-    private static final int maxStepLength = 5;
+    private static final int MAX_STEP_LENGTH = 5;
 
     private final LinkedHashMap<Pair<Integer,Integer>, Route> cacheMemoire =
             new LinkedHashMap<>() {
@@ -48,24 +48,21 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.computer = computer;
-        route.set(null);
-        elevationProfile.set(null);
-
-        //test
-        //highlightedPosition.set(5000);
 
         waypoints = FXCollections.observableArrayList();
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
-            if (waypoints.size() < minimalSize) {
+            System.out.println("list changed");
+            if (waypoints.size() < MINIMAL_SIZE) {
+                System.out.println("too small");
                 route.set(null);
                 elevationProfile.set(null);
             }else {
-
+                System.out.println("calculated");
                 routeComputer();
                 elevationProfileComputer();
             }
         });
-        routeComputer();
+        //routeComputer();
     }
 
     /**
@@ -118,7 +115,7 @@ public final class RouteBean {
             elevationProfile.set(null);
             return;
         }
-        elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(),maxStepLength));
+        elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
     }
 
     /**

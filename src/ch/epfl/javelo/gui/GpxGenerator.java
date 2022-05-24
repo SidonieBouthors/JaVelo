@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.function.DoubleUnaryOperator;
 /**
  * @author Sidonie Bouthors (343678)
@@ -64,8 +65,8 @@ public class GpxGenerator {
 
             Element rtept = doc.createElement("rtept");
             rte.appendChild(rtept);
-            rtept.setAttribute("lat", String.valueOf(Math.toDegrees(point.lat())));
-            rtept.setAttribute("lon", String.valueOf(Math.toDegrees(point.lon())));
+            rtept.setAttribute("lat", String.format(Locale.ENGLISH, ".%5f",Math.toDegrees(point.lat())));
+            rtept.setAttribute("lon", String.format(Locale.ENGLISH,".%5f",Math.toDegrees(point.lon())));
 
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);

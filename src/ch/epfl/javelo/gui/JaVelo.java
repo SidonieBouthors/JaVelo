@@ -44,9 +44,9 @@ public final class JaVelo extends Application {
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
-        /*routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
+        routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
                 new Waypoint(new PointCh(2532697, 1152500), 159049),
-                new Waypoint(new PointCh(2538659, 1154350), 117669)));*/
+                new Waypoint(new PointCh(2538659, 1154350), 117669)));
 
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
@@ -64,7 +64,7 @@ public final class JaVelo extends Application {
             }
         });
         Menu menu = new Menu("Fichier");
-        menu.getItems().add(exportOption);
+        //menu.getItems().add(exportOption);
         MenuBar menuBar = new MenuBar(menu);
         menuBar.setUseSystemMenuBar(true);
 
@@ -83,11 +83,13 @@ public final class JaVelo extends Application {
 
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
           if (newE == null){
-             mainPane.getItems().remove(elevationProfileManager.pane());
+              mainPane.getItems().remove(elevationProfileManager.pane());
+              menu.getItems().remove(exportOption);
 
           }
           else if (oldE == null){
               mainPane.getItems().add(1, elevationProfileManager.pane());
+              menu.getItems().add(exportOption);
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });

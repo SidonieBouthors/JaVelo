@@ -52,9 +52,7 @@ public final class RouteManager {
         this.highlightDisc = new Circle(5);
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
-        //routeLine.setLayoutX( - params.topLeft().getX());
-        //routeLine.setLayoutY( - params.topLeft().getY());
-        //repositionRouteLine();
+        rebuildRouteLine();
         installHandlers();
         installListeners();
     }
