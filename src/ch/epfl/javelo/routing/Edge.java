@@ -62,6 +62,7 @@ public record Edge(int fromNodeId, int toNodeId, PointCh fromPoint,
      */
     public PointCh pointAt(double position){
 
+        if(length == 0){ return fromPoint; };
         double x = position / length;
         double e = Math2.interpolate(fromPoint.e(), toPoint.e(), x);
         double n = Math2.interpolate(fromPoint.n(), toPoint.n(), x);

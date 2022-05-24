@@ -168,7 +168,7 @@ public final  class ElevationProfileManager {
         Transform toScreen = worldToScreen.get();
 
         double xNumberOfSteps = 0;
-        double xStep = 0;
+        double xStep;
         double xStepWorld = 0;
         for (int step: POS_STEPS) {
             xStep = Math.abs(toScreen.deltaTransform(step, 0).getX());
@@ -179,7 +179,7 @@ public final  class ElevationProfileManager {
             }
         }
         double yNumberOfSteps = 0;
-        double yStep = 0;
+        double yStep;
         double yStepWorld = 0;
         for (int step: ELE_STEPS) {
             yStep = Math.abs(toScreen.deltaTransform(0, step).getY());
@@ -272,9 +272,8 @@ public final  class ElevationProfileManager {
                 mousePositionOnProfile.set(x);
             }
         });
-        pane.setOnMouseExited(event ->{
-            mousePositionOnProfile.set(Double.NaN);
-        });
+
+        pane.setOnMouseExited(event -> mousePositionOnProfile.set(Double.NaN));
 
     }
     private void installListeners(){

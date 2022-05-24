@@ -93,28 +93,33 @@ public final class AnnotatedMapManager {
             if (route == null || currentMousePosition.get() == null) {
                 return Double.NaN;
             }
-            int zoomLevel = mapViewParametersP.get().zoomLevel();
-            double topLeftX = mapViewParametersP.get().x();
-            double topLeftY = mapViewParametersP.get().y();
 
             PointWebMercator mousePosition = PointWebMercator.of(
-                    zoomLevel,
-                    topLeftX + currentMousePosition.get().getX(),
-                    topLeftY + currentMousePosition.get().getY());
+                    mapViewParametersP.get().zoomLevel(),
+                    mapViewParametersP.get().x() + currentMousePosition.get().getX(),
+                    mapViewParametersP.get().y() + currentMousePosition.get().getY());
+
+            if (mousePosition.toPointCh() == null){
+                return Double.NaN;
+            }
             RoutePoint closestPoint = route.pointClosestTo(mousePosition.toPointCh());
             PointWebMercator point = PointWebMercator.ofPointCh(closestPoint.point());
 
-            double distance = Math2.squaredNorm(
-                    mapViewParametersP.get().viewX(mousePosition) - mapViewParametersP.get().viewX(point),
-                    mapViewParametersP.get().viewY(mousePosition) - mapViewParametersP.get().viewY(point));
+            double distance = Math2.norm(
+                    currentMousePosition.get().getX() - mapViewParametersP.get().viewX(point),
+                    currentMousePosition.get().getY() - mapViewParametersP.get().viewY(point));
 
+            /*
+            mapViewParametersP.get().viewX(mousePosition) - mapViewParametersP.get().viewX(point),
+            mapViewParametersP.get().viewY(mousePosition) - mapViewParametersP.get().viewY(point));
+             */
             if (distance <= MAX_CURSOR_ROUTE_DISTANCE){
                 return closestPoint.position();
             }
             else {
                 return Double.NaN;
             }
-        },routeBean.getRouteProperty(),currentMousePosition));
+        },routeBean.getRouteProperty(), currentMousePosition));
     }
 
     private void installHandlers(){

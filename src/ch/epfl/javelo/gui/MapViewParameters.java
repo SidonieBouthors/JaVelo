@@ -28,16 +28,16 @@ public record MapViewParameters(int zoomLevel, double x, double y) {
     /**
      * Returns a MapViewParameters with the same zoom as this
      * but different coordinates
-     * @param x
-     * @param y
-     * @return
+     * @param x     : x coordinate
+     * @param y     : y coordinate
+     * @return MapViewParameters with same zoom as this
      */
     MapViewParameters withMinXY(double x, double y){
         return new MapViewParameters(zoomLevel, x, y);
     }
 
     /**
-     * Returns the PoinWebMercator corresponding to
+     * Returns the PointWebMercator corresponding to
      * the given relative coordinates
      * @param viewX     : x coordinate relative to the top left
      * @param viewY     : y coordinate relative to the top left

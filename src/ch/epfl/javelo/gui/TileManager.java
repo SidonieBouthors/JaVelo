@@ -19,9 +19,9 @@ import javafx.scene.image.Image;
 public final  class TileManager {
 
     private final static int CACHE_MEMOIRE_SIZE = 100;
-    private final Path cacheDisque;
+    private final Path diskCache;
     private final String nameOfServer;
-    private final LinkedHashMap<Path, Image> cacheMemoire =
+    private final LinkedHashMap<Path, Image> memoryCache =
             new LinkedHashMap<Path, Image>() {
                 protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest)
                 {
@@ -36,9 +36,9 @@ public final  class TileManager {
      */
     public TileManager(Path diskCache, String nameOfServer) {
         this.nameOfServer=nameOfServer;
-        this.cacheDisque=cacheDisque;
-        if(!Files.exists(cacheDisque)){
-            cacheDisque.toFile().mkdir();
+        this.diskCache =diskCache;
+        if(!Files.exists(diskCache)){
+            diskCache.toFile().mkdir();
         }
     }
 
@@ -50,21 +50,18 @@ public final  class TileManager {
      */
     public Image imageForTileAt(TileId id) throws IOException {
         Preconditions.checkArgument(TileId.isValid(id.zoom, id.x, id.y));
-        Path dirPath = cacheDisque.resolve(String.valueOf(id.zoom))
+        Path dirPath = diskCache.resolve(String.valueOf(id.zoom))
                                   .resolve(String.valueOf(id.x));
         Path imagePath = dirPath.resolve(id.y+".png");
-        //File zoomFile = new File(zoomPath);
-        //File xPathFile = new File(xPath);
         File imageFile = imagePath.toFile();
 
-
-        if (cacheMemoire.containsKey(imagePath)) {
-            return cacheMemoire.get(imagePath);
+        if (memoryCache.containsKey(imagePath)) {
+            return memoryCache.get(imagePath);
         }
         else if (Files.exists(imagePath)) {
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
-            cacheMemoire.put(imagePath,image);
+            memoryCache.put(imagePath,image);
             return image;
         }
         else{
@@ -82,7 +79,7 @@ public final  class TileManager {
             }
             InputStream i = new FileInputStream(imageFile);
             Image image = new Image(i);
-            cacheMemoire.put(imagePath,image);
+            memoryCache.put(imagePath,image);
             return image;
         }
     }
@@ -93,10 +90,10 @@ public final  class TileManager {
     public record TileId(int zoom,int x, int y){
 
         /**
-         * Returns true if and only if they constitute a valid tile identity
-         * @param zoom
-         * @param x
-         * @param y
+         * Returns true if and only if the parameters constitute a valid tile identity
+         * @param zoom  : zoom level
+         * @param x     : x coordinate
+         * @param y     : y coordinate
          * @return
          */
         public  static boolean isValid(int zoom, int x, int y) {

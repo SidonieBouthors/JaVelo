@@ -54,12 +54,8 @@ public final class WaypointsManager {
         pane.setPickOnBounds(false);
         updateWaypoints();
 
-        waypoints.addListener((ListChangeListener<? super Waypoint>) l -> {
-            updateWaypoints();
-        });
-        fxProperty.addListener((p, oldP, newP) -> {
-            updateWaypoints();
-        });
+        waypoints.addListener((ListChangeListener<? super Waypoint>) l -> updateWaypoints());
+        fxProperty.addListener((p, oldP, newP) -> updateWaypoints());
     }
 
     /**
@@ -110,9 +106,7 @@ public final class WaypointsManager {
 
         SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
 
-        waypointGroup.setOnMousePressed(pressed -> {
-            point.set(new Point2D(pressed.getX(), pressed.getY()));
-        });
+        waypointGroup.setOnMousePressed(pressed -> point.set(new Point2D(pressed.getX(), pressed.getY())));
 
         waypointGroup.setOnMouseDragged(dragged -> {
             double x = waypointGroup.getLayoutX();

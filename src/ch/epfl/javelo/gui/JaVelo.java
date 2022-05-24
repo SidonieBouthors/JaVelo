@@ -37,9 +37,12 @@ public final class JaVelo extends Application {
         CostFunction costFunction = new CityBikeCF(graph);
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
+
+        /*
         routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
                 new Waypoint(new PointCh(2532697, 1152500), 159049),
                 new Waypoint(new PointCh(2538659, 1154350), 117669)));
+        */
 
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;

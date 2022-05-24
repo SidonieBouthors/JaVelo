@@ -86,7 +86,7 @@ public final class RouteManager {
     }
 
     /**
-     * Install the handlers
+     * Installs the handlers
      */
     private void installHandlers() {
         highlightDisc.setOnMouseClicked( event -> {
@@ -105,7 +105,7 @@ public final class RouteManager {
     }
 
     /**
-     * Install the listeners
+     * Installs the listeners
      */
     private void installListeners(){
 
@@ -126,7 +126,7 @@ public final class RouteManager {
     }
 
     /**
-     * Reposition the route line according to the map position
+     * Repositions the route line according to the map position
      */
     private void repositionRouteLine(){
         MapViewParameters params = mapProperty.get();
@@ -136,7 +136,7 @@ public final class RouteManager {
     }
 
     /**
-     * Rebuild the route line with the new route
+     * Rebuilds the route line with the new route
      */
     private void rebuildRouteLine(){
         Route route = routeBean.getRouteProperty().get();
@@ -150,14 +150,12 @@ public final class RouteManager {
     }
 
     /**
-     * Reposition the highlight circle on the route line
+     * Repositions the highlight circle on the route line
      */
     private void repositionHighlightCircle(){
 
         Route route = routeBean.getRouteProperty().get();
         MapViewParameters params = mapProperty.get();
-        //highlightDisc.setVisible(route != null);
-        //highlightDisc.setVisible(route != null && !routeBean.highlightedPosition().isNaN());
 
         if (route != null && (!routeBean.highlightedPosition().isNaN())) {
             highlightDisc.setVisible(true);

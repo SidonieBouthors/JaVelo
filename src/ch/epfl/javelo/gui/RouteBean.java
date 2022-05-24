@@ -60,11 +60,9 @@ public final class RouteBean {
     }
 
     /**
-     * compute route
-     *
+     * Computes the Route
      */
-
-    private void routeComputer() {
+    private void computeRoute() {
 
         Route miniRoute;
         List<Route> routeList = new ArrayList<>();
@@ -73,7 +71,6 @@ public final class RouteBean {
             int startNodeId = waypoints.get(i).nodeId();
             int endNodeId = waypoints.get(i + 1).nodeId();
             Pair<Integer,Integer> routePair = new Pair<>(startNodeId, endNodeId);
-
 
             if (cacheMemoire.containsKey(routePair) ) {
 
@@ -86,25 +83,20 @@ public final class RouteBean {
                     cacheMemoire.put(routePair, miniRoute);
                     routeList.add(miniRoute);
                 } else {
-                    //elevationProfile.set(null); (pas besoin c'est fait dans l'autre methode?
                     route.set(null);
                     return;
-                    /*routeList.clear();
-                    break;*/
                 }
-
             }
         }
-
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
         }
     }
 
     /**
-     * compute Elevation Profile
+     * Computes the Elevation Profile
      */
-    private void elevationProfileComputer() {
+    private void computeElevationProfile() {
         if (route.get() == null) {
             elevationProfile.set(null);
             return;
@@ -113,15 +105,15 @@ public final class RouteBean {
     }
 
     /**
-     * return the  highlighted DoubleProperty
-     * @return highlighted DoubleProperty
+     * Gets the  Highlighted Position property
+     * @return Highlighted Position property
      */
     public DoubleProperty highlightedPositionProperty() {
         return highlightedPosition;
     }
 
     /**
-     * return the Highlighted Position
+     * Gets the Highlighted Position
      * @return Highlighted Position
      */
     public Double highlightedPosition() {
@@ -129,40 +121,42 @@ public final class RouteBean {
     }
 
     /**
-     * Setter HighLighted Position
-     * @param highlightedPosition
+     * Sets Highlighted Position
+     * @param highlightedPosition   : new highlighted position
      */
     public void setHighlightedPosition(double highlightedPosition) {
         this.highlightedPosition.set(highlightedPosition);
     }
 
     /**
-     * getter Elevation Profile property
+     * Gets Elevation Profile property
      * @return elevation profile property
      */
-
     public ReadOnlyObjectProperty<ElevationProfile> getElevationProfile() {
         return elevationProfile;
     }
 
     /**
-     * getter Route property
+     * Gets Route property
      * @return route property
      */
-
     public ReadOnlyObjectProperty<Route> getRouteProperty() {
-
         return route;
     }
 
     /**
-     * getter Observable List of waypoints
-     * @return observable list of waypoints
+     * Gets ObservableList of waypoints
+     * @return list of waypoints
      */
     public ObservableList<Waypoint> getWaypoints() {
         return waypoints;
     }
 
+    /**
+     * Returns the index of the non-empty segment at the given position on the route
+     * @param position  : position
+     * @return index of the non-empty segment
+     */
     public int indexOfNonEmptySegmentAt(double position) {
         int index = route.get().indexOfSegmentAt(position);
         for (int i = 0; i <= index; i += 1) {

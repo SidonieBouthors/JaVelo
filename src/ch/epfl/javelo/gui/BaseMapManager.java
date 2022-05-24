@@ -22,19 +22,22 @@ public final class BaseMapManager {
     private final TileManager tileManager;
     private final WaypointsManager waypointManager;
     private final ObjectProperty<MapViewParameters> mapParameters;
-    private boolean redrawNeeded;
     private final Canvas canvas;
     private final Pane pane;
     private final SimpleLongProperty minScrollTime = new SimpleLongProperty();
     private PointWebMercator lastMousePosition;
+    private boolean redrawNeeded;
 
-
+    /**
+     * Construct the map
+     * @param tileManager       : tile manager
+     * @param waypointManager   : waypoint manager
+     * @param mapParameters     : property containing the map view parameters
+     */
     public BaseMapManager(TileManager tileManager, WaypointsManager waypointManager,
                           ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
         this.waypointManager = waypointManager;
-
-
         this.mapParameters = mapParameters;
         this.pane = new Pane();
         this.canvas = new Canvas();
@@ -47,6 +50,10 @@ public final class BaseMapManager {
         this.redrawNeeded = true;
     }
 
+    /**
+     * Returns the pane containing the base map
+     * @return the pane
+     */
     public Pane pane(){
         return pane;
     }
@@ -103,22 +110,16 @@ public final class BaseMapManager {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        canvas.widthProperty().addListener( w -> {
-            redrawOnNextPulse();
-        });
-        canvas.heightProperty().addListener( h -> {
-
-            redrawOnNextPulse();
-        });
-        mapParameters.addListener( p -> {
-            redrawOnNextPulse();
-        });
+        canvas.widthProperty().addListener((p, oldW, newW) -> redrawOnNextPulse());
+        canvas.heightProperty().addListener((p, oldH, newH) -> redrawOnNextPulse());
+        mapParameters.addListener((p, oldM, newM) -> redrawOnNextPulse());
     }
 
     private void installHandlers(){
         pane.setOnScroll(event -> {
 
             if (event.getDeltaY() == 0d) return;
+
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
@@ -151,9 +152,8 @@ public final class BaseMapManager {
 
             saveMousePosition(event.getX(),event.getY());
         });
-        pane.setOnMouseReleased( event ->  {
-            saveMousePosition(event.getX(), event.getY());
-        });
+
+        pane.setOnMouseReleased( event -> saveMousePosition(event.getX(), event.getY()));
 
         pane.setOnMouseClicked( event -> {
             if (event.isStillSincePress()){
