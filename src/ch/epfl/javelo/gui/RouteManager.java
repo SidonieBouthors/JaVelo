@@ -24,7 +24,7 @@ public final class RouteManager {
     private final Pane pane;
     private final Polyline routeLine;
     private final Circle highlightDisc;
-    private final static double CIRCLE_RADIUS = 5.0;
+    private final static double CIRCLE_RADIUS = 5d;
 
     /**
      * Builds a RouteManager with the given properties

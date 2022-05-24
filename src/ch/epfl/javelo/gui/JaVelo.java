@@ -47,20 +47,13 @@ public final class JaVelo extends Application {
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
+
+
+        //bonus
+        MenuItem clearWaypoints = new MenuItem("Supprimer tous les points");
+        clearWaypoints.setOnAction(event -> routeBean.getWaypoints().clear());
+
         MenuItem exportOption = new MenuItem("Exporter GPX");
-
-        /**
-         * MenuItem clearWaypoints = new MenuItem("Supprimer tous les points");
-         *
-         *         clearWaypoints.setOnAction(event ->{
-         *             routeBean.getWaypoints().clear();
-         *        }
-         *        );
-         */
-        
-
-
-
         exportOption.disableProperty().set(
                 routeBean.getRouteProperty().get() != null);//itineraire non nul
         exportOption.setOnAction(event -> {
@@ -73,13 +66,11 @@ public final class JaVelo extends Application {
             }
         });
         Menu menu = new Menu("Fichier");
-        //menu.getItems().add(exportOption);
         MenuBar menuBar = new MenuBar(menu);
         menuBar.setUseSystemMenuBar(true);
 
-        /**
-         * menu.getItems().add(clearWaypoints);
-         */
+
+        menu.getItems().add(clearWaypoints); // bonus
 
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);

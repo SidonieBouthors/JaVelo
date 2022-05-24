@@ -286,10 +286,10 @@ public final  class ElevationProfileManager {
         elevationProfile.addListener((p, oldP, newP) -> {
             installBindings();
             if(newP != null) {
-                //installBindings();
                 createTransforms();
                 createStatistics();
                 createProfile();
+                createGrid();
             }
         });
 
