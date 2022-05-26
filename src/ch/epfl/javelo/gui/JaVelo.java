@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
@@ -44,14 +45,25 @@ public final class JaVelo extends Application {
                 new Waypoint(new PointCh(2538659, 1154350), 117669)));
         */
 
+        //BONUS
+        Path cyclingCacheBasePath = Path.of("cycling-cache");
+        String cyclingTileServerHost = "tile.waymarkedtrails.org/cycling";
+        TileManager cyclingTileManager =
+                new TileManager(cyclingCacheBasePath, cyclingTileServerHost);
+        //
+
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
 
 
         //bonus
-        MenuItem clearWaypoints = new MenuItem("Supprimer tous les points");
+        MenuItem clearWaypoints = new MenuItem("Clear All Waypoints");
         clearWaypoints.setOnAction(event -> routeBean.getWaypoints().clear());
+        MenuItem invertRoute = new MenuItem("Invert Route");
+        invertRoute.setOnAction(event -> Collections.reverse(routeBean.getWaypoints()));
+        //
+
 
         MenuItem exportOption = new MenuItem("Exporter GPX");
         exportOption.disableProperty().set(
@@ -69,8 +81,14 @@ public final class JaVelo extends Application {
         MenuBar menuBar = new MenuBar(menu);
         menuBar.setUseSystemMenuBar(true);
 
-
-        menu.getItems().add(clearWaypoints); // bonus
+        // bonus
+        menu.getItems().add(clearWaypoints);
+        menu.getItems().add(invertRoute);
+        //
+        //BONUS
+        MenuItem overlayCyclingRoutes = new MenuItem("Overlay Cycling Routes");
+        //overlayCyclingRoutes.setOnAction(event -> );
+        //
 
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
@@ -84,6 +102,8 @@ public final class JaVelo extends Application {
         BorderPane paneWithMenu = new BorderPane();
         paneWithMenu.setTop(menuBar);
         paneWithMenu.setCenter(mainPane);
+
+
 
 
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {

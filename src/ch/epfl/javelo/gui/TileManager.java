@@ -42,7 +42,6 @@ public final  class TileManager {
         }
     }
 
-
     /**
      * Returns the image of the tile of given ID
      * @param id    : ID of the tile
