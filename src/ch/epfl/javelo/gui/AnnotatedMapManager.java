@@ -7,10 +7,7 @@ import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
@@ -41,7 +38,8 @@ public final class AnnotatedMapManager {
      * @param routeBean : routeBean
      * @param errorConsumer : errorConsumer
      */
-    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean, Consumer<String> errorConsumer){
+    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean,
+                               Consumer<String> errorConsumer, TileManager overlayTileManager, BooleanProperty drawOverlay){
         MapViewParameters mapViewParameters =
                 new MapViewParameters(INIT_ZOOM, INIT_X,INIT_Y);
         this.mapViewParametersP =
@@ -56,6 +54,8 @@ public final class AnnotatedMapManager {
                 waypoints,
                 errorConsumer);
         BaseMapManager baseMapManager = new BaseMapManager(tileManager,
+                overlayTileManager,
+                drawOverlay,
                 waypointsManager,
                 mapViewParametersP);
         RouteManager routeManager = new RouteManager(routeBean,

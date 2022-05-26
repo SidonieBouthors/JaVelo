@@ -6,6 +6,8 @@ import ch.epfl.javelo.routing.CostFunction;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -45,23 +47,31 @@ public final class JaVelo extends Application {
                 new Waypoint(new PointCh(2538659, 1154350), 117669)));
         */
 
-        //BONUS
-        Path cyclingCacheBasePath = Path.of("cycling-cache");
-        String cyclingTileServerHost = "tile.waymarkedtrails.org/cycling";
-        TileManager cyclingTileManager =
-                new TileManager(cyclingCacheBasePath, cyclingTileServerHost);
-        //
-
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
+        //BONUS
+        Path cyclingCacheBasePath = Path.of("cycling-cache");
+        String cyclingTileServerHost = "tile.waymarkedtrails.org/cycling";
+        TileManager overlayTileManager =
+                new TileManager(cyclingCacheBasePath, cyclingTileServerHost);
+        BooleanProperty drawOverlay = new SimpleBooleanProperty(false);
+        //
 
-
-        //bonus
-        MenuItem clearWaypoints = new MenuItem("Clear All Waypoints");
+        //BONUS
+        MenuItem clearWaypoints = new MenuItem("Supprimer les Points");
         clearWaypoints.setOnAction(event -> routeBean.getWaypoints().clear());
-        MenuItem invertRoute = new MenuItem("Invert Route");
+        MenuItem invertRoute = new MenuItem("Inverser la Route");
         invertRoute.setOnAction(event -> Collections.reverse(routeBean.getWaypoints()));
+        MenuItem overlayCyclingRoutes = new MenuItem("Afficher les Pistes Cyclables");
+        overlayCyclingRoutes.setOnAction(event -> drawOverlay.set(!drawOverlay.get()));
+        drawOverlay.addListener((p, oldP, newP) -> {
+            if (newP){
+                overlayCyclingRoutes.setText("Cacher les Pistes Cyclables");
+            } else {
+                overlayCyclingRoutes.setText("Afficher les Pistes Cyclables");
+            }
+        });
         //
 
 
@@ -77,21 +87,23 @@ public final class JaVelo extends Application {
                 throw new UncheckedIOException(e);
             }
         });
-        Menu menu = new Menu("Fichier");
-        MenuBar menuBar = new MenuBar(menu);
+        Menu menuFichier = new Menu("Fichier");
+        //BONUS
+        Menu menuFondCarte = new Menu("Fond de Carte");
+        Menu menuItineraire = new Menu("Itinéraire");
+        //
+        MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire);
         menuBar.setUseSystemMenuBar(true);
 
-        // bonus
-        menu.getItems().add(clearWaypoints);
-        menu.getItems().add(invertRoute);
-        //
         //BONUS
-        MenuItem overlayCyclingRoutes = new MenuItem("Overlay Cycling Routes");
-        //overlayCyclingRoutes.setOnAction(event -> );
+        menuItineraire.getItems().add(clearWaypoints);
+        menuItineraire.getItems().add(invertRoute);
+        menuFondCarte.getItems().add(overlayCyclingRoutes);
         //
 
 
-        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
+
+        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer, overlayTileManager, drawOverlay);
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.getElevationProfile(),
                                             routeBean.highlightedPositionProperty());
@@ -109,12 +121,12 @@ public final class JaVelo extends Application {
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
           if (newE == null){
               mainPane.getItems().remove(elevationProfileManager.pane());
-              menu.getItems().remove(exportOption);
+              menuFichier.getItems().remove(exportOption);
 
           }
           else if (oldE == null){
               mainPane.getItems().add(1, elevationProfileManager.pane());
-              menu.getItems().add(exportOption);
+              menuFichier.getItems().add(exportOption);
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });

@@ -3,6 +3,7 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.canvas.Canvas;
@@ -25,6 +26,8 @@ public final class BaseMapManager {
     private final Canvas canvas;
     private final Pane pane;
     private final SimpleLongProperty minScrollTime = new SimpleLongProperty();
+    private final TileManager overlayTileManager;
+    private final BooleanProperty drawOverlay;
     private PointWebMercator lastMousePosition;
     private boolean redrawNeeded;
 
@@ -34,9 +37,12 @@ public final class BaseMapManager {
      * @param waypointManager   : waypoint manager
      * @param mapParameters     : property containing the map view parameters
      */
-    public BaseMapManager(TileManager tileManager, WaypointsManager waypointManager,
+    public BaseMapManager(TileManager tileManager, TileManager overlayTileManager, BooleanProperty drawOverlay,
+                          WaypointsManager waypointManager,
                           ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
+        this.overlayTileManager = overlayTileManager;
+        this.drawOverlay = drawOverlay;
         this.waypointManager = waypointManager;
         this.mapParameters = mapParameters;
         this.pane = new Pane();
@@ -83,6 +89,11 @@ public final class BaseMapManager {
                     //Preconditions.checkArgument(TileManager.TileId.isValid(zoom, i, j));
                     Image tile = tileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
                     context.drawImage(tile, xShift, yShift);
+                    //BONUS
+                    if (drawOverlay.get()) {
+                        Image overlayTile = overlayTileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
+                        context.drawImage(overlayTile, xShift, yShift);
+                    }
                 }
                 catch (IOException ignored) {}
                 yShift+=TILE_SIZE;
@@ -113,6 +124,7 @@ public final class BaseMapManager {
         canvas.widthProperty().addListener((p, oldW, newW) -> redrawOnNextPulse());
         canvas.heightProperty().addListener((p, oldH, newH) -> redrawOnNextPulse());
         mapParameters.addListener((p, oldM, newM) -> redrawOnNextPulse());
+        drawOverlay.addListener((p, oldO, newO) -> redrawOnNextPulse());
     }
 
     private void installHandlers(){
