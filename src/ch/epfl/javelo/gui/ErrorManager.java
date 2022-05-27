@@ -8,7 +8,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
+/**
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class ErrorManager {
 
     private final Pane pane;
@@ -34,7 +37,8 @@ public final class ErrorManager {
         PauseTransition showTransition = new PauseTransition(SHOW_DURATION);
         FadeTransition disappearTransition = new FadeTransition(DISAPPEAR_DURATION);
         disappearTransition.setToValue(MIN_OPACITY);
-        this.animation = new SequentialTransition(appearTransition, showTransition, disappearTransition);
+        this.animation =
+                new SequentialTransition(appearTransition, showTransition, disappearTransition);
         animation.setNode(errorBox);
     }
 
@@ -42,7 +46,7 @@ public final class ErrorManager {
      * Returns the pane containing the error message
      * @return the pane
      */
-    public Pane pane(){
+    public Pane pane() {
         return pane;
     }
 
@@ -50,7 +54,7 @@ public final class ErrorManager {
      * Displays the given error message onto the pane
      * @param errorMessage  : error message to display
      */
-    public void displayError(String errorMessage){
+    public void displayError(String errorMessage) {
         java.awt.Toolkit.getDefaultToolkit().beep();
         errorText.setText(errorMessage);
         animation.stop();

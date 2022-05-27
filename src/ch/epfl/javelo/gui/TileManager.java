@@ -64,14 +64,15 @@ public final  class TileManager {
             memoryCache.put(imagePath,image);
             return image;
         }
-        else{
+        else {
             Files.createDirectories(dirPath);
             String urlString = "https://"+nameOfServer+"/"+id.zoom+"/"+id.x+"/"+id.y+".png";
             URL u = new URL(urlString);
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "JaVelo");
 
-            try (InputStream i = c.getInputStream(); OutputStream a = new FileOutputStream(imageFile);) {
+            try (InputStream i = c.getInputStream(); OutputStream a =
+                    new FileOutputStream(imageFile)) {
                 i.transferTo(a);
             }
             catch (Exception e){
@@ -87,8 +88,11 @@ public final  class TileManager {
     /**
      * TileId with the given zoom, x and y coordinates
      */
-    public record TileId(int zoom,int x, int y){
+    public record TileId(int zoom,int x, int y) {
 
+        public TileId {
+            Preconditions.checkArgument(isValid(zoom,x,y));
+        }
         /**
          * Returns true if and only if the parameters constitute a valid tile identity
          * @param zoom  : zoom level

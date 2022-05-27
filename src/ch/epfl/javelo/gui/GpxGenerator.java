@@ -35,7 +35,7 @@ public class GpxGenerator {
      * @param profile   : profile of the route
      * @return document corresponding to the route
      */
-    public static Document createGpx(Route route, ElevationProfile profile){
+    public static Document createGpx(Route route, ElevationProfile profile) {
         Document doc = newDocument(); // voir plus bas
 
         Element root = doc
@@ -87,7 +87,8 @@ public class GpxGenerator {
      * @param profile   : profile of the route
      * @throws IOException in case of an input/output error
      */
-    public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException {
+    public static void writeGpx(String fileName, Route route, ElevationProfile profile)
+            throws IOException {
         Document doc = createGpx(route, profile);
         Writer w = new FileWriter(fileName,  StandardCharsets.UTF_16);
 

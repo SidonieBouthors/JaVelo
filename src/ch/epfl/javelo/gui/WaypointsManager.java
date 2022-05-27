@@ -23,7 +23,8 @@ import java.util.function.Consumer;
 
 public final class WaypointsManager {
 
-    private final static String FIRST_SVG_PATH_STRING = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
+    private final static String FIRST_SVG_PATH_STRING =
+            "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
     private final static String SECOND_SVG_PATH_STRING = "M0-23A1 1 0 000-29 1 1 0 000-23";
     private final static String NO_ROAD_ERROR_MESSAGE = "Aucune route à proximité !";
 
@@ -32,7 +33,7 @@ public final class WaypointsManager {
     private final ObservableList<Waypoint> waypoints;
     private final Consumer<String> errorSignal;
     private final Pane pane;
-    private final static int SEARCH_DISTANCE_WAYPOINTS = 1000;
+    private final static int SEARCH_DISTANCE_WAYPOINTS = 500;
 
     /**
      * @param roadNetwork Graph of the roadNetwork
@@ -102,7 +103,7 @@ public final class WaypointsManager {
      * @param waypointGroup     : group
      * @param index             : index of the waypoint
      */
-    private void installGroupHandlers(Group waypointGroup, int index){
+    private void installGroupHandlers(Group waypointGroup, int index) {
 
         SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
 
@@ -163,7 +164,7 @@ public final class WaypointsManager {
      * @param y     : y coordinate
      */
     public void addWaypoint(double x, double y) {
-        addWaypoint(waypoints.size(), x,y);
+        addWaypoint(waypoints.size(), x, y);
     }
     /**
      * Add waypoint at a given position and index in the list
@@ -171,7 +172,7 @@ public final class WaypointsManager {
      * @param x     : x coordinate
      * @param y     : y coordinate
      */
-    private void addWaypoint(int index, double x, double y){
+    private void addWaypoint(int index, double x, double y) {
 
         PointCh point = fxProperty.get().pointAt(x,y).toPointCh();
         int nodeId = roadNetwork.nodeClosestTo(point, SEARCH_DISTANCE_WAYPOINTS);

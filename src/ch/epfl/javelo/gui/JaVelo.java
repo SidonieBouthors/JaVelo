@@ -8,10 +8,7 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -22,6 +19,10 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
+
+    private final static int STAGE_MIN_WIDTH = 800;
+    private final static int STAGE_MIN_HEIGHT = 600;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -38,24 +39,12 @@ public final class JaVelo extends Application {
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
 
-        /*
-        routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
-                new Waypoint(new PointCh(2532697, 1152500), 159049),
-                new Waypoint(new PointCh(2538659, 1154350), 117669)));
-        */
-
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
-
-
-        //bonus
-        MenuItem clearWaypoints = new MenuItem("Supprimer tous les points");
-        clearWaypoints.setOnAction(event -> routeBean.getWaypoints().clear());
-
         MenuItem exportOption = new MenuItem("Exporter GPX");
-        exportOption.disableProperty().set(
-                routeBean.getRouteProperty().get() != null);//itineraire non nul
+        exportOption.disableProperty().bind(
+                routeBean.getRouteProperty().isNull());
         exportOption.setOnAction(event -> {
             try {
                 GpxGenerator.writeGpx("javelo.gpx",
@@ -67,13 +56,10 @@ public final class JaVelo extends Application {
         });
         Menu menu = new Menu("Fichier");
         MenuBar menuBar = new MenuBar(menu);
-        menuBar.setUseSystemMenuBar(true);
 
+        AnnotatedMapManager mapManager =
+                new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
 
-        menu.getItems().add(clearWaypoints); // bonus
-
-
-        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.getElevationProfile(),
                                             routeBean.highlightedPositionProperty());
@@ -87,12 +73,12 @@ public final class JaVelo extends Application {
 
 
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
-          if (newE == null){
+          if (newE == null) {
               mainPane.getItems().remove(elevationProfileManager.pane());
               menu.getItems().remove(exportOption);
 
           }
-          else if (oldE == null){
+          else if (oldE == null) {
               mainPane.getItems().add(1, elevationProfileManager.pane());
               menu.getItems().add(exportOption);
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
@@ -109,8 +95,8 @@ public final class JaVelo extends Application {
        }, mapManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));
 
 
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(STAGE_MIN_WIDTH);
+        primaryStage.setMinHeight(STAGE_MIN_HEIGHT);
         primaryStage.setTitle("JaVelo");
         primaryStage.setScene(new Scene(paneWithMenu));
         primaryStage.show();

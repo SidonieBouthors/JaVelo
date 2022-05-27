@@ -78,6 +78,7 @@ public final class BaseMapManager {
 
             double yShift = -(params.y() - TILE_SIZE * topLeftTileY);
             for (int j = topLeftTileY; j < bottomRightTileY; j++) {
+                if (!TileManager.TileId.isValid(zoom,i,j)) continue;
 
                 try {
                     //Preconditions.checkArgument(TileManager.TileId.isValid(zoom, i, j));
@@ -101,7 +102,7 @@ public final class BaseMapManager {
      * @param x
      * @param y
      */
-    private void saveMousePosition(double x, double y){
+    private void saveMousePosition(double x, double y) {
         lastMousePosition = mapParameters.get().pointAt(x, y);
     }
 
@@ -115,7 +116,7 @@ public final class BaseMapManager {
         mapParameters.addListener((p, oldM, newM) -> redrawOnNextPulse());
     }
 
-    private void installHandlers(){
+    private void installHandlers() {
         pane.setOnScroll(event -> {
 
             if (event.getDeltaY() == 0d) return;

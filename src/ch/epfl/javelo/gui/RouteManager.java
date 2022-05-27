@@ -44,12 +44,7 @@ public final class RouteManager {
         routeLine.setId("route");
         pane.getChildren().add(routeLine);
 
-        /*
-        PointWebMercator highlightPoint = PointWebMercator.ofPointCh(
-                routeBean.getRouteProperty().get().pointAt(routeBean.highlightedPosition()));
-        */
-
-        this.highlightDisc = new Circle(CIRCLE_RADIUS);
+        highlightDisc = new Circle(CIRCLE_RADIUS);
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
         rebuildRouteLine();

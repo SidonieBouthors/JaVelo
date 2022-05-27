@@ -52,7 +52,7 @@ public final class RouteBean {
             if (waypoints.size() < MINIMAL_SIZE) {
                 route.set(null);
                 elevationProfile.set(null);
-            }else {
+            } else {
                 computeRoute();
                 computeElevationProfile();
             }
@@ -101,7 +101,10 @@ public final class RouteBean {
             elevationProfile.set(null);
             return;
         }
-        elevationProfile.set(ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
+        else {
+            elevationProfile.set(
+                ElevationProfileComputer.elevationProfile(route.get(), MAX_STEP_LENGTH));
+        }
     }
 
     /**

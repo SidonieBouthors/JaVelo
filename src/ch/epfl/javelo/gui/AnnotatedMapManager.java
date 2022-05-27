@@ -72,18 +72,18 @@ public final class AnnotatedMapManager {
     }
 
     /**
-     *
+     * Return the pane of the AnnotatedMap
      * @return the pane
      */
-    public StackPane pane(){
+    public StackPane pane() {
         return mainPane;
     }
 
     /**
-     *
+     * Return the mouse position of the AnnotatedMap on the route
      * @return mousePosition
      */
-    public DoubleProperty mousePositionOnRouteProperty(){
+    public DoubleProperty mousePositionOnRouteProperty() {
         return mousePositionOnRouteProperty;
     }
 
@@ -99,7 +99,7 @@ public final class AnnotatedMapManager {
                     mapViewParametersP.get().x() + currentMousePosition.get().getX(),
                     mapViewParametersP.get().y() + currentMousePosition.get().getY());
 
-            if (mousePosition.toPointCh() == null){
+            if (mousePosition.toPointCh() == null) {
                 return Double.NaN;
             }
             RoutePoint closestPoint = route.pointClosestTo(mousePosition.toPointCh());
@@ -109,11 +109,7 @@ public final class AnnotatedMapManager {
                     currentMousePosition.get().getX() - mapViewParametersP.get().viewX(point),
                     currentMousePosition.get().getY() - mapViewParametersP.get().viewY(point));
 
-            /*
-            mapViewParametersP.get().viewX(mousePosition) - mapViewParametersP.get().viewX(point),
-            mapViewParametersP.get().viewY(mousePosition) - mapViewParametersP.get().viewY(point));
-             */
-            if (distance <= MAX_CURSOR_ROUTE_DISTANCE){
+            if (distance <= MAX_CURSOR_ROUTE_DISTANCE) {
                 return closestPoint.position();
             }
             else {
@@ -122,7 +118,7 @@ public final class AnnotatedMapManager {
         },routeBean.getRouteProperty(), currentMousePosition));
     }
 
-    private void installHandlers(){
+    private void installHandlers() {
         mainPane.setOnMouseMoved(event ->
             currentMousePosition.set(new Point2D(event.getX(), event.getY()))
         );
