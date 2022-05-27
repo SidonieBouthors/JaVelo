@@ -1,9 +1,8 @@
 package ch.epfl.javelo.gui;
+
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RoutePoint;
 import javafx.beans.binding.Bindings;
@@ -14,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
+
 import java.util.function.Consumer;
 
 /**
@@ -41,7 +41,8 @@ public final class AnnotatedMapManager {
      * @param routeBean : routeBean
      * @param errorConsumer : errorConsumer
      */
-    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean, Consumer<String> errorConsumer){
+    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean,
+                                    Consumer<String> errorConsumer){
         MapViewParameters mapViewParameters =
                 new MapViewParameters(INIT_ZOOM, INIT_X,INIT_Y);
         this.mapViewParametersP =
@@ -106,8 +107,10 @@ public final class AnnotatedMapManager {
             PointWebMercator point = PointWebMercator.ofPointCh(closestPoint.point());
 
             double distance = Math2.norm(
-                    currentMousePosition.get().getX() - mapViewParametersP.get().viewX(point),
-                    currentMousePosition.get().getY() - mapViewParametersP.get().viewY(point));
+                    currentMousePosition.get().getX()
+                            - mapViewParametersP.get().viewX(point),
+                    currentMousePosition.get().getY()
+                            - mapViewParametersP.get().viewY(point));
 
             if (distance <= MAX_CURSOR_ROUTE_DISTANCE) {
                 return closestPoint.position();

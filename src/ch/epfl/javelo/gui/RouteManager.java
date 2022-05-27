@@ -50,6 +50,10 @@ public final class RouteManager {
         rebuildRouteLine();
         installHandlers();
         installListeners();
+
+        highlightDisc.visibleProperty().bind(
+                routeBean.getHighlightedPositionProperty().greaterThanOrEqualTo(0));
+        routeLine.visibleProperty().bind(routeBean.getElevationProfileProperty().isNotNull());
     }
 
     /**
@@ -91,7 +95,7 @@ public final class RouteManager {
             Point2D point = highlightDisc.localToParent(event.getX(), event.getY());
             PointWebMercator pointWebMercator = params.pointAt(point.getX(), point.getY());
             PointCh pointCh = pointWebMercator.toPointCh();
-            double position = routeBean.highlightedPosition();
+            double position = routeBean.getHighlightedPosition();
 
             ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
             Waypoint newWaypoint = new Waypoint(pointCh, route.nodeClosestTo(position));
@@ -104,7 +108,7 @@ public final class RouteManager {
      */
     private void installListeners(){
 
-        routeBean.highlightedPositionProperty().addListener(
+        routeBean.getHighlightedPositionProperty().addListener(
                 (p, oldValue, newValue) -> repositionHighlightCircle());
 
         routeBean.getRouteProperty().addListener(
@@ -135,7 +139,6 @@ public final class RouteManager {
      */
     private void rebuildRouteLine(){
         Route route = routeBean.getRouteProperty().get();
-        routeLine.setVisible(route != null);
 
         if (route != null){
             repositionRouteLine();
@@ -152,18 +155,14 @@ public final class RouteManager {
         Route route = routeBean.getRouteProperty().get();
         MapViewParameters params = mapProperty.get();
 
-        if (route != null && (!routeBean.highlightedPosition().isNaN())) {
-            highlightDisc.setVisible(true);
+        if (route != null && (!routeBean.getHighlightedPosition().isNaN())) {
             PointWebMercator highlightPoint =
                     PointWebMercator.ofPointCh(
                         routeBean.getRouteProperty().get().pointAt(
-                            routeBean.highlightedPosition()));
+                            routeBean.getHighlightedPosition()));
 
             highlightDisc.setLayoutX(params.viewX(highlightPoint));
             highlightDisc.setLayoutY(params.viewY(highlightPoint));
-        }
-        else {
-            highlightDisc.setVisible(false);
         }
     }
 }

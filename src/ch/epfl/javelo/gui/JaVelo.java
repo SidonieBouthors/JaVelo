@@ -18,6 +18,12 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
+/**
+ * Javelo
+ *
+ * @author Sidonie Bouthors (343678)
+ * @author François Théron (346077)
+ */
 public final class JaVelo extends Application {
 
     private final static int STAGE_MIN_WIDTH = 800;
@@ -49,20 +55,21 @@ public final class JaVelo extends Application {
             try {
                 GpxGenerator.writeGpx("javelo.gpx",
                         routeBean.getRouteProperty().get(),
-                        routeBean.getElevationProfile().get());
+                        routeBean.getElevationProfileProperty().get());
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         });
         Menu menu = new Menu("Fichier");
+        menu.getItems().add(exportOption);
         MenuBar menuBar = new MenuBar(menu);
 
         AnnotatedMapManager mapManager =
                 new AnnotatedMapManager(graph, tileManager, routeBean, errorConsumer);
 
         ElevationProfileManager elevationProfileManager =
-                new ElevationProfileManager(routeBean.getElevationProfile(),
-                                            routeBean.highlightedPositionProperty());
+                new ElevationProfileManager(routeBean.getElevationProfileProperty(),
+                                            routeBean.getHighlightedPositionProperty());
         StackPane mapPane = new StackPane(mapManager.pane(),errorManager.pane());
         SplitPane mainPane = new SplitPane(mapPane);
         mainPane.orientationProperty().set(Orientation.VERTICAL);
@@ -75,24 +82,22 @@ public final class JaVelo extends Application {
        routeBean.getRouteProperty().addListener((p, oldE, newE) -> {
           if (newE == null) {
               mainPane.getItems().remove(elevationProfileManager.pane());
-              menu.getItems().remove(exportOption);
-
           }
           else if (oldE == null) {
               mainPane.getItems().add(1, elevationProfileManager.pane());
-              menu.getItems().add(exportOption);
               SplitPane.setResizableWithParent(elevationProfileManager.pane(), false);
           }
        });
 
-       routeBean.highlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
+       routeBean.getHighlightedPositionProperty().bind(Bindings.createDoubleBinding(() -> {
            if (Double.isNaN(elevationProfileManager.mousePositionOnProfileProperty().get())) {
                return mapManager.mousePositionOnRouteProperty().get();
            }
            else {
                return elevationProfileManager.mousePositionOnProfileProperty().get();
            }
-       }, mapManager.mousePositionOnRouteProperty(), elevationProfileManager.mousePositionOnProfileProperty()));
+       }, mapManager.mousePositionOnRouteProperty(),
+            elevationProfileManager.mousePositionOnProfileProperty()));
 
 
         primaryStage.setMinWidth(STAGE_MIN_WIDTH);

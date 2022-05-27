@@ -99,7 +99,6 @@ public final class RouteBean {
     private void computeElevationProfile() {
         if (route.get() == null) {
             elevationProfile.set(null);
-            return;
         }
         else {
             elevationProfile.set(
@@ -111,7 +110,7 @@ public final class RouteBean {
      * Gets the  Highlighted Position property
      * @return Highlighted Position property
      */
-    public DoubleProperty highlightedPositionProperty() {
+    public DoubleProperty getHighlightedPositionProperty() {
         return highlightedPosition;
     }
 
@@ -119,7 +118,7 @@ public final class RouteBean {
      * Gets the Highlighted Position
      * @return Highlighted Position
      */
-    public Double highlightedPosition() {
+    public Double getHighlightedPosition() {
         return highlightedPosition.get();
     }
 
@@ -135,7 +134,7 @@ public final class RouteBean {
      * Gets Elevation Profile property
      * @return elevation profile property
      */
-    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfile() {
+    public ReadOnlyObjectProperty<ElevationProfile> getElevationProfileProperty() {
         return elevationProfile;
     }
 

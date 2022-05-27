@@ -29,26 +29,28 @@ public final  class ElevationProfileManager {
 
     private final static int[] POS_STEPS =
             { 1000, 2000, 5000, 10_000, 25_000, 50_000, 100_000 };
-    private static final int[] ELE_STEPS =
+    private final static int[] ELE_STEPS =
             { 5, 10, 20, 25, 50, 100, 200, 250, 500, 1_000 };
-    private static final int MIN_HORIZONTAL_SPACING = 50;
-    private static final int MIN_VERTICAL_SPACING = 25;
+    private final static int MIN_HORIZONTAL_SPACING = 50;
+    private final static int MIN_VERTICAL_SPACING = 25;
+    private final static int METERS_IN_KM = 1000;
+    private final static int FONT_STATISTIC_SIZE = 10;
 
+    private final Insets rectInsets = new Insets(10, 10, 20, 40);
     private final ReadOnlyObjectProperty<ElevationProfile> elevationProfile;
     private final ReadOnlyDoubleProperty positionAlongTheProfile;
-    private final BorderPane borderPane;
-    private final Pane pane;
-    private final Path path;
-    private final Polygon polygon;
-    private final Insets rectInsets = new Insets(10, 10, 20, 40);
+    private final DoubleProperty mousePositionOnProfile;
     private final ObjectProperty<Rectangle2D> rectProperty;
     private final ObjectProperty<Transform> screenToWorld;
     private final ObjectProperty<Transform> worldToScreen;
-    private final Line line;
-    private final Text textVbox;
-    private final Group group;
-    private final DoubleProperty mousePositionOnProfile;
-
+    private final BorderPane borderPane = new BorderPane();
+    private final Pane pane = new Pane();
+    private final Line line = new Line();
+    private final Text textVbox = new Text();
+    private final Group group = new Group();
+    private final Path path = new Path();
+    private final Polygon polygon = new Polygon();
+    //private final
 
     public ElevationProfileManager (ReadOnlyObjectProperty<ElevationProfile> elevationProfile,
                                     ReadOnlyDoubleProperty positionAlongTheProfile) {
@@ -59,25 +61,11 @@ public final  class ElevationProfileManager {
         this.worldToScreen = new SimpleObjectProperty<>();
         this.mousePositionOnProfile = new SimpleDoubleProperty(Double.NaN);
 
-
-        //Text Vbox
-        this.textVbox = new Text();
-        //Vbox
         VBox vbox = new VBox();
         vbox.setId("profile_data");
         vbox.getChildren().add(textVbox);
-        //Group
-        this.group = new Group();
-        //Path
-        this.path = new Path();
         path.setId("grid");
-        //Polygon
-        this.polygon = new Polygon();
         polygon.setId("profile");
-        //Line
-        this.line = new Line();
-        //Pane
-        this.pane = new Pane();
         pane.getChildren().addAll(group, path,  polygon, line);
         borderPane.getStylesheets().add("elevation_profile.css");
 
@@ -145,7 +133,7 @@ public final  class ElevationProfileManager {
     }
 
     /**
-     * create the elevation profile statistics with length (in Km) and the rest in meters.
+     * Create the elevation profile statistics with length (in Km) and the rest in meters.
      */
     private void createStatistics() {
         String b = "Longueur : %1$.1f km" +

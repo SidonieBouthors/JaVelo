@@ -22,7 +22,7 @@ public final  class TileManager {
     private final Path diskCache;
     private final String nameOfServer;
     private final LinkedHashMap<Path, Image> memoryCache =
-            new LinkedHashMap<Path, Image>() {
+            new LinkedHashMap<>() {
                 protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest)
                 {
                     return size() > CACHE_MEMOIRE_SIZE;
@@ -35,8 +35,8 @@ public final  class TileManager {
      * @param nameOfServer Name of the server you want to extract data
      */
     public TileManager(Path diskCache, String nameOfServer) {
-        this.nameOfServer=nameOfServer;
-        this.diskCache =diskCache;
+        this.nameOfServer = nameOfServer;
+        this.diskCache = diskCache;
         if(!Files.exists(diskCache)){
             diskCache.toFile().mkdir();
         }
@@ -98,7 +98,7 @@ public final  class TileManager {
          * @param zoom  : zoom level
          * @param x     : x coordinate
          * @param y     : y coordinate
-         * @return
+         * @return wether the parameters can be a valid tile
          */
         public  static boolean isValid(int zoom, int x, int y) {
             double i = Math.pow(2, zoom);

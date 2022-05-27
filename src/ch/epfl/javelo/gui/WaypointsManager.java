@@ -107,7 +107,8 @@ public final class WaypointsManager {
 
         SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
 
-        waypointGroup.setOnMousePressed(pressed -> point.set(new Point2D(pressed.getX(), pressed.getY())));
+        waypointGroup.setOnMousePressed(pressed ->
+            point.set(new Point2D(pressed.getX(), pressed.getY())));
 
         waypointGroup.setOnMouseDragged(dragged -> {
             double x = waypointGroup.getLayoutX();

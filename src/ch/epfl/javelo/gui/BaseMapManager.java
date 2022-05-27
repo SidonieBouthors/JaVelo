@@ -81,7 +81,6 @@ public final class BaseMapManager {
                 if (!TileManager.TileId.isValid(zoom,i,j)) continue;
 
                 try {
-                    //Preconditions.checkArgument(TileManager.TileId.isValid(zoom, i, j));
                     Image tile = tileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
                     context.drawImage(tile, xShift, yShift);
                 }
@@ -98,9 +97,9 @@ public final class BaseMapManager {
     }
 
     /**
-     * Save mouse position for Handler Use (setOnMouseScroll, setOnMouseClicked..)
-     * @param x
-     * @param y
+     * Save mouse position for Handler Use (setOnMouseScroll, setOnMouseClicked...)
+     * @param x     : mouse x position
+     * @param y     : mouse y position
      */
     private void saveMousePosition(double x, double y) {
         lastMousePosition = mapParameters.get().pointAt(x, y);

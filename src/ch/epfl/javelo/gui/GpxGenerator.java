@@ -18,7 +18,6 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 /**
@@ -68,12 +67,17 @@ public class GpxGenerator {
 
             Element rtept = doc.createElement("rtept");
             rte.appendChild(rtept);
-            rtept.setAttribute("lat", String.format(Locale.ENGLISH, ".%5f",Math.toDegrees(point.lat())));
-            rtept.setAttribute("lon", String.format(Locale.ENGLISH,".%5f",Math.toDegrees(point.lon())));
+            rtept.setAttribute("lat", String.format(
+                                            Locale.ENGLISH,
+                                        "%.5f",Math.toDegrees(point.lat())));
+            rtept.setAttribute("lon", String.format(
+                                            Locale.ENGLISH,
+                                        "%.5f",Math.toDegrees(point.lon())));
 
             Element ele = doc.createElement("ele");
             rtept.appendChild(ele);
-            ele.setTextContent(String.valueOf(profile.elevationAt(position)));
+            ele.setTextContent(String.format(Locale.ENGLISH,
+                                        "%.2f", profile.elevationAt(position)));
 
             position += edge.length();
         }
@@ -90,7 +94,7 @@ public class GpxGenerator {
     public static void writeGpx(String fileName, Route route, ElevationProfile profile)
             throws IOException {
         Document doc = createGpx(route, profile);
-        Writer w = new FileWriter(fileName,  StandardCharsets.UTF_16);
+        Writer w = new FileWriter(fileName);
 
         try {
             Transformer transformer = TransformerFactory
