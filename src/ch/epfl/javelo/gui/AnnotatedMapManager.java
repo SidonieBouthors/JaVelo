@@ -38,8 +38,8 @@ public final class AnnotatedMapManager {
      * @param routeBean : routeBean
      * @param errorConsumer : errorConsumer
      */
-    public AnnotatedMapManager(Graph graph, TileManager tileManager, RouteBean routeBean,
-                               Consumer<String> errorConsumer, TileManager overlayTileManager, BooleanProperty drawOverlay){
+    public AnnotatedMapManager(Graph graph, ObjectProperty<TileManager> tileManager, RouteBean routeBean,
+                               Consumer<String> errorConsumer, ObjectProperty<TileManager> overlayTileManager){
         MapViewParameters mapViewParameters =
                 new MapViewParameters(INIT_ZOOM, INIT_X,INIT_Y);
         this.mapViewParametersP =
@@ -55,7 +55,6 @@ public final class AnnotatedMapManager {
                 errorConsumer);
         BaseMapManager baseMapManager = new BaseMapManager(tileManager,
                 overlayTileManager,
-                drawOverlay,
                 waypointsManager,
                 mapViewParametersP);
         RouteManager routeManager = new RouteManager(routeBean,
@@ -85,6 +84,10 @@ public final class AnnotatedMapManager {
      */
     public DoubleProperty mousePositionOnRouteProperty(){
         return mousePositionOnRouteProperty;
+    }
+
+    public ReadOnlyObjectProperty<MapViewParameters> mapViewParametersProperty() {
+        return mapViewParametersP;
     }
 
     private void installBindings(){

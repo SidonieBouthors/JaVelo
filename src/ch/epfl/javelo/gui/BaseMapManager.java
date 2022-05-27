@@ -20,14 +20,13 @@ import java.io.IOException;
 public final class BaseMapManager {
 
     private static final int TILE_SIZE = 256;
-    private final TileManager tileManager;
+    private final ObjectProperty<TileManager> tileManager;
     private final WaypointsManager waypointManager;
     private final ObjectProperty<MapViewParameters> mapParameters;
     private final Canvas canvas;
     private final Pane pane;
     private final SimpleLongProperty minScrollTime = new SimpleLongProperty();
-    private final TileManager overlayTileManager;
-    private final BooleanProperty drawOverlay;
+    private final ObjectProperty<TileManager> overlayTileManager;
     private PointWebMercator lastMousePosition;
     private boolean redrawNeeded;
 
@@ -37,12 +36,11 @@ public final class BaseMapManager {
      * @param waypointManager   : waypoint manager
      * @param mapParameters     : property containing the map view parameters
      */
-    public BaseMapManager(TileManager tileManager, TileManager overlayTileManager, BooleanProperty drawOverlay,
+    public BaseMapManager(ObjectProperty<TileManager> tileManager, ObjectProperty<TileManager> overlayTileManager,
                           WaypointsManager waypointManager,
                           ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
         this.overlayTileManager = overlayTileManager;
-        this.drawOverlay = drawOverlay;
         this.waypointManager = waypointManager;
         this.mapParameters = mapParameters;
         this.pane = new Pane();
@@ -87,11 +85,13 @@ public final class BaseMapManager {
 
                 try {
                     //Preconditions.checkArgument(TileManager.TileId.isValid(zoom, i, j));
-                    Image tile = tileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
-                    context.drawImage(tile, xShift, yShift);
+                    if (tileManager.get() != null) {
+                        Image tile = tileManager.get().imageForTileAt(new TileManager.TileId(zoom, i, j));
+                        context.drawImage(tile, xShift, yShift);
+                    }
                     //BONUS
-                    if (drawOverlay.get()) {
-                        Image overlayTile = overlayTileManager.imageForTileAt(new TileManager.TileId(zoom, i, j));
+                    if (overlayTileManager.get() != null) {
+                        Image overlayTile = overlayTileManager.get().imageForTileAt(new TileManager.TileId(zoom, i, j));
                         context.drawImage(overlayTile, xShift, yShift);
                     }
                 }
@@ -124,7 +124,9 @@ public final class BaseMapManager {
         canvas.widthProperty().addListener((p, oldW, newW) -> redrawOnNextPulse());
         canvas.heightProperty().addListener((p, oldH, newH) -> redrawOnNextPulse());
         mapParameters.addListener((p, oldM, newM) -> redrawOnNextPulse());
-        drawOverlay.addListener((p, oldO, newO) -> redrawOnNextPulse());
+
+        tileManager.addListener((p, oldM, newM) -> redrawOnNextPulse());
+        overlayTileManager.addListener((p, oldO, newO) -> redrawOnNextPulse());
     }
 
     private void installHandlers(){
