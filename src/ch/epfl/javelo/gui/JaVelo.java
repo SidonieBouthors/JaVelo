@@ -102,14 +102,21 @@ public final class JaVelo extends Application {
 
             waypointsSaved.getItems().clear();
             for (int i = 0; i < liste.size(); i++) {
+                String text = liste.get(i).getKey();
                 MenuItem waypoint = new MenuItem();
+                int j;
+                int lele = -1;
+                for (j = 0; j < liste.size(); j++) {
+                    if (text.equals(liste.get(j).getKey())) {
+                        lele = j;
+                    }
+                }
+                final int index = lele;
+                System.out.println(" hey : "+liste.get(index).getValue());
                 waypoint.setOnAction(event-> {
-                            for (int j = 0; j < ; j++) {
-
-                            }
-                            routeBean.getWaypoints().add(liste.get());
-                        };
-                waypoint.setText(liste.get(i).getKey());
+                            routeBean.getWaypoints().add(liste.get(index).getValue());
+                        });
+                waypoint.setText(text);
                 waypointsSaved.getItems().add(waypoint);
             }
 
@@ -147,7 +154,6 @@ public final class JaVelo extends Application {
         Menu menuItineraire = new Menu("Itinéraire");
         //
         MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire,waypointsSaved);
-        menuBar.setUseSystemMenuBar(true);
 
         //BONUS
         //
