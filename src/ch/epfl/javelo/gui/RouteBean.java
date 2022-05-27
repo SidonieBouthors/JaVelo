@@ -24,7 +24,8 @@ public final class RouteBean {
     private final ObjectProperty<Route> route;
     private final ObjectProperty<ElevationProfile> elevationProfile;
     private final RouteComputer computer;
-
+    private final ObservableList<Pair<String,Waypoint>> savedWaypoints;
+    private final ObjectProperty<Waypoint> savedWaypoint;
     // for listener in RouteBean Constructor
     private static final int MINIMAL_SIZE = 2;
     //for elevation profile computer
@@ -47,7 +48,10 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.computer = computer;
+        savedWaypoint = new SimpleObjectProperty<>(null);
         waypoints = FXCollections.observableArrayList();
+        savedWaypoints = FXCollections.observableArrayList();
+
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
             if (waypoints.size() < MINIMAL_SIZE) {
                 route.set(null);
@@ -57,6 +61,7 @@ public final class RouteBean {
                 computeElevationProfile();
             }
         });
+
     }
 
     /**
@@ -91,6 +96,9 @@ public final class RouteBean {
         if (!routeList.isEmpty()) {
             route.set(new MultiRoute(routeList));
         }
+    }
+    public ObservableList<Pair<String,Waypoint>> getSavedWaypoints() {
+        return savedWaypoints;
     }
 
     /**
@@ -166,4 +174,8 @@ public final class RouteBean {
         }
         return index;
     }
+    public ObjectProperty<Waypoint> getSavedWaypoint(){
+        return savedWaypoint;
+    }
+
 }

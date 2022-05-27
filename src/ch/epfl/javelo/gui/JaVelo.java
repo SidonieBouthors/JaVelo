@@ -17,13 +17,17 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,6 +79,7 @@ public final class JaVelo extends Application {
         ObjectProperty<TileManager> tileManagerProperty = new SimpleObjectProperty<TileManager>(standardTileManager);
         ObjectProperty<TileManager> overlayTileManagerProperty = new SimpleObjectProperty<TileManager>();
         //
+
 
         //BONUS
         MenuItem clearWaypoints = new MenuItem("Supprimer les Points");
@@ -141,7 +146,7 @@ public final class JaVelo extends Application {
         Menu menuFondCarte = new Menu("Fond de Carte");
         Menu menuItineraire = new Menu("Itinéraire");
         //
-        MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire);
+        MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire,waypointsSaved);
         menuBar.setUseSystemMenuBar(true);
 
         //BONUS
@@ -153,6 +158,7 @@ public final class JaVelo extends Application {
         menuFondCarte.getItems().add(changeBaseMap);
         menuFondCarte.getItems().add(overlayCyclingRoutes);
         //
+
 
 
 

@@ -3,15 +3,20 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
+import javafx.stage.Popup;
+import javafx.util.Pair;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,6 +38,8 @@ public final class WaypointsManager {
     private final Consumer<String> errorSignal;
     private final Pane pane;
     private final static int SEARCH_DISTANCE_WAYPOINTS = 1000;
+    private final ObjectProperty<Waypoint> savedWaypoint;
+
 
     /**
      * @param roadNetwork Graph of the roadNetwork
@@ -43,13 +50,14 @@ public final class WaypointsManager {
     public WaypointsManager(Graph roadNetwork,
                             ObjectProperty<MapViewParameters> fxProperty,
                             ObservableList<Waypoint> waypoints,
+                            ObjectProperty<Waypoint> savedWaypoint,
                             Consumer<String> errorSignal) {
 
         this.roadNetwork = roadNetwork;
         this.fxProperty = fxProperty;
         this.waypoints = waypoints;
         this.errorSignal = errorSignal;
-
+        this.savedWaypoint = savedWaypoint;
         pane = new Pane();
         pane.setPickOnBounds(false);
         updateWaypoints();
@@ -97,6 +105,8 @@ public final class WaypointsManager {
         pane.getChildren().setAll(waypointGroups);
     }
 
+
+
     /**
      * Install handlers of the given waypoint group
      * @param waypointGroup     : group
@@ -115,8 +125,9 @@ public final class WaypointsManager {
             waypointGroup.setLayoutY(dragged.getY() + y - point.get().getY());
         });
 
+
         waypointGroup.setOnMouseReleased(event -> {
-            if (!event.isStillSincePress()) {
+            if (!event.isStillSincePress() && event.getButton() == MouseButton.PRIMARY) {
                 addWaypoint(index, waypointGroup.getLayoutX(), waypointGroup.getLayoutY());
                 updateWaypoints();
             }
@@ -124,10 +135,23 @@ public final class WaypointsManager {
 
         waypointGroup.setOnMouseClicked(event -> {
             if (event.isStillSincePress()) {
-                waypoints.remove(index);
+
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    System.out.println("saved waypoint changed");
+                    savedWaypoint.set(waypoints.get(index));
+                    System.out.println(savedWaypoint);
+                }
+                if (event.getButton() == MouseButton.PRIMARY) {
+                    waypoints.remove(index);
+                }
+
             }
+
         });
     }
+
+
+
 
     /**
      * Setting coordinates of the Group at a given Point ch

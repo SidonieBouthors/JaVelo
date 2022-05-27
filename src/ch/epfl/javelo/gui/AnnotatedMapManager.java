@@ -11,6 +11,8 @@ import javafx.beans.property.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
+
 import java.util.function.Consumer;
 
 /**
@@ -45,6 +47,8 @@ public final class AnnotatedMapManager {
         this.mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
+        ObjectProperty<Waypoint> savedWaypoint = routeBean.getSavedWaypoint();
+
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         this.currentMousePosition = new SimpleObjectProperty<>();
 
@@ -52,10 +56,12 @@ public final class AnnotatedMapManager {
         WaypointsManager waypointsManager = new WaypointsManager(graph,
                 mapViewParametersP,
                 waypoints,
+                savedWaypoint,
                 errorConsumer);
         BaseMapManager baseMapManager = new BaseMapManager(tileManager,
                 overlayTileManager,
                 waypointsManager,
+
                 mapViewParametersP);
         RouteManager routeManager = new RouteManager(routeBean,
                 mapViewParametersP);

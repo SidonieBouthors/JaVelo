@@ -7,8 +7,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +49,7 @@ public final class RouteManager {
         */
 
         this.highlightDisc = new Circle(CIRCLE_RADIUS);
+
         highlightDisc.setId("highlight");
         pane.getChildren().add(highlightDisc);
         rebuildRouteLine();
