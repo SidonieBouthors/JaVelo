@@ -76,8 +76,8 @@ public final class JaVelo extends Application {
         TileManager cyclOSMTileManager =
                 new TileManager(cyclOSMCacheBasePath, cyclOSMTileServerHost);
 
-        ObjectProperty<TileManager> tileManagerProperty = new SimpleObjectProperty<TileManager>(standardTileManager);
-        ObjectProperty<TileManager> overlayTileManagerProperty = new SimpleObjectProperty<TileManager>();
+        ObjectProperty<TileManager> tileManagerProperty = new SimpleObjectProperty<>(standardTileManager);
+        ObjectProperty<TileManager> overlayTileManagerProperty = new SimpleObjectProperty<>();
         //
 
 
@@ -154,6 +154,7 @@ public final class JaVelo extends Application {
         Menu menuItineraire = new Menu("Itinéraire");
         //
         MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire,waypointsSaved);
+        menuBar.setUseSystemMenuBar(true);
 
         //BONUS
         //
@@ -210,10 +211,13 @@ public final class JaVelo extends Application {
                 System.out.println(file.getPath());
                 try {
                     Route route = GpxReader.convertGpxToRoute(file, graph);
-                    System.out.println(route.length());
-                    ImportedRoute importedRoute = new ImportedRoute(new SimpleObjectProperty<Route>(route),
-                            mapManager.mapViewParametersProperty());
-                    mapPane.getChildren().add(importedRoute.pane());
+                    if (route != null) {
+                        ImportedRoute importedRoute = new ImportedRoute(new SimpleObjectProperty<>(route),
+                                mapManager.mapViewParametersProperty());
+                        mapPane.getChildren().add(importedRoute.pane());
+                    } else {
+                        errorManager.displayError("Invalid GPX File ! ");
+                    }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

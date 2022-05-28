@@ -4,6 +4,12 @@
     -fx-stroke-width: 4;
 }
 
+#imported-route {
+    -fx-stroke: hsb(210, 100%, 100%, 0.6);
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 4;
+}
+
 #highlight {
     -fx-fill: white;
     -fx-stroke: red;
@@ -41,4 +47,12 @@
 
 .pin_inside {
     -fx-fill: white;
+}
+
+.fixed-pin.first .pin_outside {
+    -fx-fill: hsb(270, 50%, 80%);
+}
+
+.fixed-pin.last .pin_outside {
+    -fx-fill: hsb(240, 50%, 80%);
 }

@@ -7,12 +7,15 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.SVGPath;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Sidonie Bouthors (343678)
@@ -22,8 +25,12 @@ public final class ImportedRoute {
 
     private final ObjectProperty<Route> routeProperty;
     private final ReadOnlyObjectProperty<MapViewParameters> mapProperty;
-    private final Pane pane;
-    private final Polyline routeLine;
+    private final Pane pane = new Pane();
+    private final Polyline routeLine = new Polyline();
+    private final static String CSS_MAP = "map.css";
+    private final static String FIRST_SVG_PATH_STRING = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
+    private final static String SECOND_SVG_PATH_STRING = "M0-23A1 1 0 000-29 1 1 0 000-23";
+
 
     /**
      * Builds a RouteManager with the given properties
@@ -33,15 +40,13 @@ public final class ImportedRoute {
     ImportedRoute(ObjectProperty<Route> routeProperty, ReadOnlyObjectProperty<MapViewParameters> mapProperty){
         this.routeProperty = routeProperty;
         this.mapProperty = mapProperty;
-        this.pane = new Pane();
-
         pane.setPickOnBounds(false);
-
-        this.routeLine = new Polyline();
-
         routeLine.getPoints().setAll(points());
-        routeLine.setId("route");
+        routeLine.setId("imported-route");
         pane.getChildren().add(routeLine);
+        pane.getStylesheets().add(CSS_MAP);
+        pane.getChildren().add(fixedWaypoint("first"));
+        pane.getChildren().add(fixedWaypoint("last"));
 
         rebuildRouteLine();
         installListeners();
@@ -71,7 +76,6 @@ public final class ImportedRoute {
             points.add(point.xAtZoomLevel(params.zoomLevel()));
             points.add(point.yAtZoomLevel(params.zoomLevel()));
         }
-
         return points;
     }
 
@@ -114,6 +118,33 @@ public final class ImportedRoute {
             repositionRouteLine();
             routeLine.getPoints().setAll(points());
         }
+    }
+
+    private Group fixedWaypoint(String style){
+        SVGPath firstSVG = new SVGPath();
+        SVGPath secondSVG = new SVGPath();
+        firstSVG.getStyleClass().add("pin_outside");
+        secondSVG.getStyleClass().add("pin_inside");
+        firstSVG.setContent(FIRST_SVG_PATH_STRING);
+        secondSVG.setContent(SECOND_SVG_PATH_STRING);
+        Group waypointGroup = new Group();
+        waypointGroup.getStyleClass().add("fixed-pin");
+        waypointGroup.getStyleClass().add(style);
+        waypointGroup.getChildren().addAll(firstSVG, secondSVG);
+
+        int zoomLevel = mapProperty.get().zoomLevel();
+
+        double position = 0;
+        if (style.equals("last")){
+            position = routeProperty.get().length();
+        }
+        PointWebMercator waypointWeb = PointWebMercator.ofPointCh(routeProperty.get().pointAt(position));
+
+        double realX = waypointWeb.xAtZoomLevel(zoomLevel) - mapProperty.get().x();
+        double realY = waypointWeb.yAtZoomLevel(zoomLevel) - mapProperty.get().y();
+        waypointGroup.setLayoutX(realX);
+        waypointGroup.setLayoutY(realY);
+        return waypointGroup;
     }
 
 }

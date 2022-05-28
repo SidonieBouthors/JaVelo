@@ -23,6 +23,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +36,7 @@ import java.util.stream.Stream;
 public class GpxReader {
 
     private static final int OPENTAG_LENGTH = 2;
-    private static final int SEARCH_DISTANCE = 100;
+    private static final int SEARCH_DISTANCE = 1000;
     private GpxReader(){}
 
     /**
@@ -46,20 +47,19 @@ public class GpxReader {
 
         BufferedReader buffer = new BufferedReader(new FileReader(file));
 
-        //check correctness??
-        //String name = readTagContent(readTagContent(gpx, "metadata"), "name");
-
-        //String rte = readTagContent(gpx, "rte");
-        //if (rte == null) { return new SingleRoute(new ArrayList<>()); } // no points in gpx file
-
         List<Edge> edgeList = new ArrayList<>();
         List<Integer> nodeList = new ArrayList<>();
         buffer.lines().forEach(line -> {
             String latProp = readTagProperty(line, "rtept", "lat");
             String lonProp = readTagProperty(line, "rtept", "lon");
 
+            //test
+            latProp = readTagProperty(line, "wpt", "lat");
+            lonProp = readTagProperty(line, "wpt", "lon");
+
+            System.out.println(latProp + " " + lonProp);
+
             if (latProp != null && lonProp != null) {
-                System.out.println(latProp + " " + lonProp);
                 double lat = Math.toRadians(Double.parseDouble(latProp));
                 double lon = Math.toRadians(Double.parseDouble(lonProp));
                 PointCh point = new PointCh(Ch1903.e(lon, lat), Ch1903.n(lon, lat));
@@ -69,6 +69,11 @@ public class GpxReader {
                 }
             }
         });
+
+        System.out.println("Node List");
+        for (int n : nodeList){
+            System.out.println(n);
+        }
 
         int fromNodeId;
         int toNodeId;
@@ -83,19 +88,12 @@ public class GpxReader {
             }
 
         }
+        System.out.println("Edge List");
+        for (Edge e : edgeList){
+            System.out.println(e);
+        }
         if(edgeList.isEmpty()) { return null; }
         return new SingleRoute(edgeList);
-    }
-
-    private static Document newDocument() {
-        try {
-            return DocumentBuilderFactory
-                    .newDefaultInstance()
-                    .newDocumentBuilder()
-                    .newDocument();
-        } catch (ParserConfigurationException e) {
-            throw new Error(e); // Should never happen
-        }
     }
 
     private static String readTagContent(String text, String tag) {
@@ -119,7 +117,6 @@ public class GpxReader {
         if(text == null){text = "";}
         text = text.replaceAll("\\s", ""); // remove blank spaces
 
-        System.out.println(text);
         String tagProps;
         if (text.contains("<"+ tag)){
             System.out.println("tag found " + tag);
@@ -131,7 +128,6 @@ public class GpxReader {
         }
 
         if (tagProps.contains(property)){
-            System.out.println("property found " + property);
             int propOpen = text.indexOf(property + "=\"")+ property.length() + 2;
             int propClose = text.indexOf("\"", propOpen );
             return text.substring(propOpen, propClose);
