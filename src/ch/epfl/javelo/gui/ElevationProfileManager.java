@@ -84,12 +84,8 @@ public final  class ElevationProfileManager {
         //BorderPane
         this.borderPane = new BorderPane();
         borderPane.getStylesheets().add("elevation_profile.css");
-
         borderPane.setCenter(pane);
         borderPane.setBottom(vbox);
-        //borderPane.getChildren().add(pane);
-
-
 
         installHandler();
         installListeners();

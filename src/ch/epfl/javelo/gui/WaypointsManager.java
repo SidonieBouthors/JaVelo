@@ -3,22 +3,34 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.data.Graph;
 import ch.epfl.javelo.projection.PointCh;
 import ch.epfl.javelo.projection.PointWebMercator;
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -38,7 +50,7 @@ public final class WaypointsManager {
     private final Consumer<String> errorSignal;
     private final Pane pane;
     private final static int SEARCH_DISTANCE_WAYPOINTS = 1000;
-    private final ObjectProperty<Waypoint> savedWaypoint;
+    private final ObservableMap<String, Waypoint> savedWaypoints;
 
 
     /**
@@ -50,14 +62,14 @@ public final class WaypointsManager {
     public WaypointsManager(Graph roadNetwork,
                             ObjectProperty<MapViewParameters> fxProperty,
                             ObservableList<Waypoint> waypoints,
-                            ObjectProperty<Waypoint> savedWaypoint,
+                            ObservableMap<String, Waypoint> savedWaypoints,
                             Consumer<String> errorSignal) {
 
         this.roadNetwork = roadNetwork;
         this.fxProperty = fxProperty;
         this.waypoints = waypoints;
         this.errorSignal = errorSignal;
-        this.savedWaypoint = savedWaypoint;
+        this.savedWaypoints = savedWaypoints;
         pane = new Pane();
         pane.setPickOnBounds(false);
         updateWaypoints();
@@ -97,7 +109,7 @@ public final class WaypointsManager {
             }
             waypointGroup.getChildren().addAll(firstSVG, secondSVG);
 
-            installGroupHandlers(waypointGroup, i);
+            installGroupHandlers(waypoint, waypointGroup, i);
             setGroupCoordinates(waypointGroup, waypoint.position());
 
             waypointGroups.add(waypointGroup);
@@ -112,7 +124,7 @@ public final class WaypointsManager {
      * @param waypointGroup     : group
      * @param index             : index of the waypoint
      */
-    private void installGroupHandlers(Group waypointGroup, int index){
+    private void installGroupHandlers(Waypoint waypoint, Group waypointGroup, int index){
 
         SimpleObjectProperty<Point2D> point = new SimpleObjectProperty<>();
 
@@ -137,9 +149,7 @@ public final class WaypointsManager {
             if (event.isStillSincePress()) {
 
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    System.out.println("saved waypoint changed");
-                    savedWaypoint.set(waypoints.get(index));
-                    System.out.println(savedWaypoint);
+                    saveWaypointPopup(waypoint);
                 }
                 if (event.getButton() == MouseButton.PRIMARY) {
                     waypoints.remove(index);
@@ -149,9 +159,6 @@ public final class WaypointsManager {
 
         });
     }
-
-
-
 
     /**
      * Setting coordinates of the Group at a given Point ch
@@ -208,6 +215,43 @@ public final class WaypointsManager {
         }
         else {
             waypoints.set(index, new Waypoint(point, nodeId));
+        }
+    }
+
+    private void saveWaypointPopup(Waypoint waypoint){
+        if (!(waypoint == null || savedWaypoints.containsValue(waypoint))) {
+            Stage saveStage = new Stage();
+            saveStage.initModality(Modality.APPLICATION_MODAL);
+            GridPane grid = new GridPane();
+            grid.getStylesheets().add("save.css");
+            grid.setId("grid");
+            grid.setAlignment(Pos.CENTER);
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(25, 25, 25, 25));
+            Button save = new Button("Sauvegarder");
+            Button cancel = new Button("Annuler");
+            javafx.scene.control.TextField field = new TextField();
+            Text errorMessage = new Text("Entrez le nom du point !");
+            errorMessage.setVisible(false);
+            grid.add(field, 0, 0, 2, 1);
+            grid.add(save, 0, 1, 1, 1);
+            grid.add(cancel, 1, 1, 1, 1);
+            grid.add(errorMessage, 0, 2, 2, 1);
+            save.setOnAction(event -> {
+                if (!(field.getText().length() == 0 || savedWaypoints.containsValue(waypoint))) {
+                    savedWaypoints.put(field.getText(),waypoint);
+                    saveStage.close();
+                } else {
+                    errorMessage.setText("Entrez le nom du point !");
+                    errorMessage.setVisible(true);
+                }
+            });
+            cancel.setOnAction(event -> saveStage.close());
+            saveStage.setTitle("Point");
+            saveStage.getIcons().add(new Image("bicycle.png"));
+            saveStage.setScene(new Scene(grid));
+            saveStage.show();
         }
     }
 }

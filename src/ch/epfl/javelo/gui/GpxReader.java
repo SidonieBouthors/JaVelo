@@ -53,12 +53,6 @@ public class GpxReader {
             String latProp = readTagProperty(line, "rtept", "lat");
             String lonProp = readTagProperty(line, "rtept", "lon");
 
-            //test
-            latProp = readTagProperty(line, "wpt", "lat");
-            lonProp = readTagProperty(line, "wpt", "lon");
-
-            System.out.println(latProp + " " + lonProp);
-
             if (latProp != null && lonProp != null) {
                 double lat = Math.toRadians(Double.parseDouble(latProp));
                 double lon = Math.toRadians(Double.parseDouble(lonProp));
@@ -69,11 +63,6 @@ public class GpxReader {
                 }
             }
         });
-
-        System.out.println("Node List");
-        for (int n : nodeList){
-            System.out.println(n);
-        }
 
         int fromNodeId;
         int toNodeId;
@@ -88,10 +77,7 @@ public class GpxReader {
             }
 
         }
-        System.out.println("Edge List");
-        for (Edge e : edgeList){
-            System.out.println(e);
-        }
+
         if(edgeList.isEmpty()) { return null; }
         return new SingleRoute(edgeList);
     }

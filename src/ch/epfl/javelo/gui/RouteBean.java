@@ -5,6 +5,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
@@ -24,8 +25,7 @@ public final class RouteBean {
     private final ObjectProperty<Route> route;
     private final ObjectProperty<ElevationProfile> elevationProfile;
     private final RouteComputer computer;
-    private final ObservableList<Pair<String,Waypoint>> savedWaypoints;
-    private final ObjectProperty<Waypoint> savedWaypoint;
+    private final ObservableMap<String,Waypoint> savedWaypoints;
     // for listener in RouteBean Constructor
     private static final int MINIMAL_SIZE = 2;
     //for elevation profile computer
@@ -48,9 +48,8 @@ public final class RouteBean {
         this.highlightedPosition = new SimpleDoubleProperty();
         this.elevationProfile = new SimpleObjectProperty<>();
         this.computer = computer;
-        savedWaypoint = new SimpleObjectProperty<>(null);
         waypoints = FXCollections.observableArrayList();
-        savedWaypoints = FXCollections.observableArrayList();
+        savedWaypoints = FXCollections.observableHashMap();
 
         waypoints.addListener((ListChangeListener<? super Waypoint>) o -> {
             if (waypoints.size() < MINIMAL_SIZE) {
@@ -97,7 +96,8 @@ public final class RouteBean {
             route.set(new MultiRoute(routeList));
         }
     }
-    public ObservableList<Pair<String,Waypoint>> getSavedWaypoints() {
+
+    public ObservableMap<String,Waypoint> getSavedWaypoints() {
         return savedWaypoints;
     }
 
@@ -174,8 +174,4 @@ public final class RouteBean {
         }
         return index;
     }
-    public ObjectProperty<Waypoint> getSavedWaypoint(){
-        return savedWaypoint;
-    }
-
 }

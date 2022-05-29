@@ -1,18 +1,19 @@
 package ch.epfl.javelo.gui;
+
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.Ch1903;
 import ch.epfl.javelo.projection.PointWebMercator;
-import ch.epfl.javelo.projection.SwissBounds;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RoutePoint;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.StackPane;
-import javafx.util.Pair;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -47,7 +48,7 @@ public final class AnnotatedMapManager {
         this.mapViewParametersP =
                 new SimpleObjectProperty<>(mapViewParameters);
         ObservableList<Waypoint> waypoints = routeBean.getWaypoints();
-        ObjectProperty<Waypoint> savedWaypoint = routeBean.getSavedWaypoint();
+        ObservableMap<String, Waypoint> savedWaypoints = routeBean.getSavedWaypoints();
 
         this.mousePositionOnRouteProperty = new SimpleDoubleProperty(Double.NaN);
         this.currentMousePosition = new SimpleObjectProperty<>();
@@ -56,7 +57,7 @@ public final class AnnotatedMapManager {
         WaypointsManager waypointsManager = new WaypointsManager(graph,
                 mapViewParametersP,
                 waypoints,
-                savedWaypoint,
+                savedWaypoints,
                 errorConsumer);
         BaseMapManager baseMapManager = new BaseMapManager(tileManager,
                 overlayTileManager,
@@ -118,10 +119,6 @@ public final class AnnotatedMapManager {
                     currentMousePosition.get().getX() - mapViewParametersP.get().viewX(point),
                     currentMousePosition.get().getY() - mapViewParametersP.get().viewY(point));
 
-            /*
-            mapViewParametersP.get().viewX(mousePosition) - mapViewParametersP.get().viewX(point),
-            mapViewParametersP.get().viewY(mousePosition) - mapViewParametersP.get().viewY(point));
-             */
             if (distance <= MAX_CURSOR_ROUTE_DISTANCE){
                 return closestPoint.position();
             }

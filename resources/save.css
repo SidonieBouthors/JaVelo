@@ -1,0 +1,31 @@
+* {
+    -fx-font-family: "Avenir";
+
+}
+
+#grid {
+    -fx-background-color: #b6cce4;
+}
+Button {
+    -fx-text-fill: #ffffff;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+    -fx-background-color: #1d727e;
+    -fx-font-size: 12px;
+}
+#save-button{
+}
+#cancel-button{
+}
+TextField {
+    -fx-border-color: #00455a;
+    -fx-border-width: 3px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+Text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-fill: #950a0a;
+}

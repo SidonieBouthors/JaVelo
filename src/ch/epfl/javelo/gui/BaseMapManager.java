@@ -36,7 +36,8 @@ public final class BaseMapManager {
      * @param waypointManager   : waypoint manager
      * @param mapParameters     : property containing the map view parameters
      */
-    public BaseMapManager(ObjectProperty<TileManager> tileManager, ObjectProperty<TileManager> overlayTileManager,
+    public BaseMapManager(ObjectProperty<TileManager> tileManager,
+                          ObjectProperty<TileManager> overlayTileManager,
                           WaypointsManager waypointManager,
                           ObjectProperty<MapViewParameters> mapParameters) {
         this.tileManager = tileManager;
@@ -84,7 +85,6 @@ public final class BaseMapManager {
             for (int j = topLeftTileY; j < bottomRightTileY; j++) {
 
                 try {
-                    //Preconditions.checkArgument(TileManager.TileId.isValid(zoom, i, j));
                     if (tileManager.get() != null) {
                         Image tile = tileManager.get().imageForTileAt(new TileManager.TileId(zoom, i, j));
                         context.drawImage(tile, xShift, yShift);

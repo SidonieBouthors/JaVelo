@@ -1,31 +1,26 @@
 package ch.epfl.javelo.gui;
 
 import ch.epfl.javelo.data.Graph;
-import ch.epfl.javelo.projection.PointCh;
-import ch.epfl.javelo.projection.PointWebMercator;
 import ch.epfl.javelo.routing.CityBikeCF;
 import ch.epfl.javelo.routing.CostFunction;
 import ch.epfl.javelo.routing.Route;
 import ch.epfl.javelo.routing.RouteComputer;
 import javafx.application.Application;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -33,9 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
 
 public final class JaVelo extends Application {
@@ -55,90 +48,88 @@ public final class JaVelo extends Application {
         RouteComputer computer = new RouteComputer(graph, costFunction);
         RouteBean routeBean = new RouteBean(computer);
 
-        /*
-        routeBean.getWaypoints().addAll(FXCollections.observableArrayList(
-                new Waypoint(new PointCh(2532697, 1152500), 159049),
-                new Waypoint(new PointCh(2538659, 1154350), 117669)));
-        */
-
         ErrorManager errorManager = new ErrorManager();
         Consumer<String> errorConsumer = errorManager::displayError;
 
-        //BONUS
+        //TILE MANAGER OPTIONS
         Path cyclingCacheBasePath = Path.of("cycling-cache");
         String cyclingTileServerHost = "tile.waymarkedtrails.org/cycling";
         TileManager overlayTileManager =
                 new TileManager(cyclingCacheBasePath, cyclingTileServerHost);
-        BooleanProperty drawOverlay = new SimpleBooleanProperty(false);
 
         Path cyclOSMCacheBasePath = Path.of("cyclosm-cache");
         String cyclOSMTileServerHost = "a.tile-cyclosm.openstreetmap.fr/cyclosm";
         TileManager cyclOSMTileManager =
                 new TileManager(cyclOSMCacheBasePath, cyclOSMTileServerHost);
 
+        Path watercolorCacheBasePath = Path.of("watercolor-cache");
+        String watercolorTileServerHost = "stamen-tiles.a.ssl.fastly.net/watercolor";
+        TileManager watercolorTileManager =
+                new TileManager(watercolorCacheBasePath, watercolorTileServerHost);
+
+
         ObjectProperty<TileManager> tileManagerProperty = new SimpleObjectProperty<>(standardTileManager);
         ObjectProperty<TileManager> overlayTileManagerProperty = new SimpleObjectProperty<>();
-        //
+        ObservableList<ImportedRoute> importedRoutes = FXCollections.observableArrayList();
 
-
-        //BONUS
+        //OPTIONS
         MenuItem clearWaypoints = new MenuItem("Supprimer les Points");
         clearWaypoints.setOnAction(event -> routeBean.getWaypoints().clear());
+
         MenuItem invertRoute = new MenuItem("Inverser la Route");
         invertRoute.setOnAction(event -> Collections.reverse(routeBean.getWaypoints()));
-        MenuItem overlayCyclingRoutes = new MenuItem("Afficher les Pistes Cyclables");
-        overlayCyclingRoutes.setOnAction(event -> {
-            if (overlayTileManagerProperty.get() == null){
-                overlayTileManagerProperty.set(overlayTileManager);
-                overlayCyclingRoutes.setText("Cacher les Pistes Cyclables");
-            } else {
-                overlayTileManagerProperty.set(null);
-                overlayCyclingRoutes.setText("Afficher les Pistes Cyclables");
-            }
-        });
-        Menu waypointsSaved= new Menu("Sauvegardé");
-        routeBean.getSavedWaypoints().addListener((ListChangeListener<? super Pair<String, Waypoint>>) n->{
-            ObservableList<Pair<String, Waypoint>> liste = routeBean.getSavedWaypoints();
 
-            waypointsSaved.getItems().clear();
-            for (int i = 0; i < liste.size(); i++) {
-                String text = liste.get(i).getKey();
-                MenuItem waypoint = new MenuItem();
-                int j;
-                int lele = -1;
-                for (j = 0; j < liste.size(); j++) {
-                    if (text.equals(liste.get(j).getKey())) {
-                        lele = j;
-                    }
-                }
-                final int index = lele;
-                System.out.println(" hey : "+liste.get(index).getValue());
-                waypoint.setOnAction(event-> {
-                            routeBean.getWaypoints().add(liste.get(index).getValue());
-                        });
-                waypoint.setText(text);
-                waypointsSaved.getItems().add(waypoint);
-            }
+        CheckMenuItem overlayCyclingRoutes = new CheckMenuItem("Afficher Pistes Cyclables");
+        overlayTileManagerProperty.bind(Bindings.createObjectBinding(
+                () -> overlayCyclingRoutes.isSelected() ? overlayTileManager : null,
+                overlayCyclingRoutes.selectedProperty()));
 
-        });
-        MenuItem changeBaseMap = new MenuItem("Utiliser la Carte CyclOSM");
-        changeBaseMap.setOnAction(event -> {
-            if(tileManagerProperty.get() != cyclOSMTileManager) {
-                tileManagerProperty.set(cyclOSMTileManager);
-                changeBaseMap.setText("Utiliser la Carte Standard");
-            } else {
-                tileManagerProperty.set(standardTileManager);
-                changeBaseMap.setText("Utiliser la Carte CyclOSM");
+        //SAVED WAYPOINTS
+        Menu menuSavedWaypoints = new Menu("Points Sauvegardés");
+        menuSavedWaypoints.disableProperty().bind(Bindings.createBooleanBinding(
+                () -> routeBean.getSavedWaypoints().isEmpty(),
+                routeBean.getSavedWaypoints()
+        ));
+
+        routeBean.getSavedWaypoints().addListener((MapChangeListener<? super String, ? super Waypoint>)
+            l -> {
+            ObservableMap<String,Waypoint> savedWaypoints = routeBean.getSavedWaypoints();
+
+            menuSavedWaypoints.getItems().clear();
+
+            for (String key : savedWaypoints.keySet()){
+
+                MenuItem waypointMenu = new MenuItem();
+
+                waypointMenu.setOnAction(event-> {
+                    routeBean.getWaypoints().add(savedWaypoints.get(key));
+                });
+
+                waypointMenu.setText(key);
+
+                menuSavedWaypoints.getItems().add(waypointMenu);
             }
         });
 
+        //CHANGE BASE MAP
+        ToggleGroup baseMap = new ToggleGroup();
+        RadioMenuItem setStandardBaseMap = new RadioMenuItem("Carte Standard");
+        setStandardBaseMap.setToggleGroup(baseMap);
+        setStandardBaseMap.setOnAction(event -> tileManagerProperty.set(standardTileManager));
+        RadioMenuItem setCyclosmBaseMap = new RadioMenuItem("Carte CyclOSM");
+        setCyclosmBaseMap.setToggleGroup(baseMap);
+        setCyclosmBaseMap.setOnAction(event -> tileManagerProperty.set(cyclOSMTileManager));
+        RadioMenuItem setWatercolorBaseMap = new RadioMenuItem("Carte Watercolor");
+        setWatercolorBaseMap.setToggleGroup(baseMap);
+        setWatercolorBaseMap.setOnAction(event -> tileManagerProperty.set(watercolorTileManager));
+
+        setStandardBaseMap.setSelected(true);
+
+        //IMPORT / EXPORT GPX
         MenuItem importOption = new MenuItem("Importer GPX");
-        //
-
-
         MenuItem exportOption = new MenuItem("Exporter GPX");
         exportOption.disableProperty().bind(
-                routeBean.getRouteProperty().isNull());//itineraire non nul
+                routeBean.getRouteProperty().isNull());
         exportOption.setOnAction(event -> {
             try {
                 GpxGenerator.writeGpx("javelo.gpx",
@@ -148,28 +139,31 @@ public final class JaVelo extends Application {
                 throw new UncheckedIOException(e);
             }
         });
-        Menu menuFichier = new Menu("Fichier");
-        //BONUS
-        Menu menuFondCarte = new Menu("Fond de Carte");
-        Menu menuItineraire = new Menu("Itinéraire");
-        //
-        MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuItineraire,waypointsSaved);
-        menuBar.setUseSystemMenuBar(true);
 
-        //BONUS
-        //
+        Menu menuFichier = new Menu("Fichier");
+        Menu menuFondCarte = new Menu("Fond de Carte");
+        Menu menuOptions = new Menu("Itinéraire");
+        Menu menuSaved = new Menu("Elements");
+        Menu menuImportedRoutes = new Menu("GPX Importés");
+        menuImportedRoutes.disableProperty().bind(Bindings.createBooleanBinding(
+                importedRoutes::isEmpty,
+                importedRoutes));
+        MenuBar menuBar = new MenuBar(menuFichier, menuFondCarte, menuOptions, menuSaved);
+
+        menuSaved.getItems().add(menuImportedRoutes);
+        menuSaved.getItems().add(menuSavedWaypoints);
         menuFichier.getItems().add(exportOption);
         menuFichier.getItems().add(importOption);
-        menuItineraire.getItems().add(clearWaypoints);
-        menuItineraire.getItems().add(invertRoute);
-        menuFondCarte.getItems().add(changeBaseMap);
-        menuFondCarte.getItems().add(overlayCyclingRoutes);
-        //
+        menuOptions.getItems().add(clearWaypoints);
+        menuOptions.getItems().add(invertRoute);
+        menuOptions.getItems().add(overlayCyclingRoutes);
+        menuFondCarte.getItems().add(setStandardBaseMap);
+        menuFondCarte.getItems().add(setCyclosmBaseMap);
+        menuFondCarte.getItems().add(setWatercolorBaseMap);
 
 
-
-
-        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManagerProperty, routeBean, errorConsumer, overlayTileManagerProperty);
+        AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManagerProperty,
+                routeBean, errorConsumer, overlayTileManagerProperty);
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.getElevationProfile(),
                                             routeBean.highlightedPositionProperty());
@@ -208,12 +202,13 @@ public final class JaVelo extends Application {
                     new FileChooser.ExtensionFilter("GPX File (*.gpx)", "*.gpx"));
             File file = fileChooser.showOpenDialog(primaryStage);
             if (file != null) {
-                System.out.println(file.getPath());
                 try {
                     Route route = GpxReader.convertGpxToRoute(file, graph);
                     if (route != null) {
-                        ImportedRoute importedRoute = new ImportedRoute(new SimpleObjectProperty<>(route),
-                                mapManager.mapViewParametersProperty());
+                        ImportedRoute importedRoute = new ImportedRoute(route,
+                                mapManager.mapViewParametersProperty(),
+                                file.getName());
+                        importedRoutes.add(importedRoute);
                         mapPane.getChildren().add(importedRoute.pane());
                     } else {
                         errorManager.displayError("Invalid GPX File ! ");
@@ -224,44 +219,23 @@ public final class JaVelo extends Application {
             }
         });
 
-        routeBean.getSavedWaypoint().addListener(n->{
-            System.out.println("hello1");
-            Waypoint waypoint = routeBean.getSavedWaypoint().get();
-            ObservableList<Pair<String, Waypoint>> liste = routeBean.getSavedWaypoints();
-            if (!(waypoint == null || liste.contains(waypoint))) {
-                final Stage dialog = new Stage();
-                BorderPane pane = new BorderPane();
-                dialog.initModality(Modality.APPLICATION_MODAL);
-                dialog.initOwner(primaryStage);
-                VBox dialogVbox = new VBox(20);
-                Button save = new Button("Save");
-                Button cancel = new Button("Annuler");
-                TextField text = new TextField();
-                dialogVbox.getChildren().addAll(text,save,cancel);
-                save.setOnAction(event->{
+        importedRoutes.addListener((ListChangeListener<? super ImportedRoute>)
+            l -> {
+                menuImportedRoutes.getItems().clear();
+                for (ImportedRoute importedRoute : importedRoutes){
 
-                    if (!(text.getText().length() == 0 || liste.contains(waypoint))) {
-                        liste.add(new Pair<>(text.getText(),waypoint));
-                        System.out.println(liste);
-                        dialog.close();
-                    } else {
-                        save.setText("Entrez le nom de votre waypoint !");
-                    }
-                });
-                cancel.setOnAction(event2-> dialog.close());
-                pane.setCenter(dialogVbox);
-
-
-                //Scene dialogScene = new Scene(dialogVbox, 300, 200);
-                dialog.setScene(new Scene(pane));
-                dialog.show();
-            }
+                    CheckMenuItem routeMenu = new CheckMenuItem();
+                    routeMenu.setText(importedRoute.getName());
+                    routeMenu.setSelected(importedRoute.visibleProperty().get());
+                    importedRoute.visibleProperty().bind(routeMenu.selectedProperty());
+                    menuImportedRoutes.getItems().add(routeMenu);
+                }
         });
-
 
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setTitle("JaVelo");
+        primaryStage.getIcons().add(new Image("bicycle.png"));
         primaryStage.setScene(new Scene(paneWithMenu));
         primaryStage.show();
     }
