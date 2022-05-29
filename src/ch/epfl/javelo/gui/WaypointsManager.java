@@ -219,7 +219,15 @@ public final class WaypointsManager {
     }
 
     private void saveWaypointPopup(Waypoint waypoint){
-        if (!(waypoint == null || savedWaypoints.containsValue(waypoint))) {
+        if (savedWaypoints.containsValue(waypoint)) {
+            for (String name : savedWaypoints.keySet()){
+                if (waypoint.equals(savedWaypoints.get(name))) {
+                    errorSignal.accept("Ce point est déjà sauvegardé sous le nom : "
+                            + name);
+                }
+            }
+        }
+        else if (waypoint != null ) {
             Stage saveStage = new Stage();
             saveStage.initModality(Modality.APPLICATION_MODAL);
             GridPane grid = new GridPane();
@@ -239,12 +247,16 @@ public final class WaypointsManager {
             grid.add(cancel, 1, 1, 1, 1);
             grid.add(errorMessage, 0, 2, 2, 1);
             save.setOnAction(event -> {
-                if (!(field.getText().length() == 0 || savedWaypoints.containsValue(waypoint))) {
-                    savedWaypoints.put(field.getText(),waypoint);
-                    saveStage.close();
-                } else {
+                if (field.getText().length() == 0) {
                     errorMessage.setText("Entrez le nom du point !");
                     errorMessage.setVisible(true);
+                } else if (savedWaypoints.containsKey(field.getText())){
+                    errorMessage.setText("Ce nom est déjà utilisé !");
+                    errorMessage.setVisible(true);
+                }
+                else {
+                    savedWaypoints.put(field.getText(),waypoint);
+                    saveStage.close();
                 }
             });
             cancel.setOnAction(event -> saveStage.close());
