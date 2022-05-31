@@ -3,15 +3,20 @@ package ch.epfl.javelo.gui;
 import ch.epfl.javelo.Math2;
 import ch.epfl.javelo.projection.PointWebMercator;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
+import java.util.function.Predicate;
 
 /**
  * @author Sidonie Bouthors (343678)
@@ -27,6 +32,7 @@ public final class BaseMapManager {
     private final Pane pane;
     private final SimpleLongProperty minScrollTime = new SimpleLongProperty();
     private final ObjectProperty<TileManager> overlayTileManager;
+    private final ObservableList<ImportedRoute> importedRoutes;
     private PointWebMercator lastMousePosition;
     private boolean redrawNeeded;
 
@@ -39,11 +45,13 @@ public final class BaseMapManager {
     public BaseMapManager(ObjectProperty<TileManager> tileManager,
                           ObjectProperty<TileManager> overlayTileManager,
                           WaypointsManager waypointManager,
-                          ObjectProperty<MapViewParameters> mapParameters) {
+                          ObjectProperty<MapViewParameters> mapParameters,
+                          ObservableList<ImportedRoute> importedRoutes) {
         this.tileManager = tileManager;
         this.overlayTileManager = overlayTileManager;
         this.waypointManager = waypointManager;
         this.mapParameters = mapParameters;
+        this.importedRoutes = importedRoutes;
         this.pane = new Pane();
         this.canvas = new Canvas();
         pane.getChildren().add(canvas);
@@ -127,6 +135,14 @@ public final class BaseMapManager {
 
         tileManager.addListener((p, oldM, newM) -> redrawOnNextPulse());
         overlayTileManager.addListener((p, oldO, newO) -> redrawOnNextPulse());
+
+        importedRoutes.addListener((ListChangeListener<? super ImportedRoute>)
+            l -> {
+                pane.getChildren().removeIf(n -> n != canvas);
+                for (ImportedRoute importedRoute : importedRoutes) {
+                    pane.getChildren().add(importedRoute.pane());
+                }
+            });
     }
 
     private void installHandlers(){

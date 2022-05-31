@@ -163,7 +163,7 @@ public final class JaVelo extends Application {
 
 
         AnnotatedMapManager mapManager = new AnnotatedMapManager(graph, tileManagerProperty,
-                routeBean, errorConsumer, overlayTileManagerProperty);
+                routeBean, errorConsumer, overlayTileManagerProperty, importedRoutes);
         ElevationProfileManager elevationProfileManager =
                 new ElevationProfileManager(routeBean.getElevationProfile(),
                                             routeBean.highlightedPositionProperty());
@@ -209,7 +209,6 @@ public final class JaVelo extends Application {
                                 mapManager.mapViewParametersProperty(),
                                 file.getName());
                         importedRoutes.add(importedRoute);
-                        mapPane.getChildren().add(importedRoute.pane());
                     } else {
                         errorManager.displayError("Invalid GPX File ! ");
                     }

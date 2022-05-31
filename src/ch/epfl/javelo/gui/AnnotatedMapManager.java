@@ -42,7 +42,8 @@ public final class AnnotatedMapManager {
      * @param errorConsumer : errorConsumer
      */
     public AnnotatedMapManager(Graph graph, ObjectProperty<TileManager> tileManager, RouteBean routeBean,
-                               Consumer<String> errorConsumer, ObjectProperty<TileManager> overlayTileManager){
+                               Consumer<String> errorConsumer, ObjectProperty<TileManager> overlayTileManager,
+                                ObservableList<ImportedRoute> importedRoutes){
         MapViewParameters mapViewParameters =
                 new MapViewParameters(INIT_ZOOM, INIT_X,INIT_Y);
         this.mapViewParametersP =
@@ -62,8 +63,8 @@ public final class AnnotatedMapManager {
         BaseMapManager baseMapManager = new BaseMapManager(tileManager,
                 overlayTileManager,
                 waypointsManager,
-
-                mapViewParametersP);
+                mapViewParametersP,
+                importedRoutes);
         RouteManager routeManager = new RouteManager(routeBean,
                 mapViewParametersP);
 
