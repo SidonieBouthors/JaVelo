@@ -19,6 +19,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 
 /**
@@ -89,7 +91,7 @@ public class GpxGenerator {
      */
     public static void writeGpx(String fileName, Route route, ElevationProfile profile) throws IOException {
         Document doc = createGpx(route, profile);
-        Writer w = new FileWriter(fileName);
+        Writer w = Files.newBufferedWriter(Path.of(fileName));
 
         try {
             Transformer transformer = TransformerFactory

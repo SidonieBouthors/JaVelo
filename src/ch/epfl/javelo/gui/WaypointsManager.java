@@ -246,6 +246,19 @@ public final class WaypointsManager {
             grid.add(save, 0, 1, 1, 1);
             grid.add(cancel, 1, 1, 1, 1);
             grid.add(errorMessage, 0, 2, 2, 1);
+            field.setOnAction(event -> {
+                if (field.getText().length() == 0) {
+                    errorMessage.setText("Entrez le nom du point !");
+                    errorMessage.setVisible(true);
+                } else if (savedWaypoints.containsKey(field.getText())){
+                    errorMessage.setText("Ce nom est déjà utilisé !");
+                    errorMessage.setVisible(true);
+                }
+                else {
+                    savedWaypoints.put(field.getText(),waypoint);
+                    saveStage.close();
+                }
+            });
             save.setOnAction(event -> {
                 if (field.getText().length() == 0) {
                     errorMessage.setText("Entrez le nom du point !");
@@ -260,6 +273,7 @@ public final class WaypointsManager {
                 }
             });
             cancel.setOnAction(event -> saveStage.close());
+
             saveStage.setTitle("Point");
             saveStage.getIcons().add(new Image("bicycle.png"));
             saveStage.setScene(new Scene(grid));

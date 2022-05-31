@@ -105,7 +105,6 @@ public class GpxReader {
 
         String tagProps;
         if (text.contains("<"+ tag)){
-            System.out.println("tag found " + tag);
             int tagOpen = text.indexOf("<" + tag)+ tag.length() + 1;
             int tagClose = text.indexOf( ">", tagOpen);
             tagProps =  text.substring(tagOpen , tagClose);
