@@ -43,7 +43,11 @@ public final class WaypointsManager {
     private final static String FIRST_SVG_PATH_STRING = "M-8-20C-5-14-2-7 0 0 2-7 5-14 8-20 20-40-20-40-8-20";
     private final static String SECOND_SVG_PATH_STRING = "M0-23A1 1 0 000-29 1 1 0 000-23";
     private final static String NO_ROAD_ERROR_MESSAGE = "Aucune route à proximité !";
+    private final static String ENTER_WAYPOINT_NAME = "Entrez le nom du point !";
+    private final static String WAYPOINT_NAME_ALREADY_USED = "Ce nom est déjà utilisé !";
+    private final static String MAX_WAYPOINTS_SAVED ="Vous avez atteint le nombre maximum de points sauvegardés";
 
+    private final static int SAVED_WAYPOINTS_SIZE = 1;
     private final Graph roadNetwork;
     private final ObjectProperty<MapViewParameters> fxProperty;
     private final ObservableList<Waypoint> waypoints;
@@ -51,6 +55,7 @@ public final class WaypointsManager {
     private final Pane pane;
     private final static int SEARCH_DISTANCE_WAYPOINTS = 1000;
     private final ObservableMap<String, Waypoint> savedWaypoints;
+
 
 
     /**
@@ -248,25 +253,29 @@ public final class WaypointsManager {
             grid.add(errorMessage, 0, 2, 2, 1);
             field.setOnAction(event -> {
                 if (field.getText().length() == 0) {
-                    errorMessage.setText("Entrez le nom du point !");
+                    errorMessage.setText(ENTER_WAYPOINT_NAME);
                     errorMessage.setVisible(true);
                 } else if (savedWaypoints.containsKey(field.getText())){
-                    errorMessage.setText("Ce nom est déjà utilisé !");
+                    errorMessage.setText(WAYPOINT_NAME_ALREADY_USED);
                     errorMessage.setVisible(true);
-                }
-                else {
-                    savedWaypoints.put(field.getText(),waypoint);
+                } else if (savedWaypoints.size() > SAVED_WAYPOINTS_SIZE) {
+                    errorMessage.setText(MAX_WAYPOINTS_SAVED);
+                    errorMessage.setVisible(true);
+                } else {
+                    savedWaypoints.put(field.getText(), waypoint);
                     saveStage.close();
                 }
             });
             save.setOnAction(event -> {
                 if (field.getText().length() == 0) {
-                    errorMessage.setText("Entrez le nom du point !");
+                    errorMessage.setText(ENTER_WAYPOINT_NAME);
                     errorMessage.setVisible(true);
                 } else if (savedWaypoints.containsKey(field.getText())){
-                    errorMessage.setText("Ce nom est déjà utilisé !");
+                    errorMessage.setText(WAYPOINT_NAME_ALREADY_USED);
                     errorMessage.setVisible(true);
-                }
+                } else if (savedWaypoints.size() > SAVED_WAYPOINTS_SIZE) {
+                errorMessage.setText(MAX_WAYPOINTS_SAVED);
+                errorMessage.setVisible(true);}
                 else {
                     savedWaypoints.put(field.getText(),waypoint);
                     saveStage.close();
