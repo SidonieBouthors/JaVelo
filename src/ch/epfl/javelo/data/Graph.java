@@ -40,6 +40,7 @@ public final class Graph {
         this.sectors=sectors;
         this.edges=edges;
         this.attributeSet= List.copyOf(attributeSets);
+
     }
 
     /**

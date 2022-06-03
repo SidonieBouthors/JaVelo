@@ -103,6 +103,7 @@ public final class JaVelo extends Application {
 
                 waypointMenu.setOnAction(event-> {
                     routeBean.getWaypoints().add(savedWaypoints.get(key));
+
                 });
 
                 waypointMenu.setText(key);
